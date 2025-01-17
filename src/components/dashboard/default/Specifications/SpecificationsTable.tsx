@@ -15,7 +15,7 @@ const SpecificationsTable = () => {
   const { machines, getMachines } = useMachines();
 
   // const [detailId, setDetailId] = useState(null);
-  const [params,] = useState({
+  const [params] = useState({
     page: 1,
     limit: 20,
     filters: [],
@@ -36,9 +36,12 @@ const SpecificationsTable = () => {
   const columns = [
     {
       title: "Название параметра",
-      dataIndex: "nameRu",
+      // dataIndex: "nameRu",
       width: "20%",
       key: "nameRu",
+      render: (parametr) => (
+        <p>{`${parametr?.nameRu} (${parametr?.name.toUpperCase()})`}</p>
+      ),
     },
     {
       title: "Значение",

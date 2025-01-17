@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Button,
   Card,
@@ -12,7 +13,7 @@ import {
   Typography,
 } from "antd";
 import { useEffect, useState } from "react";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 import useMachines from "../../../../hooks/machines/useMachines.jsx";
 import usePricing from "../../../../hooks/pricing/usePricing.jsx";
 import { useNavigate } from "react-router-dom";
@@ -95,7 +96,7 @@ const PricingCreatePage = () => {
         </Typography.Title>
 
         <Form form={form} onFinish={onFinish} layout="vertical">
-          <Form.Item
+          {/* <Form.Item
             label="Укажите Название ценообразования"
             name="tariffName"
             rules={[
@@ -103,7 +104,7 @@ const PricingCreatePage = () => {
             ]}
           >
             <Input placeholder="Название ценообразования" />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             label="Укажите тип техники данного тарифа"
             name="machineId"
@@ -248,7 +249,9 @@ const PricingCreatePage = () => {
               },
             ]}
           >
-            {(fields, { add, remove }) => (
+            {(fields, { remove }) => (
+              //! removeni yonida add yoziladi
+
               <>
                 {fields.map(({ key, name, ...restField }) => (
                   <Row gutter={[16, 16]} key={key}>
@@ -305,7 +308,7 @@ const PricingCreatePage = () => {
                   </Row>
                 ))}
                 {/* Add New Parameter Button */}
-                <Form.Item>
+                {/* <Form.Item>
                   <Button
                     type="dashed"
                     onClick={() => add()}
@@ -313,7 +316,7 @@ const PricingCreatePage = () => {
                   >
                     Добавить ещё
                   </Button>
-                </Form.Item>
+                </Form.Item> */}
               </>
             )}
           </Form.List>

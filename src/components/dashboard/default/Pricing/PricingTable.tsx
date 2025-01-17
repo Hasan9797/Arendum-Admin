@@ -1,12 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Popconfirm, Space, Table, message } from "antd";
+import {
+  Badge,
+  Button,
+  Popconfirm,
+  Space,
+  Table,
+  Typography,
+  message,
+} from "antd";
 import { DeleteOutlined, EyeOutlined, FormOutlined } from "@ant-design/icons";
 import { useMemo, useState } from "react";
 import { useEffect } from "react";
 import useMachines from "../../../../hooks/machines/useMachines.jsx";
 import usePricing from "../../../../hooks/pricing/usePricing.jsx";
-import dayjs from "dayjs";
 
 const PricingTable = () => {
   // const { getList, specifications, listLoading, remove, removeLoading } =
@@ -34,31 +41,10 @@ const PricingTable = () => {
   }, []);
 
   const columns = [
-    // {
-    //   title: "Значение",
-    //   width: "40%",
-    //   key: "params",
-    //   // dataIndex: "params",
-    //   render: (parametres) => {
-    //     if (parametres && Array.isArray(parametres.params)) {
-    //       return parametres.params.map((param, index) => (
-    //         <Badge
-    //           style={{ marginRight: "3px" }}
-    //           key={index}
-    //           count={`${param.param}
-    //           ${parametres.name}`}
-    //           showZero
-    //           color="blue"
-    //         />
-    //       ));
-    //     }
-    //     return "No parameters available";
-    //   },
-    // },
     {
-      // title: "Связь с категорией",
+      title: "Связь с категорией",
       // dataIndex: "machineId",
-      width: "20%",
+      width: "10%",
       key: "machineId",
       render: ({ machineId }) => {
         return (
@@ -70,24 +56,77 @@ const PricingTable = () => {
       },
     },
     {
-      // title: "",
-      width: "40%",
-      dataIndex: "parameters",
-      key: "parameters",
-    },
-    {
-      // title: "Название параметра",
-      dataIndex: "nameRu",
+      title: "Составляюшие ценоброзования",
       width: "20%",
-      key: "nameRu",
+      key: "params",
+      // dataIndex: "params",
+      render: (parametres) => {
+        if (parametres && Array.isArray(parametres.machinePriceParams)) {
+          return parametres.machinePriceParams.map((param, index) => (
+            <Badge
+              style={{ marginRight: "3px" }}
+              key={index}
+              count={`
+                ${param.parameterName} - ${param.parameter}   ${param.unit}`}
+              showZero
+              color="blue"
+            />
+          ));
+        }
+        return "No parameters available";
+      },
     },
-
     {
-      // title: "Дата создания",
-      dataIndex: "createdAt",
+      title: "Статус",
+      width: "15%",
+      dataIndex: "status",
+      key: "status",
+    },
+    {
+      // title: "Составляюшие ценоброзования",
       width: "30%",
-      key: "createdAt",
-      render: (createdAt) => dayjs(createdAt).format("DD-MM-YYYY  HH:mm:ss"),
+      key: "params",
+      // dataIndex: "params",
+      render: (parametres) => {
+        if (parametres && parametres.minHourTime) {
+          return (
+            <>
+              <Typography.Title
+                level={5}
+                style={{ color: "blue", margin: "0" }}
+              >
+                Минималное сумма
+                <strong style={{ color: "red" }}>
+                  {" "}
+                  {parametres.minAmount}
+                </strong>{" "}
+                UZS
+              </Typography.Title>
+              <Typography.Title
+                level={5}
+                style={{ color: "blue", margin: "0" }}
+              >
+                Минималное сол-во часов аренды
+                <strong style={{ color: "red" }}>
+                  {" "}
+                  {parametres.minHourTime}{" "}
+                </strong>
+                ЧАС
+              </Typography.Title>
+            </>
+          );
+        }
+        return (
+          <Typography.Title level={5} style={{ color: "blue", margin: "0" }}>
+            Минималное сумма
+            <strong style={{ color: "red" }}>
+              {" "}
+              {parametres.minAmount}
+            </strong>{" "}
+            UZS
+          </Typography.Title>
+        );
+      },
     },
     {
       // title: "",

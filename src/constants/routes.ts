@@ -23,7 +23,7 @@ export const PATH_DASHBOARD = {
   specifications: path(ROOTS_DASHBOARD, "/specifications"),
   pricing: path(ROOTS_DASHBOARD, "/pricing"),
   moderators: path(ROOTS_DASHBOARD, "/moderators"),
-  regional_management: path(ROOTS_DASHBOARD, "/regional_management"),
+  // regional_management: path(ROOTS_DASHBOARD, "/regional_management"),
   user_detail: path(ROOTS_DASHBOARD, "/user/:id"),
 };
 
