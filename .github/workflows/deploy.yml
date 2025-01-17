@@ -1,4 +1,4 @@
-name: Deploy Build Folder
+name: Deploy React App
 
 on:
   push:
@@ -6,33 +6,44 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Kodni klonlash
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 2. Node.js versiyasini sozlash
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '22'
 
+      # 3. Bog‘liqliklarni o‘rnatish va build
       - name: Install dependencies and build
         run: |
           yarn install
           yarn build
 
-      # === YANGI STEP: SSH kalitlarni sozlash ===
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          # host ni known_hosts ga qo'shish:
-          ssh-keyscan -H 143.198.198.121 >> ~/.ssh/known_hosts
+      # 4. Serverda eski fayllarni o‘chirish
+      - name: Clean remote folder
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_NAME }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            rm -rf /var/www/arendumAdmin/*
 
-      - name: Deploy to Server
-        run: |
-          ssh -o StrictHostKeyChecking=no root@143.198.198.121 "rm -rf /var/www/arendumAdmin/*"
-          scp -r build/* root@143.198.198.121:/var/www/arendumAdmin/
+      # 5. Build qilingan fayllarni nusxalash
+      - name: Copy build to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST_NAME }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          source: "build/*"
+          target: "/var/www/arendumAdmin/"
