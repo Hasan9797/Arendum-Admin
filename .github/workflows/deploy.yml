@@ -10,26 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Kodni yuklash
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Node.js o'rnatish
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "22"
+          node-version: '22'
 
-      # Bog'liqliklarni o'rnatish va build qilish
       - name: Install dependencies and build
         run: |
           yarn install
-          yarn run build
+          yarn build
 
-      # Serverga build papkasini nusxalash
+      # === YANGI STEP: SSH kalitlarni sozlash ===
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          # host ni known_hosts ga qo'shish:
+          ssh-keyscan -H 143.198.198.121 >> ~/.ssh/known_hosts
+
       - name: Deploy to Server
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           ssh -o StrictHostKeyChecking=no root@143.198.198.121 "rm -rf /var/www/arendumAdmin/*"
           scp -r build/* root@143.198.198.121:/var/www/arendumAdmin/
