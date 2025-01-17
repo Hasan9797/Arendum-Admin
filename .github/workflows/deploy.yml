@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies and build
         run: |
           yarn install
-          yarn build
+          yarn run build
 
       # 4. Serverda eski fayllarni o‘chirish
       - name: Clean remote folder
