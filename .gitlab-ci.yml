@@ -1,0 +1,23 @@
+stages:
+  - notify_telegram_start
+  - deploy
+
+notify_telegram_start:
+  stage: notify_telegram_start
+  script:
+    - curl -s -X POST https://api.telegram.org/bot$TG_BOT_TOKEN/sendMessage -d chat_id=$TG_GROUP_CHATID -d parse_mode=html -d text="Отправлены изменения по проекту - <b>$CI_PROJECT_NAME</b>. %0AВетка <b>$CI_COMMIT_BRANCH</b>. %0AОт <b>$GITLAB_USER_NAME</b> %0A<b>КОММИТ - $CI_COMMIT_MESSAGE</b>"
+
+deploy:
+  stage: deploy
+  script:
+    - echo "$RUNNER_KEY" >> runner_key
+    - chmod 600 runner_key
+
+    # Определить текущую ветку и выполнить соответствующий SSH-деплой
+    - if [ "$CI_COMMIT_REF_NAME" == "dev" ]; then
+        ssh -i runner_key -o StrictHostKeyChecking=no -p $DEV_KIOSK_PORT $SSH_USER@$ALL_HOST "cd /home/developer && bash deploy_front.sh";
+      elif [ "$CI_COMMIT_REF_NAME" == "main" ]; then
+        ssh -i runner_key -o StrictHostKeyChecking=no -p;
+      fi
+
+    - rm -f runner_key # Удалить ключ после выполнения скрипта

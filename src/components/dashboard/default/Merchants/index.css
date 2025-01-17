@@ -1,0 +1,23 @@
+.wrapper {
+  width: 100%;
+  display: flex;
+
+  @media screen and (min-width: 768px) {
+  }
+}
+
+.merchant__profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #0ec8eb;
+  background-color: #0ec8eb;
+  border-radius: 50%;
+}
+.label-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

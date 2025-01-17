@@ -1,0 +1,35 @@
+name: Deploy Build Folder
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Kodni yuklash
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Node.js o'rnatish
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      # Bog'liqliklarni o'rnatish va build qilish
+      - name: Install dependencies and build
+        run: |
+          yarn install
+          yarn run build
+
+      # Serverga build papkasini nusxalash
+      - name: Deploy to Server
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          ssh -o StrictHostKeyChecking=no root@143.198.198.121 "rm -rf /var/www/arendumAdmin/*"
+          scp -r build/* root@143.198.198.121:/var/www/arendumAdmin/
