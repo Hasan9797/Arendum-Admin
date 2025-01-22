@@ -117,12 +117,12 @@ const SideNav = ({ ...others }: SiderProps) => {
       "pricing",
       <FileTextOutlined />
     ),
+    getItem(
+      <Link to={PATH_DASHBOARD.params_filter}>Фильтр параметров</Link>,
+      "params_filter",
+      <FileTextOutlined />
+    ),
     getItem("Роли", "role", null, [], "group"),
-    // getItem(
-    //   <Link to={PATH_DASHBOARD.regional_management}>Управление регионы</Link>,
-    //   "regional_management",
-    //   <FileTextOutlined />
-    // ),
     getItem(
       <Link to={PATH_DASHBOARD.moderators}>Модераторы</Link>,
       "moderators",

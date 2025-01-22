@@ -3,29 +3,23 @@ import { devtools } from "zustand/middleware";
 import { requests } from "../../helpers/requests";
 import { removeToken } from "../../helpers/api";
 
-const useSpecification = create(
+const useParamsFilter = create(
   devtools((set) => ({
-    specifications: [],
-    machineParams: [],
+    filteredList: [],
     pagination: {},
-    permissions: [],
-    roles: [],
-    status: [],
     detail: {},
-    statics: [],
     listLoading: false,
     createLoading: false,
     detailLoading: false,
     updateLoading: false,
     removeLoading: false,
-    postLoading: false,
 
     getList: async (params) => {
       set({ listLoading: true });
       try {
-        const { data } = await requests.fetchSpecificationList(params);
+        const { data } = await requests.fetchParamsFilterList(params);
         set({
-          specifications: data?.data,
+          filteredList: data?.data,
           pagination: data?.pagination,
           listLoading: false,
         });
@@ -39,26 +33,10 @@ const useSpecification = create(
         }
       }
     },
-    getParamsByMachineId: async (params) => {
-      set({ postLoading: true });
-      try {
-        const data = await requests.specificationGetByMachine(params);
-        // set({
-        //   specifications: data?.data,
-        //   pagination: data?.pagination,
-        //   postLoading: false,
-        // });
-        return data;
-      } catch (err) {
-        return err?.response?.data;
-      } finally {
-        set({ postLoading: false });
-      }
-    },
     create: async (params) => {
       set({ createLoading: true });
       try {
-        const data = await requests.postSpecificationCreate(params);
+        const data = await requests.postParamsFilterCreate(params);
         return data;
       } catch (err) {
         return err?.response?.data;
@@ -68,7 +46,7 @@ const useSpecification = create(
     },
     getDetail: async (id) => {
       set({ detailLoading: true });
-      const { data } = await requests.fetchUserDetail(id);
+      const { data } = await requests.fetchParamsFilterDetail(id);
       set({
         detail: data,
         detailLoading: false,
@@ -77,7 +55,7 @@ const useSpecification = create(
     update: async (id, params) => {
       set({ updateLoading: true });
       try {
-        const data = await requests.userUpdate(id, params);
+        const data = await requests.paramsFilterUpdate(id, params);
         return data;
       } catch ({ response }) {
         return response;
@@ -88,7 +66,7 @@ const useSpecification = create(
     remove: async (id) => {
       set({ removeLoading: true });
       try {
-        const { data } = await requests.userDelete(id);
+        const { data } = await requests.paramsFilterDelete(id);
         set({ removeLoading: false });
         return data;
       } catch ({ response }) {
@@ -149,4 +127,4 @@ const useSpecification = create(
   }))
 );
 
-export default useSpecification;
+export default useParamsFilter;

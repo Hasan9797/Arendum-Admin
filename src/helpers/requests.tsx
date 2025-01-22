@@ -86,13 +86,16 @@ export const requests = {
     $api.get(`${API_URL}/machines-params`, { params }),
   postSpecificationCreate: (params: SpecificationParamsType) =>
     $api.post(`${API_URL}/machines-params/create`, params),
+  specificationGetByMachine: (params) =>
+    $api.post(`${API_URL}/machines-params/by-machine`, params),
   fetchSpecificationDetail: (id: string) =>
     $api.get(`${API_URL}/machines-params/update/${id}`), //! done
   specificationUpdate: (id: string, params: SpecificationParamsType) =>
     $api.patch(`${API_URL}/machines-params/${id}`, params), //! done
   specificationDelete: (id: string) =>
     $api.delete(`${API_URL}/machines-params/${id}`),
-  //* Pricing
+
+  //* Pricing 
   fetchPricingList: (params: AccountFilterType) =>
     $api.get(`${API_URL}/machine-price`, { params }),
   postPricingCreate: (params: PricingParamsType) =>
@@ -103,6 +106,17 @@ export const requests = {
     $api.patch(`${API_URL}/machine-price/${id}`, params), //! done
   pricingDelete: (id: string) =>
     $api.delete(`${API_URL}/machine-price/delete/${id}`),
+  //* ParamsFilter
+  fetchParamsFilterList: (params: AccountFilterType) =>
+    $api.get(`${API_URL}/params-filter`, { params }),
+  postParamsFilterCreate: (params) =>
+    $api.post(`${API_URL}/params-filter/create`, params),
+  fetchParamsFilterDetail: (id: string) =>
+    $api.get(`${API_URL}/params-filter/update/${id}`), //! done
+  paramsFilterUpdate: (id: string, params: PricingParamsType) =>
+    $api.patch(`${API_URL}/params-filter/${id}`, params), //! done
+  paramsFilterDelete: (id: string) =>
+    $api.delete(`${API_URL}/params-filter/delete/${id}`),
   //* USER
   fetchUserList: (params: AccountFilterType) =>
     $api.get(`${API_URL}/users`, { params }),

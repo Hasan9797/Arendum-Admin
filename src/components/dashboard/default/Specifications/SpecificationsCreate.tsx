@@ -80,6 +80,18 @@ const SpecificationsCreate: React.FC = () => {
               />
             </Form.Item>
             <Form.Item
+              label="Название параметра (EN)"
+              name="nameEn"
+              rules={[
+                { required: true, message: "Введите название параметра" },
+              ]}
+            >
+              <Input
+                style={{ width: "300px" }}
+                placeholder="Название параметра"
+              />
+            </Form.Item>
+            <Form.Item
               label="Единицы измерения"
               name="name"
               rules={[

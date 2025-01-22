@@ -19,7 +19,7 @@ const DASHBOARD_ITEMS = [
   { title: "Категории техники", path: PATH_DASHBOARD.categories_of_equipment },
   { title: "Параметры техники", path: PATH_DASHBOARD.specifications },
   { title: "Ценообразование", path: PATH_DASHBOARD.pricing },
-  // { title: "Управление регионы", path: PATH_DASHBOARD.regional_management },
+  { title: "Техника параметров фильтра", path: PATH_DASHBOARD.params_filter },
   { title: "Модераторы", path: PATH_DASHBOARD.moderators },
   { title: "Пользователь ID", path: PATH_DASHBOARD.user_detail },
 ];
