@@ -212,20 +212,26 @@ export const addFilterDataTree = (setParams, key, value) => {
   });
 };
 
-export const addFilter = (setParams, column, value) => {
+export const addFilter = (setParams, column, value, operator = "contains") => {
   setParams((prevParams) => {
-    const newFilters = { ...prevParams };
-
-    // Agar qiymat mavjud bo'lmasa, filterni o'chiradi
+    const newFilters = [...prevParams.filters];
+    const existingFilterIndex = newFilters.findIndex(
+      (filter) => filter.column === column
+    );
+    console.log(existingFilterIndex)
     if (typeof value !== "number" && !value) {
-      delete newFilters[column];
+      if (existingFilterIndex !== -1) {
+        newFilters.splice(existingFilterIndex, 1);
+      }
     } else {
-      // Filter qo'shadi yoki mavjudini yangilaydi
-      newFilters[column] = value;
+      if (existingFilterIndex !== -1) {
+        newFilters[existingFilterIndex] = { column, value: value, operator };
+      } else {
+        newFilters.push({ column, value: value, operator });
+      }
     }
 
-    // Faqat yangi filterlar obyektini qaytaradi
-    return newFilters;
+    return { ...prevParams, filters: newFilters };
   });
 };
 

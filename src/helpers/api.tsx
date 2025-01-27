@@ -8,6 +8,8 @@ export const $api = axios.create({
 
 $api.defaults.headers.common["Accept"] = "application/json";
 $api.defaults.headers.common["Authorization"] = `Bearer ${appToken}`;
+$api.defaults.headers.common["Accept-Language"] = `ru`;
+
 
 // $api.defaults.headers.common["Content-Type"] =
 //   "application/json; charset=utf-8";

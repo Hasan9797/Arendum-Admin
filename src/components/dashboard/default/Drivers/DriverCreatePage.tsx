@@ -17,7 +17,6 @@ import { useNavigate } from "react-router-dom";
 import useDrivers from "../../../../hooks/drivers/useDrivers.jsx";
 import useMachines from "../../../../hooks/machines/useMachines.jsx";
 import useRegions from "../../../../hooks/region/useRegion.jsx";
-import useStructure from "../../../../hooks/structure/useStructure.jsx";
 import { showErrors } from "../../../../errorHandler/errors.js";
 
 export interface UploadFile {
@@ -37,11 +36,6 @@ const DriverCreatePage = () => {
   const [form] = Form.useForm();
   const { uploadImg, create, createLoading } = useDrivers();
   const { getMachines, machines, listLoading } = useMachines();
-  const {
-    structure,
-    getStructure,
-    listLoading: structureLoading,
-  } = useStructure();
   const { getRegions, regions, listLoading: regionLoading } = useRegions();
 
   const [isLegalPerson, setIsLegalPerson] = useState(false);
@@ -52,12 +46,9 @@ const DriverCreatePage = () => {
   useEffect(() => {
     getMachines();
     getRegions();
-    getStructure();
   }, []);
 
-  
-
-  const districts = structure.filter((e) => e.regionId === selectedRegion);
+  const districts = regions.find((region) => region.id === selectedRegion);
 
   const handleFileUpload = async (file, name) => {
     const formData = new FormData();
@@ -138,37 +129,26 @@ const DriverCreatePage = () => {
       required: true,
       message: "Введите тип спецтехники",
       child: (
-          <Select
-            showSearch
-            allowClear
-            loading={listLoading}
-            disabled={listLoading}
-            filterOption={(inputValue, option: { label: string }) =>
-              option?.label?.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
-            }
-            options={
-              machines &&
-              machines?.map((item) => {
-                return {
-                  value: item.id,
-                  label: item.name,
-                };
-              })
-            }
-          />
+        <Select
+          showSearch
+          allowClear
+          loading={listLoading}
+          disabled={listLoading}
+          filterOption={(inputValue, option: { label: string }) =>
+            option?.label?.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+          }
+          options={
+            machines &&
+            machines?.map((item) => {
+              return {
+                value: item.id,
+                label: item.name,
+              };
+            })
+          }
+        />
       ),
     },
-    // {
-    //   label: "Марка и модель вашего авто",
-    //   name: "equipmentModel",
-    //   required: true,
-    //   message: "Введите ГРН спецтехники",
-    //   child: (
-    //     <Input
-    //       onChange={(e) => form.setFieldValue("equipmentModel", e.target.value)}
-    //     />
-    //   ),
-    // },
     {
       label: "Гос.номер авто",
       name: "machineNumber",
@@ -276,7 +256,7 @@ const DriverCreatePage = () => {
           filterOption={(inputValue, option: { label: string }) =>
             option?.label?.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
           }
-          onChange={(e) => setSelectedRegion(e)}
+          onChange={(e) => setSelectedRegion(Number(e))}
           options={
             regions &&
             regions?.map((item) => {
@@ -298,14 +278,14 @@ const DriverCreatePage = () => {
         <Select
           showSearch
           allowClear
-          loading={structureLoading}
-          disabled={structureLoading}
+          loading={regionLoading}
+          disabled={regionLoading}
           filterOption={(inputValue, option: { label: string }) =>
             option?.label?.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
           }
           options={
             districts &&
-            districts?.map((item) => {
+            districts?.structure?.map((item) => {
               return {
                 value: item.id,
                 label: item.name,
@@ -322,6 +302,7 @@ const DriverCreatePage = () => {
       message: "Загрузите фото водительского удостоверения",
       child: (
         <Upload
+          listType="picture"
           beforeUpload={(file) => handleFileUpload(file, "photoDriverLicense")}
           onChange={({ fileList }) => {
             form.setFieldValue("photoDriverLicense", fileList);
@@ -340,6 +321,7 @@ const DriverCreatePage = () => {
       message: "Загрузите фото техпаспорта",
       child: (
         <Upload
+          listType="picture"
           beforeUpload={(file) => handleFileUpload(file, "photoTexPassport")}
           onChange={({ fileList }) => {
             form.setFieldValue("photoTexPassport", fileList);
@@ -358,6 +340,7 @@ const DriverCreatePage = () => {
       message: "Загрузите фото техпаспорта",
       child: (
         <Upload
+          listType="picture"
           beforeUpload={(file) => handleFileUpload(file, "photoPassport")}
           onChange={({ fileList }) => {
             form.setFieldValue("photoPassport", fileList);
@@ -376,6 +359,7 @@ const DriverCreatePage = () => {
       message: "Загрузите фото техпаспорта",
       child: (
         <Upload
+          listType="picture"
           beforeUpload={(file) =>
             handleFileUpload(file, "photoConfidencePassport")
           }
@@ -396,6 +380,7 @@ const DriverCreatePage = () => {
       message: "Загрузите фото техпаспорта",
       child: (
         <Upload
+          listType="picture"
           beforeUpload={(file) => handleFileUpload(file, "photoLicense")}
           onChange={({ fileList }) => {
             form.setFieldValue("photoLicense", fileList);
@@ -414,6 +399,7 @@ const DriverCreatePage = () => {
       message: "Загрузите фото техпаспорта",
       child: (
         <Upload
+          listType="picture"
           beforeUpload={(file) => handleFileUpload(file, "photoCar")}
           onChange={({ fileList }) => {
             form.setFieldValue("photoCar", fileList);

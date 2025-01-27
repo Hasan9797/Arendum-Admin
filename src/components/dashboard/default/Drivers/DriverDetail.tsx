@@ -17,10 +17,8 @@ import { IMAGES } from "../../../../assets/images/images";
 import dayjs from "dayjs";
 import { useNavigate, useParams } from "react-router-dom";
 import { FormOutlined } from "@ant-design/icons";
-// import "./index.css";
 import { Button } from "antd";
 import useDrivers from "../../../../hooks/drivers/useDrivers";
-
 import LastApplicationsTable from "../../../../components/Transactions/LastTransactionsTable";
 import { useEffect } from "react";
 
@@ -29,7 +27,8 @@ export const DriverDetailPage = () => {
   const stylesContext = useStylesContext();
   const navigate = useNavigate();
 
-  const { getDetail, detail, detailLoading, update,updateLoading } = useDrivers();
+  const { getDetail, detail, detailLoading, update, updateLoading } =
+    useDrivers();
 
   useEffect(() => {
     if (id) {
@@ -37,15 +36,8 @@ export const DriverDetailPage = () => {
     }
   }, [id]);
 
-  console.log(detail);
-  // const [isActive, setIsActive] = useState(detail?.status === "active");
-
-  // useEffect(() => {
-  //   setIsActive(detail?.status === "active");
-  // }, [detail]);
-
   const handleStatusChange = async (checked) => {
-    const newStatus = checked ? 1 : 0;
+    const newStatus = checked ? 2 : 1;
     try {
       await update(detail.id, {
         status: newStatus,
@@ -56,47 +48,7 @@ export const DriverDetailPage = () => {
     }
   };
 
-  // const onSave = async () => {
-  //   await form.validateFields().then(() => {
-  //     const values = form.getFieldsValue();
-  //     let updatedUsers = null;
-
-  //     // Agar roles string bo'lsa, uni massivga aylantiramiz
-  //     if (typeof values.roles === "string") {
-  //       updatedUsers = { ...values, roles: [values.roles] };
-  //     } else {
-  //       updatedUsers = values;
-  //     }
-
-  //     // Agar password uzunligi 0 yoki undefined bo'lsa, updatedUsersdan o'chiramiz
-  //     if (!updatedUsers.password || updatedUsers.password.length === 0) {
-  //       delete updatedUsers.password;
-  //     }
-
-  //     // Yangilanishni amalga oshiramiz
-  //     update(id, updatedUsers).then((res) => {
-  //       console.log(res);
-
-  //       if (res.status === 200) {
-  //         getList({ pageNumber: 1, pageSize: 20 });
-  //         message.success({ content: "Ma'lumot yangilandi" });
-  //         navigate(-1);
-  //       } else {
-  //         showErrors(res);
-  //       }
-  //     });
-  //   });
-  // };
-
-  // const generatePassword = () => {
-  //   const length = 6;
-  //   const charset = "abcdefghijklmnopqrstuvwxyz";
-  //   const password = Array.from(
-  //     { length },
-  //     () => charset[Math.floor(Math.random() * charset.length)]
-  //   ).join("");
-  //   setPassword(password);
-  // };
+  console.log(detail);
 
   const DESCRIPTION_ITEMS: DescriptionsProps["items"] = [
     {
@@ -112,7 +64,7 @@ export const DriverDetailPage = () => {
     {
       key: "region",
       label: "Foydalanuvchi mintaqasi",
-      children: <span>{detail.region}</span>,
+      children: <span>{detail.regionId}</span>,
     },
     {
       key: "email",
@@ -123,7 +75,6 @@ export const DriverDetailPage = () => {
         </span>
       ),
     },
-
     {
       key: "registrationDate",
       label: "Ro‘yxatdan o‘tish sanasi",
@@ -136,9 +87,12 @@ export const DriverDetailPage = () => {
       label: "Holati",
       children: (
         <Switch
-          checked={detail.status === 1}
-          checkedChildren="АКТИВНИЫ"
-          unCheckedChildren="НЕАКТИВЕН"
+          checked={detail.status === 2}
+          checkedChildren={"Активный"}
+          unCheckedChildren={
+            (detail.status === 0 && "Созданный") ||
+            (detail.status === 1 && "Неактивный")
+          }
           disabled={updateLoading}
           onChange={handleStatusChange}
         />

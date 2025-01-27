@@ -77,7 +77,7 @@ const useDrivers = create(
       set({ detailLoading: true });
       const { data } = await requests.fetchDriverDetail(id);
       set({
-        detail: data,
+        detail: data.data,
         detailLoading: false,
       });
     },
@@ -95,7 +95,7 @@ const useDrivers = create(
     remove: async (id) => {
       set({ removeLoading: true });
       try {
-        const { data } = await requests.facilityDelete(id);
+        const { data } = await requests.driverDelete(id);
         set({ removeLoading: false });
         return data;
       } catch ({ response }) {

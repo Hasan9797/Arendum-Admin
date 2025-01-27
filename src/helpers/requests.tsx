@@ -6,7 +6,6 @@ import {
   RegionParamsType,
   UserParamsType,
 } from "../types";
-import { ApplicationFilterType } from "../types/application";
 import { ClientParamsType } from "../types/clinet";
 import {
   DriversFilterType,
@@ -70,8 +69,7 @@ export const requests = {
   fetchDriverDetail: (id: string) => $api.get(`${API_URL}/driver/${id}`), //! done
   driverUpdate: (id: string, params: DriversParamsType) =>
     $api.put(`${API_URL}/driver/update/${id}`, params), //! done
-  driverDelete: (id: string) => $api.delete(`${API_URL}/driver/${id}`), //! done
-  fetchStatics: () => $api.get(`${API_URL}/static/driver`),
+  driverDelete: (id: string) => $api.delete(`${API_URL}/driver/delete/${id}`), //! done
   //* Services
   fetchServicesList: (params: ServicesFilterType) =>
     $api.get(`${API_URL}/services`, { params }),
@@ -95,7 +93,7 @@ export const requests = {
   specificationDelete: (id: string) =>
     $api.delete(`${API_URL}/machines-params/${id}`),
 
-  //* Pricing 
+  //* Pricing
   fetchPricingList: (params: AccountFilterType) =>
     $api.get(`${API_URL}/machine-price`, { params }),
   postPricingCreate: (params: PricingParamsType) =>
@@ -147,15 +145,15 @@ export const requests = {
   // const queryParams = new URLSearchParams(params as any).toString();
   // $api.post(`${API_URL}/users/change-status/${id}?${queryParams}`);
   // },
-  //* Application
-  fetchApplicationList: (params: ApplicationFilterType) =>
-    $api.get(`${API_URL}/applications`, { params }),
-  fetchstatisticsCurrentDate: (params: ApplicationFilterType) =>
-    $api.get(`${API_URL}/applications/find/current-date`, { params }),
-  fetchApplicationByTodayList: (params: ApplicationFilterType) =>
-    $api.get(`${API_URL}/applications/applications/by-region`, { params }),
-  fetchApplicationByServiceList: (params: ApplicationFilterType) =>
-    $api.get(`${API_URL}/applications/applications/by-service`, { params }),
+
+  //* Statics
+  fetchDriverStatus: (params) =>
+    $api.get(`${API_URL}/static/driver/status`, { params }),
+  fetchClientStatus: (params) =>
+    $api.get(`${API_URL}/static/client/status`, { params }),
+  fetchOrderStatus: (params) =>
+    $api.get(`${API_URL}/static/order/status`, { params }),
+
   //* Roles
   fetchRolesList: (params: AccountFilterType) =>
     $api.get(`${API_URL}/roles`, { params }),

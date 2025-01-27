@@ -18,15 +18,16 @@ const ParamsFilterCreatePage = () => {
 
   const { getParamsByMachineId } = useSpecification();
   const { getMachines, machines, listLoading } = useMachines();
-  const { create, createLoading, filteredList } = useParamsFilter();
+  const { create, createLoading, getList } = useParamsFilter();
 
   const filteredParams =
     JSON.parse(localStorage.getItem("selectedValues")) || [];
 
   const handleRadioChange = (value, machineName) => {
+    const name = machineName.replaceAll(" ", "_");
     setSelectedValues((prev) => ({
       ...prev,
-      [machineName]: value, // Mashina nomini kalit qilib saqlash
+      [name]: value, // Mashina nomini kalit qilib saqlash
     }));
   };
 
@@ -75,7 +76,7 @@ const ParamsFilterCreatePage = () => {
     const allValues = { ...values, params: filteredParams };
     create(allValues).then((res) => {
       if (res.status === 201) {
-        filteredList({ limit: 10, page: 1 });
+        getList({ limit: 10, page: 1 });
         message.success({
           content: "Успешно создано",
         });
@@ -118,35 +119,42 @@ const ParamsFilterCreatePage = () => {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item>
-            {machineParams.map((machine) => (
-              <div key={machine.id} style={{ marginBottom: "20px" }}>
-                <h3>{machine.name}</h3>
-                <Radio.Group
-                  buttonStyle="solid"
-                  optionType="button"
-                  value={selectedValues[machine.name] || null} // Har bir mashina uchun qiymat
-                  onChange={(e) =>
-                    handleRadioChange(e.target.value, machine.name)
-                  }
-                >
-                  {machine.params.map((param) => (
-                    <Radio key={param.param} value={+param.param}>
-                      {param.param}
-                    </Radio>
-                  ))}
-                </Radio.Group>
-              </div>
-            ))}
-            <Button
-              type="primary"
-              onClick={handleSubmit}
-              disabled={Object.keys(selectedValues).length === 0}
-              style={{ marginTop: "20px" }}
-            >
-              Добавить в избранное.
-            </Button>
-          </Form.Item>
+          {selectedMachineId ? (
+            <Form.Item>
+              {machineParams.map((machine) => {
+                console.log(machine)
+                return (
+                  <div key={machine.id} style={{ marginBottom: "20px" }}>
+                    <h3>{machine.name}</h3>
+                    <Radio.Group
+                      buttonStyle="solid"
+                      optionType="button"
+                      value={selectedValues[machine.nameEn.replaceAll(" ", "_")] || ""} // Har bir mashina uchun qiymat
+                      onChange={(e) =>
+                        handleRadioChange(e.target.value, machine.nameEn)
+                      }
+                    >
+                      {machine.params.map((param) => (
+                        <Radio key={param.param} value={+param.param}>
+                          {param.param}
+                        </Radio>
+                      ))}
+                    </Radio.Group>
+                  </div>
+                );
+              })}
+              <Button
+                type="primary"
+                onClick={handleSubmit}
+                disabled={Object.keys(selectedValues).length === 0}
+                style={{ marginTop: "20px" }}
+              >
+                Добавить в избранное.
+              </Button>
+            </Form.Item>
+          ) : (
+            ""
+          )}
           {filteredParams && filteredParams.length > 0 ? (
             <div style={{ marginTop: "20px" }}>
               <Typography.Title level={4}>Tanlangan Filtrlar</Typography.Title>

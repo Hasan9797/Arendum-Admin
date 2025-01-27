@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Button,
   Card,
@@ -5,7 +6,6 @@ import {
   Form,
   Input,
   message,
-  Radio,
   Row,
   Select,
   Spin,
@@ -13,10 +13,11 @@ import {
 } from "antd";
 import { FC, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { equipmentTypes, regions } from "../../../../constants/index.js";
 import { UploadOutlined } from "@ant-design/icons";
 import useDrivers from "../../../../hooks/drivers/useDrivers.jsx";
-
+import useMachines from "../../../../hooks/machines/useMachines.jsx";
+import useRegions from "../../../../hooks/region/useRegion.jsx";
+import { showErrors } from "../../../../errorHandler/errors.js";
 interface UploadFile {
   uid: string;
   name: string;
@@ -29,17 +30,71 @@ interface UploadedFilesType {
   [key: string]: string[];
 }
 
+interface CustomUploadFile extends UploadFile {
+  response?: {
+    imgUrl?: string;
+  };
+}
+
 const DriverEditPage: FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const { uploadImg, getDetail, detail } = useDrivers();
-  const [isLegalPerson, setIsLegalPerson] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+  const { uploadImg, getDetail, getDrivers, detailLoading, detail, update } =
+    useDrivers();
+  const { getMachines, machines, listLoading } = useMachines();
+  const { getRegions, regions, listLoading: regionLoading } = useRegions();
+
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesType>({});
-  const [fileList, setFileList] = useState<Record<string, UploadFile[]>>({});
-  const detailLoading = false;
-  console.log(uploadedFiles);
+  const [selectedRegion, setSelectedRegion] = useState<number>(detail.regionId);
+  const [isFormChanged, setIsFormChanged] = useState(false);
+  const [fileList, setFileList] = useState<Record<string, CustomUploadFile[]>>(
+    {}
+  );
+
+  const districts = regions.find((region) => region.id === selectedRegion);
+
+  useEffect(() => {
+    if (detail?.regionId) {
+      setSelectedRegion(detail.regionId);
+    }
+  }, [detail]);
+
+  useEffect(() => {
+    if (id && open) {
+      getDetail(id);
+      getMachines();
+      getRegions({ page: 1, limit: 20 });
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (detail) {
+      form.setFieldsValue({
+        fullName: detail?.fullName,
+        machineId: detail?.machineId,
+        machineNumber: detail?.machineNumber,
+        machineColor: detail?.machineColor,
+        phone: detail?.phone,
+        email: detail?.email,
+        regionId: detail?.regionId,
+        structureId: detail?.structureId,
+        photoDriverLicense: detail?.photoDriverLicense,
+        photoCar: detail?.photoCar,
+        photoConfidencePassport: detail?.photoConfidencePassport,
+        photoLicense: detail?.photoLicense,
+        photoPassport: detail?.photoPassport,
+        photoTexPassport: detail?.photoTexPassport,
+      });
+    }
+  }, [detail, form]);
+
+  const handleFormChange = (allValues) => {
+    const isEqual = JSON.stringify(allValues) === JSON.stringify(detail);
+    setIsFormChanged(!isEqual); // Agar qiymatlar bir xil bo'lsa, false bo'ladi
+  };
+
   const handleFileUpload = async (file, name) => {
     const formData = new FormData();
     if (file) {
@@ -48,7 +103,6 @@ const DriverEditPage: FC = () => {
     try {
       const response = await uploadImg(formData);
 
-      // Assuming the response contains the uploaded file URL
       if (response?.imgUrl) {
         setUploadedFiles((prev) => ({
           ...prev,
@@ -65,10 +119,12 @@ const DriverEditPage: FC = () => {
 
     return false;
   };
+
   const handleFormCancel = () => {
     form.resetFields();
-    navigate(-1);
+    navigate("/dashboards/drivers");
     setUploadedFiles({});
+    setFileList({});
   };
 
   const handleFileListChange = (fileList, name) => {
@@ -78,44 +134,27 @@ const DriverEditPage: FC = () => {
     }));
   };
 
-  useEffect(() => {
-    if (id && open) {
-      getDetail(id);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
-
-  console.log(detail);
-
-  useEffect(() => {
-    if (form && detail) {
-      form.setFieldsValue({
-        fullName: detail?.fullName || "No data",
-        facilityNameUZ: detail?.fullName || "No data",
-        regionId: detail?.region, // To'g'ri id qiymatini o'rnatish
-      });
-    }
-  }, [detail, form]);
-
   const onSave = async () => {
     await form.validateFields().then(() => {
       const values = form.getFieldsValue();
-      console.log(values);
+      const finalValues = {
+        ...values,
+        ...uploadedFiles,
+      };
 
-      // regionId Select o'zgartirilmasa eski regionId saqlanadi
-      // const payload = {
-      //   ...values,
-      // };
-
-      // update(id, payload).then((res) => {
-      //   if (!res) {
-      //     getFacilities({ pageNumber: 1, pageSize: 20 });
-      //     message.success({ content: "Обновлено успешно" });
-      //     onCancel();
-      //   } else {
-      //     showErrors(res);
-      //   }
-      // });
+      update(id, finalValues).then((res) => {
+        console.log(res);
+        if (res.success) {
+          getDrivers({ page: 1, limit: 20 });
+          message.success({ content: "Обновлено успешно" });
+          form.resetFields();
+          setUploadedFiles({});
+          setFileList({});
+          navigate("/dashboards/drivers");
+        } else {
+          showErrors(res);
+        }
+      });
     });
   };
 
@@ -123,7 +162,6 @@ const DriverEditPage: FC = () => {
     {
       label: "Ваше ФИО",
       name: "fullName",
-      required: true,
       message: "Введите ФИО или название организации",
       child: (
         <Input
@@ -133,24 +171,22 @@ const DriverEditPage: FC = () => {
     },
     {
       label: "Тип вашей спецтехники",
-      name: "equipmentType",
-      required: true,
+      name: "machineId",
       message: "Введите тип спецтехники",
       child: (
         <Select
           showSearch
           allowClear
-          // loading={createLoading}
-          // disabled={createLoading}
+          loading={listLoading}
+          disabled={listLoading}
           filterOption={(inputValue, option: { label: string }) =>
             option?.label?.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
           }
           options={
-            equipmentTypes &&
-            equipmentTypes?.map((item) => {
+            machines &&
+            machines?.map((item) => {
               return {
-                // value: item.id,
-                value: item.name,
+                value: item.id,
                 label: item.name,
               };
             })
@@ -159,99 +195,36 @@ const DriverEditPage: FC = () => {
       ),
     },
     {
-      label: "Марка и модель вашего авто",
-      name: "equipmentModel",
-      required: true,
-      message: "Введите ГРН спецтехники",
-      child: (
-        <Input
-          onChange={(e) => form.setFieldValue("equipmentModel", e.target.value)}
-        />
-      ),
-    },
-    {
       label: "Гос.номер авто",
-      name: "equipmentNumber",
-      required: true,
+      name: "machineNumber",
       message: "Введите ГРН спецтехники",
       child: (
         <Input
-          onChange={(e) =>
-            form.setFieldValue("equipmentNumber", e.target.value)
-          }
+          onChange={(e) => form.setFieldValue("machineNumber", e.target.value)}
         />
       ),
     },
     {
       label: "Цвет авто",
-      name: "equipmentColor",
-      required: true,
+      name: "machineColor",
       message: "Введите ГРН спецтехники",
       child: (
         <Input
-          onChange={(e) => form.setFieldValue("equipmentColor", e.target.value)}
+          onChange={(e) => form.setFieldValue("machineColor", e.target.value)}
         />
       ),
     },
     {
       label: "Номер телефона",
-      name: "phoneNumber",
-      required: true,
+      name: "phone",
       message: "Введите номер телефона",
       child: (
         <Input
           type="tel"
-          onChange={(e) => form.setFieldValue("phoneNumber", e.target.value)}
+          onChange={(e) => form.setFieldValue("phone", e.target.value)}
         />
       ),
     },
-    {
-      label: "Тип пользователя",
-      // name: "userType",
-      required: true,
-      message: "Выберите тип пользователя",
-      child: (
-        <Radio.Group
-          onChange={(e) => {
-            setIsLegalPerson(e.target.value === "legal" ? true : false);
-          }}
-        >
-          <Radio value="legal">Юридическое лицо</Radio>
-          <Radio value="physical">Физическое лицо</Radio>
-        </Radio.Group>
-      ),
-      colSpan: 24,
-    },
-    ...(isLegalPerson
-      ? [
-          {
-            label: "ФИО / Название организации",
-            name: "merchantName",
-            required: true,
-            message: "Введите ИФИО / Название организации",
-            child: (
-              <Input
-                onChange={(e) =>
-                  form.setFieldValue("merchantName", e.target.value)
-                }
-              />
-            ),
-          },
-          {
-            label: "ИНН Мерчанта",
-            name: "merchantInn",
-            required: true,
-            message: "Введите ИНН Мерчанта",
-            child: (
-              <Input
-                onChange={(e) =>
-                  form.setFieldValue("merchantInn", e.target.value)
-                }
-              />
-            ),
-          },
-        ]
-      : []),
     {
       label: "Электронная почта",
       name: "email",
@@ -267,24 +240,48 @@ const DriverEditPage: FC = () => {
     {
       label: "Регион проживания",
       name: "regionId",
-      required: true,
       message: "Выберите регион",
       child: (
         <Select
           showSearch
           allowClear
-          // loading={createLoading}
-          // disabled={createLoading}
+          loading={regionLoading}
+          disabled={regionLoading}
           filterOption={(inputValue, option: { label: string }) =>
             option?.label?.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
           }
+          onChange={(e) => setSelectedRegion(Number(e))}
           options={
             regions &&
             regions?.map((item) => {
               return {
-                // value: item.id,
-                value: item.name,
+                value: item.id,
                 label: item.name,
+              };
+            })
+          }
+        />
+      ),
+    },
+    {
+      label: "Район проживания",
+      name: "structureId",
+      message: "Выберите регион",
+      child: (
+        <Select
+          showSearch
+          allowClear
+          loading={regionLoading}
+          disabled={regionLoading}
+          filterOption={(inputValue, option: { label: string }) =>
+            option?.label?.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+          }
+          options={
+            districts &&
+            districts?.structure?.map((item) => {
+              return {
+                value: item?.id,
+                label: item?.name,
               };
             })
           }
@@ -294,111 +291,268 @@ const DriverEditPage: FC = () => {
     {
       label: "Фото водительского удостоверения",
       name: "photoDriverLicense",
-      required: true,
       message: "Загрузите фото водительского удостоверения",
       child: (
-        <Upload
-          beforeUpload={(file) => handleFileUpload(file, "photoDriverLicense")}
-          onChange={({ fileList }) => {
-            form.setFieldValue("photoDriverLicense", fileList);
-            handleFileListChange(fileList, "photoDriverLicense");
-          }}
-          fileList={fileList?.photoDriverLicense || []}
-        >
-          <Button icon={<UploadOutlined />}>Загрузить фото</Button>
-        </Upload>
+        <>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+              }}
+            >
+              {detail?.photoDriverLicense &&
+                detail?.photoDriverLicense.map((img, index) => (
+                  <img
+                    key={index}
+                    src={`http://hasandev.uz${img}`}
+                    alt="Driver License"
+                    style={{ maxWidth: "500px", marginBottom: "10px" }}
+                  />
+                ))}
+            </div>
+            <Upload
+              listType="picture"
+              beforeUpload={(file) =>
+                handleFileUpload(file, "photoDriverLicense")
+              }
+              onChange={({ fileList }) => {
+                const updatedFileList = fileList.map((file) => ({
+                  ...file,
+                  url: file.response?.imgUrl || file.url,
+                }));
+
+                setFileList((prev) => ({
+                  ...prev,
+                  photoDriverLicense: updatedFileList,
+                }));
+
+                form.setFieldValue(
+                  "photoDriverLicense",
+                  updatedFileList.map((file) => file.url)
+                );
+              }}
+              // onRemove={(file) => {
+              //   const updatedFileList = fileList.photoDriverLicense.filter(
+              //     (item) => item.uid !== file.uid
+              //   );
+              //   console.log(file);
+              //   setFileList((prev) => ({
+              //     ...prev,
+              //     photoDriverLicense: updatedFileList,
+              //   }));
+
+              //   form.setFieldValue(
+              //     "photoDriverLicense",
+              //     updatedFileList.map((file) => file.url)
+              //   );
+              // }}
+              fileList={fileList?.photoDriverLicense || []}
+            >
+              <Button icon={<UploadOutlined />}>Загрузить новое фото</Button>
+            </Upload>
+          </div>
+        </>
       ),
     },
     {
       label: "Фото техпаспорта (сзади и спереди)",
       name: "photoTexPassport",
-      required: true,
       message: "Загрузите фото техпаспорта",
       child: (
-        <Upload
-          beforeUpload={(file) => handleFileUpload(file, "photoTexPassport")}
-          onChange={({ fileList }) => {
-            form.setFieldValue("photoTexPassport", fileList);
-            handleFileListChange(fileList, "photoTexPassport");
-          }}
-          fileList={fileList?.photoTexPassport || []}
-        >
-          <Button icon={<UploadOutlined />}>Загрузить фото</Button>
-        </Upload>
+        <>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+              }}
+            >
+              {detail?.photoTexPassport &&
+                detail?.photoTexPassport.map((img, index) => (
+                  <img
+                    key={index}
+                    src={`http://hasandev.uz${img}`}
+                    alt="Driver License"
+                    style={{ width: "500px", marginBottom: "10px" }}
+                  />
+                ))}
+            </div>
+            <Upload
+              listType="picture"
+              beforeUpload={(file) =>
+                handleFileUpload(file, "photoTexPassport")
+              }
+              onChange={({ fileList }) => {
+                form.setFieldValue("photoTexPassport", fileList);
+                handleFileListChange(fileList, "photoTexPassport");
+              }}
+              fileList={fileList?.photoTexPassport || []}
+            >
+              <Button icon={<UploadOutlined />}>Загрузить фото</Button>
+            </Upload>
+          </div>
+        </>
       ),
     },
     {
       label: "Паспорт (сзади и спереди)",
       name: "photoPassport",
-      required: true,
       message: "Загрузите фото техпаспорта",
       child: (
-        <Upload
-          beforeUpload={(file) => handleFileUpload(file, "photoPassport")}
-          onChange={({ fileList }) => {
-            form.setFieldValue("photoPassport", fileList);
-            handleFileListChange(fileList, "photoPassport");
-          }}
-          fileList={fileList?.photoPassport || []}
-        >
-          <Button icon={<UploadOutlined />}>Загрузить фото</Button>
-        </Upload>
+        <>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+              }}
+            >
+              {detail?.photoPassport &&
+                detail?.photoPassport.map((img, index) => (
+                  <img
+                    key={index}
+                    src={`http://hasandev.uz${img}`}
+                    alt="Driver License"
+                    style={{ width: "500px", marginBottom: "10px" }}
+                  />
+                ))}
+            </div>
+            <Upload
+              listType="picture"
+              beforeUpload={(file) => handleFileUpload(file, "photoPassport")}
+              onChange={({ fileList }) => {
+                form.setFieldValue("photoPassport", fileList);
+                handleFileListChange(fileList, "photoPassport");
+              }}
+              fileList={fileList?.photoPassport || []}
+            >
+              <Button icon={<UploadOutlined />}>Загрузить фото</Button>
+            </Upload>
+          </div>
+        </>
       ),
     },
     {
       label: "Доверенность (сзади и спереди)",
       name: "photoConfidencePassport",
-      required: true,
       message: "Загрузите фото техпаспорта",
       child: (
-        <Upload
-          beforeUpload={(file) =>
-            handleFileUpload(file, "photoConfidencePassport")
-          }
-          onChange={({ fileList }) => {
-            form.setFieldValue("photoConfidencePassport", fileList);
-            handleFileListChange(fileList, "photoConfidencePassport");
-          }}
-          fileList={fileList?.photoConfidencePassport || []}
-        >
-          <Button icon={<UploadOutlined />}>Загрузить фото</Button>
-        </Upload>
+        <>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+              }}
+            >
+              {detail?.photoConfidencePassport &&
+                detail?.photoConfidencePassport.map((img, index) => (
+                  <img
+                    key={index}
+                    src={`http://hasandev.uz${img}`}
+                    alt="Driver License"
+                    style={{ width: "500px", marginBottom: "10px" }}
+                  />
+                ))}
+            </div>
+            <Upload
+              listType="picture"
+              beforeUpload={(file) =>
+                handleFileUpload(file, "photoConfidencePassport")
+              }
+              onChange={({ fileList }) => {
+                form.setFieldValue("photoConfidencePassport", fileList);
+                handleFileListChange(fileList, "photoConfidencePassport");
+              }}
+              fileList={fileList?.photoConfidencePassport || []}
+            >
+              <Button icon={<UploadOutlined />}>Загрузить фото</Button>
+            </Upload>
+          </div>
+        </>
       ),
     },
     {
       label: "Лицензия",
       name: "photoLicense",
-      required: true,
       message: "Загрузите фото техпаспорта",
       child: (
-        <Upload
-          beforeUpload={(file) => handleFileUpload(file, "photoLicense")}
-          onChange={({ fileList }) => {
-            form.setFieldValue("photoLicense", fileList);
-            handleFileListChange(fileList, "photoLicense");
-          }}
-          fileList={fileList?.photoLicense || []}
-        >
-          <Button icon={<UploadOutlined />}>Загрузить фото</Button>
-        </Upload>
+        <>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+              }}
+            >
+              {detail?.photoLicense &&
+                detail?.photoLicense.map((img, index) => (
+                  <img
+                    key={index}
+                    src={`http://hasandev.uz${img}`}
+                    alt="Driver License"
+                    style={{ width: "500px", marginBottom: "10px" }}
+                  />
+                ))}
+            </div>
+            <Upload
+              listType="picture"
+              beforeUpload={(file) => handleFileUpload(file, "photoLicense")}
+              onChange={({ fileList }) => {
+                form.setFieldValue("photoLicense", fileList);
+                handleFileListChange(fileList, "photoLicense");
+              }}
+              fileList={fileList?.photoLicense || []}
+            >
+              <Button icon={<UploadOutlined />}>Загрузить фото</Button>
+            </Upload>
+          </div>
+        </>
       ),
     },
     {
       label: "Фото автомобиля",
       name: "photoCar",
-      required: true,
       message: "Загрузите фото техпаспорта",
       child: (
-        <Upload
-          beforeUpload={(file) => handleFileUpload(file, "photoCar")}
-          onChange={({ fileList }) => {
-            form.setFieldValue("photoCar", fileList);
-            handleFileListChange(fileList, "photoCar");
-          }}
-          fileList={fileList?.photoCar || []}
-        >
-          <Button icon={<UploadOutlined />}>Загрузить фото</Button>
-        </Upload>
+        <>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+              }}
+            >
+              {detail?.photoCar &&
+                detail?.photoCar.map((img, index) => (
+                  <img
+                    key={index}
+                    src={`http://hasandev.uz${img}`}
+                    alt="Driver License"
+                    style={{ width: "500px", marginBottom: "10px" }}
+                  />
+                ))}
+            </div>
+            <Upload
+              listType="picture"
+              beforeUpload={(file) => handleFileUpload(file, "photoCar")}
+              onChange={({ fileList }) => {
+                form.setFieldValue("photoCar", fileList);
+                handleFileListChange(fileList, "photoCar");
+              }}
+              fileList={fileList?.photoCar || []}
+            >
+              <Button icon={<UploadOutlined />}>Загрузить фото</Button>
+            </Upload>
+          </div>
+        </>
       ),
     },
   ];
@@ -406,14 +560,19 @@ const DriverEditPage: FC = () => {
     <Spin />
   ) : (
     <Card>
-      <Form form={form} layout="vertical" onFinish={onSave}>
+      <Form
+        form={form}
+        layout="vertical"
+        onValuesChange={handleFormChange}
+        onFinish={onSave}
+      >
         <Row gutter={[16, 16]}>
           {forms.map((item, idx) => (
             <Col
               xs={24}
               sm={24}
-              md={item?.colSpan || 12}
-              lg={item?.colSpan || 12}
+              // md={item?.colSpan || 12}
+              // lg={item?.colSpan || 12}
               key={idx}
             >
               <Form.Item
@@ -433,7 +592,7 @@ const DriverEditPage: FC = () => {
             </Button>
           </Col>
           <Col>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" disabled={!isFormChanged}>
               Submit
             </Button>
           </Col>

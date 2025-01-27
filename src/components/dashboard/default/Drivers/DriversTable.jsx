@@ -16,19 +16,22 @@ import { useEffect } from "react";
 import TableTitle from "../../../TableTitle/TableTitle";
 import dayjs from "dayjs";
 import useDrivers from "../../../../hooks/drivers/useDrivers";
+import useRegions from "../../../../hooks/region/useRegion";
 import { useNavigate } from "react-router-dom";
-import { regions } from "../../../../constants";
+import useStatics from "../../../../hooks/statics/useStatics";
+import useMachines from "../../../../hooks/machines/useMachines";
+
 const DriversTable = () => {
   const { getDrivers, drivers, pagination, listLoading, remove } = useDrivers();
+  const { getRegions, regions, listLoading: regionLoading } = useRegions();
+  const { getDriverStatus, driverStatus, driverLoading } = useStatics();
+  const { getMachines, machines, listLoading: machineLoading } = useMachines();
   const navigate = useNavigate();
-  const [detailId, setDetailId] = useState();
   const [params, setParams] = useState({
     page: 1,
-    limit: 20,
+    limit: 10,
     filters: [],
   });
-
-  console.log(drivers)
 
   const filter = () => {
     const newParams = { ...params };
@@ -36,29 +39,31 @@ const DriversTable = () => {
     setParams(newParams);
     getDrivers(newParams);
   };
+
   const onKeyPress = (e) => {
     if (e.key === "Enter") {
       filter();
     }
   };
 
-  // const onBlur = () => {
-  //   filter();
-  // };
-
   useEffect(() => {
     getDrivers(params);
+    getRegions(params);
+    getDriverStatus();
+    getMachines();
   }, []);
-
+  console.log(drivers);
   const columns = [
     {
-      title: "ID raqami",
+      title: "Ид номер",
       width: "10%",
       children: [
         {
           title: (
             <Input
-              onChange={(e) => addFilter(setParams, "id", e.target.value)}
+              onChange={(e) =>
+                addFilter(setParams, "id", e.target.value, "equals")
+              }
               onKeyPress={onKeyPress}
             />
           ),
@@ -68,7 +73,7 @@ const DriversTable = () => {
       ],
     },
     {
-      title: "F.I.Sh. / Tashkilot nomi",
+      title: "Ф.И.О. / Название организации",
       width: "20%",
       children: [
         {
@@ -84,7 +89,7 @@ const DriversTable = () => {
       ],
     },
     {
-      title: "Telefon raqami",
+      title: "Номер телефона",
       width: "15%",
       children: [
         {
@@ -101,7 +106,42 @@ const DriversTable = () => {
       ],
     },
     {
-      title: "Email manzili",
+      title: "Техника",
+      width: "15%",
+      children: [
+        {
+          title: (
+            <Select
+              className="w-100"
+              showSearch
+              allowClear
+              loading={machineLoading}
+              disabled={machineLoading}
+              filterOption={(inputValue, option) =>
+                option?.label
+                  ?.toUpperCase()
+                  .indexOf(inputValue.toUpperCase()) >= 0
+              }
+              options={
+                machines &&
+                machines.map((machine) => ({
+                  value: machine.id,
+                  label: machine.name,
+                }))
+              }
+              onChange={(value) =>
+                addFilter(setParams, "machine", value, "equals")
+              }
+            />
+          ),
+          dataIndex: "machine",
+          render: (machine) => machine?.name,
+          key: "machine",
+        },
+      ],
+    },
+    {
+      title: "Адрес электронной почты",
       width: "15%",
       children: [
         {
@@ -118,7 +158,7 @@ const DriversTable = () => {
       ],
     },
     {
-      title: "Foydalanuvchi mintaqasi",
+      title: "Регион пользователя",
       width: "15%",
       children: [
         {
@@ -127,8 +167,8 @@ const DriversTable = () => {
               className="w-100"
               showSearch
               allowClear
-              loading={listLoading}
-              disabled={listLoading}
+              loading={regionLoading}
+              disabled={regionLoading}
               filterOption={(inputValue, option) =>
                 option?.label
                   ?.toUpperCase()
@@ -145,35 +185,13 @@ const DriversTable = () => {
             />
           ),
           dataIndex: "region",
+          render: (region) => region?.name,
           key: "region",
         },
       ],
     },
     {
-      title: "Ro‘yxatdan o‘tish sanasi",
-      width: "15%",
-      children: [
-        {
-          title: (
-            <DatePicker.RangePicker
-              onChange={(e, v) =>
-                addFilter(
-                  setParams,
-                  "registrationDate",
-                  getDateTime(e, v),
-                  "between"
-                )
-              }
-            />
-          ),
-          dataIndex: "registrationDate",
-          key: "registrationDate",
-          render: (date) => dayjs(date).format("DD-MM-YYYY HH:mm:ss"),
-        },
-      ],
-    },
-    {
-      title: "Holati",
+      title: "Статус",
       width: "10%",
       children: [
         {
@@ -182,22 +200,46 @@ const DriversTable = () => {
               className="w-100"
               showSearch
               allowClear
-              loading={listLoading}
-              disabled={listLoading}
+              loading={driverLoading}
+              disabled={driverLoading}
               filterOption={(inputValue, option) =>
                 option?.label
                   ?.toUpperCase()
                   .indexOf(inputValue.toUpperCase()) >= 0
               }
-              options={[
-                { value: "active", label: "Faol" },
-                { value: "blocked", label: "Bloklangan" },
-              ]}
-              onChange={(value) => addFilter(setParams, "status", value)}
+              options={
+                driverStatus &&
+                driverStatus.map((status) => ({
+                  value: status.value,
+                  label: status.label,
+                }))
+              }
+              onChange={(value) =>
+                addFilter(setParams, "status", value, "equals")
+              }
             />
           ),
           dataIndex: "status",
+          render: (status) => status.value,
           key: "status",
+        },
+      ],
+    },
+    {
+      title: "Дата регистрации",
+      width: "25%",
+      children: [
+        {
+          title: (
+            <DatePicker.RangePicker
+              onChange={(e, v) =>
+                addFilter(setParams, "created_at", getDateTime(e, v), "between")
+              }
+            />
+          ),
+          dataIndex: "registrationDate",
+          key: "registrationDate",
+          render: (date) => dayjs(date).format("DD-MM-YYYY HH:mm:ss"),
         },
       ],
     },
@@ -229,17 +271,17 @@ const DriversTable = () => {
               icon={<FormOutlined />}
             />
             <Popconfirm
-            placement="topLeft"
+              placement="topLeft"
               title="Вы точно хотите удалить?"
               okText="Да"
               cancelText="Нет"
-              onOpenChange={(open) => {
-                if (open) {
-                  setDetailId(item?.id);
-                } else {
-                  setDetailId(null);
-                }
-              }}
+              // onOpenChange={(open) => {
+              //   if (open) {
+              //     setDetailId(item?.id);
+              //   } else {
+              //     setDetailId(null);
+              //   }
+              // }}
               onConfirm={() => {
                 remove(item?.id).then(() => {
                   message.success("Успешно удалено");
@@ -254,7 +296,6 @@ const DriversTable = () => {
       };
     });
   }, [drivers]);
-
   return (
     <>
       <Table
@@ -276,31 +317,22 @@ const DriversTable = () => {
         pagination={{
           onChange: (page, pageSize) => {
             const newParams = { ...params };
-            newParams.limit = pageSize;
             newParams.page = page;
+            newParams.limit = pageSize;
             setParams(newParams);
             getDrivers(newParams);
           },
-          total: pagination?.totalPages,
+          total: pagination?.total,
           showTotal: (total, range) => (
             <div className="show-total-pagination">
               Показаны <b>{range[0]}</b> - <b>{range[1]}</b> из <b>{total}</b>{" "}
               записи.
             </div>
           ),
-          pageSize: pagination.pageSize,
-          current: pagination?.currentPage,
+          pageSize: params.limit,
+          current: pagination?.current_page,
         }}
       />
-
-      {/* <DriverEditModal
-        open={editModal}
-        onCancel={() => {
-          setEditModal(false);
-          setDetailId(null);
-        }}
-        id={detailId}
-      /> */}
     </>
   );
 };

@@ -247,6 +247,12 @@ const PricingCreatePage = () => {
                 type: "fine_payment",
                 unit: "UZS",
               },
+              {
+                parameterName: "НДС ",
+                parameter: "",
+                type: "qqs",
+                unit: "%",
+              },
             ]}
           >
             {(fields, { remove }) => (
@@ -295,6 +301,7 @@ const PricingCreatePage = () => {
                           <Option value="MIN">МИН</Option>
                           <Option value="HOUR">ЧАС</Option>
                           <Option value="UZS">UZS</Option>
+                          <Option value="%">%</Option>
                         </Select>
                       </Form.Item>
                     </Col>

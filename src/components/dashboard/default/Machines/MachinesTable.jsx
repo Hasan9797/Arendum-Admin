@@ -18,6 +18,7 @@ const MachinesTable = () => {
   useEffect(() => {
     getMachines();
   }, []);
+  console.log(machines)
 
   const columns = [
     {
