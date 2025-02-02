@@ -61,7 +61,7 @@ const useRegion = create(
       set({ detailLoading: true });
       const { data } = await requests.fetchRegionDetail(id);
       set({
-        detail: data,
+        detail: data?.data,
         detailLoading: false,
       });
     },

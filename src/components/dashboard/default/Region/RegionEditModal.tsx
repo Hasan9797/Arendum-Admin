@@ -40,9 +40,8 @@ const RegionEditModal: FC<RegionEditModalProps> = ({ open, onCancel, id }) => {
   const onSave = async () => {
     await form.validateFields().then(() => {
       const values = form.getFieldsValue();
-      const allValues = { ...values, name: "aaaa" };
-      update(id, allValues).then((res) => {
-        console.log(res);
+
+      update(id, values).then((res) => {
         if (res) {
           getRegions({ page: 1, limit: 10 });
           message.success({ content: "Обновлено успешно" });

@@ -34,6 +34,7 @@ import PricingCreatePage from "../components/dashboard/default/Pricing/PricingCr
 import UserCreatePage from "../components/dashboard/default/User/UserCreatePage";
 import ParamsFilter from "../pages/dashboards/ParamsFilter";
 import ParamsFilterCreatePage from "../components/dashboard/default/ParamsFilter/ParamsFilterCreatePage";
+import SpecificactionsEdiPage from "../components/dashboard/default/Specifications/SpecificationsEditPage";
 
 export const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -172,6 +173,10 @@ const router = createBrowserRouter([
       {
         path: "specifications/create",
         element: <SpecificationsCreate />,
+      },
+      {
+        path: "specifications/:id",
+        element: <SpecificactionsEdiPage />,
       },
       {
         path: "pricing",

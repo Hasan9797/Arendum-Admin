@@ -130,7 +130,7 @@ const DriversTable = () => {
                 }))
               }
               onChange={(value) =>
-                addFilter(setParams, "machine", value, "equals")
+                addFilter(setParams, "machineId", value, "equals")
               }
             />
           ),
@@ -181,7 +181,9 @@ const DriversTable = () => {
                   label: region.name,
                 }))
               }
-              onChange={(value) => addFilter(setParams, "region", value)}
+              onChange={(value) =>
+                addFilter(setParams, "region", value, "equals")
+              }
             />
           ),
           dataIndex: "region",
@@ -233,7 +235,7 @@ const DriversTable = () => {
           title: (
             <DatePicker.RangePicker
               onChange={(e, v) =>
-                addFilter(setParams, "created_at", getDateTime(e, v), "between")
+                addFilter(setParams, "createdAt", getDateTime(e, v), "between")
               }
             />
           ),
@@ -275,17 +277,14 @@ const DriversTable = () => {
               title="Вы точно хотите удалить?"
               okText="Да"
               cancelText="Нет"
-              // onOpenChange={(open) => {
-              //   if (open) {
-              //     setDetailId(item?.id);
-              //   } else {
-              //     setDetailId(null);
-              //   }
-              // }}
               onConfirm={() => {
-                remove(item?.id).then(() => {
-                  message.success("Успешно удалено");
-                  getDrivers(params);
+                remove(item?.id).then((res) => {
+                  if (res.success === true) {
+                    message.success("Успешно удалено");
+                    getDrivers(params);
+                  } else {
+                    message.error("Ошибка при удалении");
+                  }
                 });
               }}
             >

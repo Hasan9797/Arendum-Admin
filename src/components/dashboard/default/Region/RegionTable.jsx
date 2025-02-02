@@ -79,9 +79,13 @@ const RegionTable = () => {
                 }
               }}
               onConfirm={() => {
-                remove(item?.id).then(() => {
-                  message.success("Успешно удалено");
-                  getRegions();
+                remove(item?.id).then((res) => {
+                  if (res.success === true) {
+                    message.success("Успешно удалено");
+                    getRegions();
+                  } else {
+                    message.error("Ошибка при удалении");
+                  }
                 });
               }}
             >

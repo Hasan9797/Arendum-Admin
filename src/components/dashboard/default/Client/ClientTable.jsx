@@ -273,9 +273,11 @@ const ClientTable = () => {
               cancelText="Нет"
               onConfirm={() => {
                 remove(item?.id).then((res) => {
-                  if (!res) {
+                  if (res.success === true) {
                     message.success("Успешно удалено");
                     getList(params);
+                  } else {
+                    message.error("Ошибка при удалении");
                   }
                 });
               }}

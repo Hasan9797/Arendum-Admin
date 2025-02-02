@@ -68,16 +68,16 @@ const useSpecification = create(
     },
     getDetail: async (id) => {
       set({ detailLoading: true });
-      const { data } = await requests.fetchUserDetail(id);
+      const { data } = await requests.fetchSpecificationDetail(id);
       set({
-        detail: data,
+        detail: data.data,
         detailLoading: false,
       });
     },
     update: async (id, params) => {
       set({ updateLoading: true });
       try {
-        const data = await requests.userUpdate(id, params);
+        const data = await requests.specificationUpdate(id, params);
         return data;
       } catch ({ response }) {
         return response;
@@ -88,7 +88,7 @@ const useSpecification = create(
     remove: async (id) => {
       set({ removeLoading: true });
       try {
-        const { data } = await requests.userDelete(id);
+        const { data } = await requests.specificationDelete(id);
         set({ removeLoading: false });
         return data;
       } catch ({ response }) {
@@ -96,56 +96,56 @@ const useSpecification = create(
         return response;
       }
     },
-    getPermissions: async () => {
-      set({ listLoading: true });
-      try {
-        const { data } = await requests.fetchUserPermissions();
-        set({
-          permissions: data,
-          listLoading: false,
-        });
-      } catch (err) {
-        set({ listLoading: false });
-        console.log(err);
-      }
-    },
-    getRoles: async () => {
-      set({ listLoading: true });
-      try {
-        const { data } = await requests.fetchUserRoles();
-        set({
-          roles: data,
-          listLoading: false,
-        });
-      } catch (err) {
-        set({ listLoading: false });
-        console.log(err);
-      }
-    },
-    getStatus: async () => {
-      set({ listLoading: true });
-      try {
-        const { data } = await requests.fetchUserStatus();
-        set({
-          status: data,
-          listLoading: false,
-        });
-      } catch (err) {
-        set({ listLoading: false });
-        console.log(err);
-      }
-    },
-    changeUserStatus: async (id, params) => {
-      set({ updateLoading: true });
-      try {
-        const data = await requests.updateUserChangeStatus(id, params);
-        return data;
-      } catch ({ response }) {
-        return response;
-      } finally {
-        set({ updateLoading: false });
-      }
-    },
+    // getPermissions: async () => {
+    //   set({ listLoading: true });
+    //   try {
+    //     const { data } = await requests.fetchUserPermissions();
+    //     set({
+    //       permissions: data,
+    //       listLoading: false,
+    //     });
+    //   } catch (err) {
+    //     set({ listLoading: false });
+    //     console.log(err);
+    //   }
+    // },
+    // getRoles: async () => {
+    //   set({ listLoading: true });
+    //   try {
+    //     const { data } = await requests.fetchUserRoles();
+    //     set({
+    //       roles: data,
+    //       listLoading: false,
+    //     });
+    //   } catch (err) {
+    //     set({ listLoading: false });
+    //     console.log(err);
+    //   }
+    // },
+    // getStatus: async () => {
+    //   set({ listLoading: true });
+    //   try {
+    //     const { data } = await requests.fetchUserStatus();
+    //     set({
+    //       status: data,
+    //       listLoading: false,
+    //     });
+    //   } catch (err) {
+    //     set({ listLoading: false });
+    //     console.log(err);
+    //   }
+    // },
+    // changeUserStatus: async (id, params) => {
+    //   set({ updateLoading: true });
+    //   try {
+    //     const data = await requests.updateUserChangeStatus(id, params);
+    //     return data;
+    //   } catch ({ response }) {
+    //     return response;
+    //   } finally {
+    //     set({ updateLoading: false });
+    //   }
+    // },
   }))
 );
 

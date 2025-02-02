@@ -22,7 +22,7 @@ const StructureDetailModal: FC<StructureDetailModalProps> = ({
       getDetail(id);
     }
   }, [id]);
-
+  console.log(detail);
   const detailItems = useMemo(() => {
     return [
       {

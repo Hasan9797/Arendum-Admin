@@ -112,9 +112,13 @@ const ParamsFilterTable = () => {
               //   }
               // }}
               onConfirm={() => {
-                remove(item?.id).then(() => {
-                  message.success("Успешно удалено");
-                  getList(params);
+                remove(item?.id).then((res) => {
+                  if (res.success === true) {
+                    message.success("Успешно удалено");
+                    getList(params);
+                  } else {
+                    message.error("Ошибка при удалении");
+                  }
                 });
               }}
             >

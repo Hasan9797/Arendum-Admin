@@ -87,11 +87,11 @@ export const requests = {
   specificationGetByMachine: (params) =>
     $api.post(`${API_URL}/machines-params/by-machine`, params),
   fetchSpecificationDetail: (id: string) =>
-    $api.get(`${API_URL}/machines-params/update/${id}`), //! done
+    $api.get(`${API_URL}/machines-params/${id}`), //! done
   specificationUpdate: (id: string, params: SpecificationParamsType) =>
-    $api.patch(`${API_URL}/machines-params/${id}`, params), //! done
+    $api.patch(`${API_URL}/machines-params/update/${id}`, params), //! done
   specificationDelete: (id: string) =>
-    $api.delete(`${API_URL}/machines-params/${id}`),
+    $api.delete(`${API_URL}/machines-params/delete/${id}`),
 
   //* Pricing
   fetchPricingList: (params: AccountFilterType) =>

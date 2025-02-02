@@ -247,12 +247,7 @@ const PricingCreatePage = () => {
                 type: "fine_payment",
                 unit: "UZS",
               },
-              {
-                parameterName: "НДС ",
-                parameter: "",
-                type: "qqs",
-                unit: "%",
-              },
+            
             ]}
           >
             {(fields, { remove }) => (

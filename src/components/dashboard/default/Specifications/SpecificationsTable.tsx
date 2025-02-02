@@ -2,17 +2,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Badge, Button, Popconfirm, Space, Table, message } from "antd";
-import { DeleteOutlined, EyeOutlined, FormOutlined } from "@ant-design/icons";
+import { DeleteOutlined, FormOutlined } from "@ant-design/icons";
 import { useMemo, useState } from "react";
 import { useEffect } from "react";
 import useSpecification from "../../../../hooks/specifications/useSpecification.jsx";
-import useMachines from "../../../../hooks/machines/useMachines";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 const SpecificationsTable = () => {
+  const navigate = useNavigate();
+
   const { getList, specifications, listLoading, remove, removeLoading } =
     useSpecification();
-  const { machines, getMachines } = useMachines();
+  // const { machines, getMachines } = useMachines();
 
   // const [detailId, setDetailId] = useState(null);
   const [params] = useState({
@@ -30,8 +32,9 @@ const SpecificationsTable = () => {
 
   useEffect(() => {
     getList(params);
-    getMachines(params);
   }, []);
+
+  console.log(specifications);
 
   const columns = [
     {
@@ -40,7 +43,7 @@ const SpecificationsTable = () => {
       width: "20%",
       key: "nameRu",
       render: (parametr) => (
-        <p>{`${parametr?.nameRu} (${parametr?.name.toUpperCase()})`}</p>
+        <p>{`${parametr?.name} (${parametr?.prefix?.toUpperCase()})`}</p>
       ),
     },
     {
@@ -55,7 +58,7 @@ const SpecificationsTable = () => {
               style={{ marginRight: "3px" }}
               key={index}
               count={`${param.param}
-              ${parametres.name}`}
+              ${parametres?.prefix}`}
               showZero
               color="blue"
             />
@@ -67,16 +70,11 @@ const SpecificationsTable = () => {
 
     {
       title: "Связь с категорией",
-      // dataIndex: "machineId",
+      dataIndex: "machine",
       width: "20%",
       key: "machineId",
-      render: ({ machineId }) => {
-        return (
-          <div>
-            {machines.length &&
-              machines?.find((machine) => machine.id === machineId)?.name}
-          </div>
-        );
+      render: (machine) => {
+        return <div>{machine.name}</div>;
       },
     },
     {
@@ -100,21 +98,25 @@ const SpecificationsTable = () => {
         key: item.id,
         others: (
           <Space>
-            <Button onClick={() => {}} icon={<EyeOutlined />} />
-            <Button onClick={() => {}} icon={<FormOutlined />} />
+            {/* <Button onClick={() => {}} icon={<EyeOutlined />} /> */}
+            <Button
+              onClick={() => {
+                navigate(`/dashboards/specifications/${item?.id}`);
+              }}
+              icon={<FormOutlined />}
+            />
             <Popconfirm
               title="Вы точно хотите удалить?"
               okText="Да"
               cancelText="Нет"
-              // onOpenChange={(open) => {
-              //   if (open) {
-              //   } else {
-              //   }
-              // }}
               onConfirm={() => {
-                remove(item?.id).then(() => {
-                  message.success("Успешно удалено");
-                  getList(params);
+                remove(item?.id).then((res) => {
+                  if (res.success === true) {
+                    message.success("Успешно удалено");
+                    getList(params);
+                  } else {
+                    message.error("Ошибка при удалении");
+                  }
                 });
               }}
             >

@@ -10,12 +10,6 @@ import { showErrors } from "../../../../errorHandler/errors.js";
 
 const { Option } = Select;
 
-// interface Parameter {
-//   name: string;
-//   unit: string;
-//   value: string;
-// }
-
 const SpecificationsCreate: React.FC = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -93,7 +87,7 @@ const SpecificationsCreate: React.FC = () => {
             </Form.Item>
             <Form.Item
               label="Единицы измерения"
-              name="name"
+              name="prefix"
               rules={[
                 { required: true, message: "Выберите единицу измерения" },
               ]}
@@ -107,8 +101,7 @@ const SpecificationsCreate: React.FC = () => {
                 <Option value="t">т</Option>
                 <Option value="m">м</Option>
                 <Option value="km">км</Option>
-                <Option value="yes">Эсть</Option>
-                <Option value="no">Нет</Option>
+                <Option value="m3">m3</Option>
               </Select>
             </Form.Item>
           </Space>

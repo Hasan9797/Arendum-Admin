@@ -106,7 +106,7 @@ const PricingTable = () => {
                 level={5}
                 style={{ color: "blue", margin: "0" }}
               >
-                Минималное сол-во часов аренды
+                Минималное кол-во часов аренды
                 <strong style={{ color: "red" }}>
                   {" "}
                   {parametres.minHourTime}{" "}
@@ -166,9 +166,13 @@ const PricingTable = () => {
                 }
               }}
               onConfirm={() => {
-                remove(item?.id).then(() => {
-                  message.success("Успешно удалено");
-                  getList(params);
+                remove(item?.id).then((res) => {
+                  if (res.success === true) {
+                    message.success("Успешно удалено");
+                    getList(params);
+                  } else {
+                    message.error("Ошибка при удалении");
+                  }
                 });
               }}
             >

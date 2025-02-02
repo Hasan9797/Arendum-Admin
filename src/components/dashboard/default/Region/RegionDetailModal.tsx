@@ -32,10 +32,12 @@ const RegionDetailModal: FC<RegionDetailModalProps> = ({
     }
   }, [id]);
 
+  console.log(detail);
+
   const items: MenuProps["items"] =
-    detail?.facilities?.map((facility, index) => ({
+    detail?.structures?.map((structure, index) => ({
       key: index.toString(),
-      label: <Space>{facility.facilityNameRU}</Space>,
+      label: <Space>{structure.name}</Space>,
     })) || [];
 
   const detailItems = useMemo(() => {
@@ -65,7 +67,7 @@ const RegionDetailModal: FC<RegionDetailModalProps> = ({
           >
             <Typography.Link>
               <Space>
-                {detail?.structure && detail.structure.length > 0 ? (
+                {detail?.structures ? (
                   <>
                     Show facilities <DownOutlined />
                   </>
@@ -90,7 +92,7 @@ const RegionDetailModal: FC<RegionDetailModalProps> = ({
 
   return (
     <Modal
-      title={`${detail?.regionNameRU}`}
+      title={`${detail?.name}`}
       open={open}
       cancelButtonProps={{ style: { display: "none" } }}
       okText="Закрыть"

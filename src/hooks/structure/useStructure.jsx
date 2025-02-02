@@ -49,7 +49,7 @@ const useStructure = create(
       set({ detailLoading: true });
       const { data } = await requests.fetchStructureDetail(id);
       set({
-        detail: data,
+        detail: data.data,
         detailLoading: false,
       });
     },

@@ -21,7 +21,7 @@ import React from "react";
 import { MerchantsData, Statuses } from "../../../../constants";
 import { DeleteOutlined, EyeOutlined, FormOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { getDateTime } from './../../../../utils/index';
+import { getDateTime } from "./../../../../utils/index";
 import dayjs from "dayjs";
 
 const MerchantsTable: React.FC = () => {
@@ -259,9 +259,13 @@ const MerchantsTable: React.FC = () => {
                 }
               }}
               onConfirm={() => {
-                // remove(item?.id).then(() => {
-                //   message.success("Успешно удалено");
-                //   getFacilities(params);
+                // remove(item?.id).then((res) => {
+                //   if (res.success === true) {
+                //     message.success("Успешно удалено");
+                //     getList(params);
+                //   } else {
+                //     message.error("Ошибка при удалении");
+                //   }
                 // });
               }}
             >

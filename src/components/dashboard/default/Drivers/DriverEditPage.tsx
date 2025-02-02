@@ -62,12 +62,13 @@ const DriverEditPage: FC = () => {
   }, [detail]);
 
   useEffect(() => {
-    if (id && open) {
+    if (id) {
       getDetail(id);
       getMachines();
       getRegions({ page: 1, limit: 20 });
     }
   }, [id]);
+  console.log(detail);
 
   useEffect(() => {
     if (detail) {

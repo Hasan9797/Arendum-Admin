@@ -37,8 +37,7 @@ const StructureEditModal: FC<StructureEditModalProps> = ({
   useEffect(() => {
     if (form && detail) {
       form.setFieldsValue({
-        regionId:
-          regions?.find((region) => region.id == detail.regionId)?.nameRu || "",
+        regionId: detail.regionId,
         nameRu: detail?.nameRu,
         nameUz: detail?.nameUz,
       });
@@ -81,7 +80,7 @@ const StructureEditModal: FC<StructureEditModalProps> = ({
             regions?.map((item) => {
               return {
                 value: item.id,
-                label: item.nameRu,
+                label: item.name,
               };
             })
           }
