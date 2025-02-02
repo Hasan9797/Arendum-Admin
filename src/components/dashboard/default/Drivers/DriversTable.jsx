@@ -73,6 +73,22 @@ const DriversTable = () => {
       ],
     },
     {
+      title: "Ф.И.О",
+      width: "20%",
+      children: [
+        {
+          title: (
+            <Input
+              onChange={(e) => addFilter(setParams, "fullName", e.target.value)}
+              onKeyPress={onKeyPress}
+            />
+          ),
+          dataIndex: "fullName",
+          key: "fullName",
+        },
+      ],
+    },
+    {
       title: "Ф.И.О. / Название организации",
       width: "20%",
       children: [
@@ -154,6 +170,23 @@ const DriversTable = () => {
           ),
           dataIndex: "email",
           key: "email",
+        },
+      ],
+    },
+    {
+      title: "ИНН организации",
+      width: "15%",
+      children: [
+        {
+          title: (
+            <Input
+              type="string"
+              onChange={(e) => addFilter(setParams, "email", e.target.value)}
+              onKeyPress={onKeyPress}
+            />
+          ),
+          dataIndex: "inn",
+          key: "inn",
         },
       ],
     },

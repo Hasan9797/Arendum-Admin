@@ -55,10 +55,9 @@ const SpecificationsTable = () => {
         if (parametres && Array.isArray(parametres.params)) {
           return parametres.params.map((param, index) => (
             <Badge
-              style={{ marginRight: "3px" }}
+              style={{ marginRight: "3px", paddingBottom: "2px" }}
               key={index}
-              count={`${param.param}
-              ${parametres?.prefix}`}
+              count={`${param.param}`}
               showZero
               color="blue"
             />

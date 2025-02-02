@@ -49,7 +49,7 @@ const useMachines = create(
       set({ detailLoading: true });
       const { data } = await requests.fetchMachinesDetail(id);
       set({
-        detail: data,
+        detail: data?.data,
         detailLoading: false,
       });
     },

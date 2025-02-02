@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Popconfirm, Space, Table, message } from "antd";
-import { DeleteOutlined, EyeOutlined, FormOutlined } from "@ant-design/icons";
+import { Button, Popconfirm, Space, Switch, Table, message } from "antd";
+import { DeleteOutlined, FormOutlined } from "@ant-design/icons";
 import { useMemo, useState } from "react";
 import useMachines from "../../../../hooks/machines/useMachines";
 import RegionDetailModal from "./MachinesDetailModal";
@@ -9,16 +9,40 @@ import { useEffect } from "react";
 import dayjs from "dayjs";
 
 const MachinesTable = () => {
-  const { machines, getMachines, remove, listLoading } = useMachines();
+  const {
+    machines,
+    getMachines,
+    pagination,
+    remove,
+    listLoading,
+    update,
+    updateLoading,
+  } = useMachines();
 
   const [detailModal, setDetailModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [detailId, setDetailId] = useState(null);
+  const [params, setParams] = useState({
+    page: 1,
+    limit: 10,
+    filters: [],
+  });
+
+  const handleStatusChange = async (checked, id) => {
+    const newStatus = checked ? 2 : 1;
+    try {
+      await update(id, {
+        status: newStatus,
+      });
+      await getMachines(params);
+    } catch (error) {
+      message.error("Statusni o'zgartirishda xatolik:", error);
+    }
+  };
 
   useEffect(() => {
-    getMachines();
+    getMachines(params);
   }, []);
-  console.log(machines)
 
   const columns = [
     {
@@ -36,6 +60,12 @@ const MachinesTable = () => {
       key: "name",
     },
     {
+      title: "Status",
+      dataIndex: "status",
+      width: "20%",
+      key: "status",
+    },
+    {
       title: "Дата создания",
       dataIndex: "createdAt",
       width: "20%",
@@ -44,7 +74,7 @@ const MachinesTable = () => {
     },
     {
       title: "",
-      width: "20%",
+      width: "10%",
       dataIndex: "others",
       key: "others",
     },
@@ -56,13 +86,13 @@ const MachinesTable = () => {
         key: item.id,
         others: (
           <Space>
-            <Button
+            {/* <Button
               onClick={() => {
                 setDetailModal(true);
                 setDetailId(item?.id);
               }}
               icon={<EyeOutlined />}
-            />
+            /> */}
             <Button
               onClick={() => {
                 setEditModal(true);
@@ -92,6 +122,20 @@ const MachinesTable = () => {
             </Popconfirm>
           </Space>
         ),
+        status: (
+          <Space>
+            <Switch
+              checked={item.status === 2}
+              checkedChildren={"Активный"}
+              unCheckedChildren={
+                (item.status === 0 && "Созданный") ||
+                (item.status === 1 && "Неактивный")
+              }
+              disabled={updateLoading}
+              onChange={(cheched) => handleStatusChange(cheched, item.id)}
+            />
+          </Space>
+        ),
       };
     });
   }, [machines]);
@@ -104,7 +148,24 @@ const MachinesTable = () => {
         columns={columns}
         dataSource={data}
         loading={listLoading}
-        pagination={false}
+        pagination={{
+          onChange: (page, pageSize) => {
+            const newParams = { ...params };
+            newParams.page = page;
+            newParams.limit = pageSize;
+            setParams(newParams);
+            getMachines(newParams);
+          },
+          total: pagination?.total,
+          showTotal: (total, range) => (
+            <div className="show-total-pagination">
+              Показаны <b>{range[0]}</b> - <b>{range[1]}</b> из <b>{total}</b>{" "}
+              записи.
+            </div>
+          ),
+          pageSize: params.limit,
+          current: pagination?.current_page,
+        }}
       />
       <RegionDetailModal
         open={detailModal}
