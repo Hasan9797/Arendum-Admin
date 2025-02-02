@@ -89,7 +89,7 @@ export const requests = {
   fetchSpecificationDetail: (id: string) =>
     $api.get(`${API_URL}/machines-params/${id}`), //! done
   specificationUpdate: (id: string, params: SpecificationParamsType) =>
-    $api.patch(`${API_URL}/machines-params/update/${id}`, params), //! done
+    $api.put(`${API_URL}/machines-params/update/${id}`, params), //! done
   specificationDelete: (id: string) =>
     $api.delete(`${API_URL}/machines-params/delete/${id}`),
 
@@ -101,7 +101,7 @@ export const requests = {
   fetchPricingDetail: (id: string) =>
     $api.get(`${API_URL}/machine-price/update/${id}`), //! done
   pricingUpdate: (id: string, params: PricingParamsType) =>
-    $api.patch(`${API_URL}/machine-price/${id}`, params), //! done
+    $api.put(`${API_URL}/machine-price/update/${id}`, params), //! done
   pricingDelete: (id: string) =>
     $api.delete(`${API_URL}/machine-price/delete/${id}`),
   //* ParamsFilter

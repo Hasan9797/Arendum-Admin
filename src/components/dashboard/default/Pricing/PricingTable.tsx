@@ -5,6 +5,7 @@ import {
   Button,
   Popconfirm,
   Space,
+  Switch,
   Table,
   Typography,
   message,
@@ -19,7 +20,15 @@ const PricingTable = () => {
   // const { getList, specifications, listLoading, remove, removeLoading } =
   //   useSpecification();
   const { machines, getMachines } = useMachines();
-  const { pricing, getList, listLoading, remove, removeLoading } = usePricing();
+  const {
+    pricing,
+    getList,
+    listLoading,
+    remove,
+    removeLoading,
+    update,
+    updateLoading,
+  } = usePricing();
 
   // const [detailId, setDetailId] = useState(null);
   const [params] = useState({
@@ -34,6 +43,18 @@ const PricingTable = () => {
   //   setParams(newParams);
   //   getList(newParams);
   // };
+
+  const handleStatusChange = async (checked, id) => {
+    const newStatus = checked ? 2 : 1;
+    try {
+      await update(id, {
+        status: newStatus,
+      });
+      await getList(params);
+    } catch (error) {
+      message.error("Statusni o'zgartirishda xatolik:", error);
+    }
+  };
 
   useEffect(() => {
     getList(params);
@@ -184,7 +205,20 @@ const PricingTable = () => {
             </Popconfirm>
           </Space>
         ),
-        parameters: <Space></Space>,
+        status: (
+          <Space>
+            <Switch
+              checked={item.status === 2}
+              checkedChildren={"Активный"}
+              unCheckedChildren={
+                (item.status === 0 && "Созданный") ||
+                (item.status === 1 && "Неактивный")
+              }
+              disabled={updateLoading}
+              onChange={(cheched) => handleStatusChange(cheched, item.id)}
+            />
+          </Space>
+        ),
       };
     });
   }, [pricing]);

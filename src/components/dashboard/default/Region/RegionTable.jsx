@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Popconfirm, Space, Table, message } from "antd";
+import { Button, Popconfirm, Space, Switch, Table, message } from "antd";
 import { DeleteOutlined, EyeOutlined, FormOutlined } from "@ant-design/icons";
 import { useMemo, useState } from "react";
 import useRegion from "../../../../hooks/region/useRegion";
@@ -9,16 +9,31 @@ import { useEffect } from "react";
 import dayjs from "dayjs";
 
 const RegionTable = () => {
-  const { regions, getRegions, remove, listLoading } = useRegion();
+  const { regions, getRegions, update, updateLoading, remove, listLoading } =
+    useRegion();
   console.log(regions);
   const [detailModal, setDetailModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [detailId, setDetailId] = useState(null);
-
+  const [params, setParams] = useState({
+    page: 1,
+    limit: 10,
+  });
   useEffect(() => {
-    getRegions({ page: 1, limit: 10 });
+    getRegions(params);
   }, []);
 
+  const handleStatusChange = async (checked, id) => {
+    const newStatus = checked ? 2 : 1;
+    try {
+      await update(id, {
+        status: newStatus,
+      });
+      await getRegions(params);
+    } catch (error) {
+      message.error("Statusni o'zgartirishda xatolik:", error);
+    }
+  };
   const columns = [
     {
       title: "Имя",
@@ -26,12 +41,12 @@ const RegionTable = () => {
       width: "30%",
       key: "name",
     },
-    // {
-    //   title: "Имя (UZ)",
-    //   dataIndex: "nameUz",
-    //   width: "30%",
-    //   key: "name",
-    // },
+    {
+      title: "Статус",
+      dataIndex: "status",
+      width: "20%",
+      key: "status",
+    },
     {
       title: "Дата создания",
       dataIndex: "createdAt",
@@ -91,6 +106,20 @@ const RegionTable = () => {
             >
               <Button icon={<DeleteOutlined />} />
             </Popconfirm>
+          </Space>
+        ),
+        status: (
+          <Space>
+            <Switch
+              checked={item.status === 2}
+              checkedChildren={"Активный"}
+              unCheckedChildren={
+                (item.status === 0 && "Созданный") ||
+                (item.status === 1 && "Неактивный")
+              }
+              disabled={updateLoading}
+              onChange={(cheched) => handleStatusChange(cheched, item.id)}
+            />
           </Space>
         ),
       };

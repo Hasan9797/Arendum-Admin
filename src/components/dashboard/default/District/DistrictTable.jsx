@@ -4,7 +4,9 @@ import {
   DatePicker,
   Input,
   Popconfirm,
+  Select,
   Space,
+  Switch,
   Table,
   message,
 } from "antd";
@@ -17,10 +19,19 @@ import { addFilter, getDateTime } from "../../../../utils";
 import StructureDetailModal from "./DistrictDetailModal";
 import StructureEditModal from "./DistrictEditModal";
 import TableTitle from "../../../TableTitle/TableTitle";
+import useStatics from "../../../../hooks/statics/useStatics";
 
 const DistrictTable = () => {
-  const { structure, getStructure, remove, listLoading, pagination } =
-    useStructure();
+  const {
+    structure,
+    getStructure,
+    remove,
+    listLoading,
+    update,
+    updateLoading,
+    pagination,
+  } = useStructure();
+  const { getDriverStatus, driverStatus, driverLoading } = useStatics();
 
   const [detailModal, setDetailModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
@@ -33,6 +44,7 @@ const DistrictTable = () => {
 
   useEffect(() => {
     getStructure(params);
+    getDriverStatus();
   }, []);
 
   const filter = () => {
@@ -45,6 +57,18 @@ const DistrictTable = () => {
   const onKeyPress = (e) => {
     if (e.key === "Enter") {
       filter();
+    }
+  };
+
+  const handleStatusChange = async (checked, id) => {
+    const newStatus = checked ? 2 : 1;
+    try {
+      await update(id, {
+        status: newStatus,
+      });
+      await getStructure(params);
+    } catch (error) {
+      message.error("Statusni o'zgartirishda xatolik:", error);
     }
   };
 
@@ -62,6 +86,40 @@ const DistrictTable = () => {
           ),
           dataIndex: "name",
           key: "name",
+        },
+      ],
+    },
+    {
+      title: "Статус",
+      width: "10%",
+      children: [
+        {
+          title: (
+            <Select
+              className="w-100"
+              showSearch
+              allowClear
+              loading={driverLoading}
+              disabled={driverLoading}
+              filterOption={(inputValue, option) =>
+                option?.label
+                  ?.toUpperCase()
+                  .indexOf(inputValue.toUpperCase()) >= 0
+              }
+              options={
+                driverStatus &&
+                driverStatus.map((status) => ({
+                  value: status.value,
+                  label: status.label,
+                }))
+              }
+              onChange={(value) =>
+                addFilter(setParams, "status", value, "equals")
+              }
+            />
+          ),
+          dataIndex: "status",
+          key: "status",
         },
       ],
     },
@@ -93,6 +151,7 @@ const DistrictTable = () => {
   ];
   const data = useMemo(() => {
     return structure?.map((item) => {
+      console.log(item);
       return {
         ...item,
         key: item.id,
@@ -136,6 +195,20 @@ const DistrictTable = () => {
             >
               <Button icon={<DeleteOutlined />} />
             </Popconfirm>
+          </Space>
+        ),
+        status: (
+          <Space>
+            <Switch
+              checked={item.status === 2}
+              checkedChildren={"Активный"}
+              unCheckedChildren={
+                (item.status === 0 && "Созданный") ||
+                (item.status === 1 && "Неактивный")
+              }
+              disabled={updateLoading}
+              onChange={(checked) => handleStatusChange(checked, item.id)}
+            />
           </Space>
         ),
       };

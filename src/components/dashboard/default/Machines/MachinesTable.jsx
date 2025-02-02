@@ -60,7 +60,7 @@ const MachinesTable = () => {
       key: "name",
     },
     {
-      title: "Status",
+      title: "Статус",
       dataIndex: "status",
       width: "20%",
       key: "status",
