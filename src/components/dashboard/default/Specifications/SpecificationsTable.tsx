@@ -109,6 +109,7 @@ const SpecificationsTable = () => {
               count={`${param.param}`}
               showZero
               color="blue"
+              overflowCount={Infinity}
             />
           ));
         }

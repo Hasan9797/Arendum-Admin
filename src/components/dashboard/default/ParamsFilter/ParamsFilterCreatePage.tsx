@@ -112,8 +112,8 @@ const ParamsFilterCreatePage = () => {
                 setSelectedMachineId(e);
               }}
             >
-              {machines.map((category) => (
-                <Option key={category} value={category.id}>
+              {machines.map((category, index) => (
+                <Option key={index} value={category.id}>
                   {category.name}
                 </Option>
               ))}
@@ -121,21 +121,23 @@ const ParamsFilterCreatePage = () => {
           </Form.Item>
           {selectedMachineId ? (
             <Form.Item>
-              {machineParams.map((machine) => {
-                console.log(machine)
+              {machineParams.map((machine, index) => {
                 return (
-                  <div key={machine.id} style={{ marginBottom: "20px" }}>
+                  <div key={index} style={{ marginBottom: "20px" }}>
                     <h3>{machine.name}</h3>
                     <Radio.Group
                       buttonStyle="solid"
                       optionType="button"
-                      value={selectedValues[machine.nameEn.replaceAll(" ", "_")] || ""} // Har bir mashina uchun qiymat
+                      value={
+                        selectedValues[machine.nameEn.replaceAll(" ", "_")] ||
+                        ""
+                      }
                       onChange={(e) =>
                         handleRadioChange(e.target.value, machine.nameEn)
                       }
                     >
-                      {machine.params.map((param) => (
-                        <Radio key={param.param} value={+param.param}>
+                      {machine.params.map((param, index) => (
+                        <Radio key={index} value={param.param}>
                           {param.param}
                         </Radio>
                       ))}
