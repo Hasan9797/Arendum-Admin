@@ -76,7 +76,7 @@ const SpecificationsTable = () => {
     getMachines({ page: 1, limit: 200 });
     getDriverStatus();
   }, []);
-
+  console.log(specifications);
   const columns = [
     {
       title: "Название параметра",
@@ -90,9 +90,7 @@ const SpecificationsTable = () => {
             />
           ),
           key: "name",
-          render: (parametr) => (
-            <p>{`${parametr?.name} (${parametr?.prefix?.toUpperCase()})`}</p>
-          ),
+          dataIndex: "name",
         },
       ],
     },
