@@ -204,26 +204,26 @@ const DriverCreatePage = () => {
       ? [
           {
             label: "ФИО / Название организации",
-            name: "merchantName",
+            name: "companyName",
             required: true,
             message: "Введите ИФИО / Название организации",
             child: (
               <Input
                 onChange={(e) =>
-                  form.setFieldValue("merchantName", e.target.value)
+                  form.setFieldValue("companyName", e.target.value)
                 }
               />
             ),
           },
           {
             label: "ИНН Мерчанта",
-            name: "merchantInn",
+            name: "companyInn",
             required: true,
             message: "Введите ИНН Мерчанта",
             child: (
               <Input
                 onChange={(e) =>
-                  form.setFieldValue("merchantInn", e.target.value)
+                  form.setFieldValue("companyInn", e.target.value)
                 }
               />
             ),

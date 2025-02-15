@@ -78,7 +78,7 @@ const useSpecification = create(
       set({ updateLoading: true });
       try {
         const data = await requests.specificationUpdate(id, params);
-        return data;
+        return data.data;
       } catch ({ response }) {
         return response;
       } finally {

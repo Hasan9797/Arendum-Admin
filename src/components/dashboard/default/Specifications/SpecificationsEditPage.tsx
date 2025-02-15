@@ -118,7 +118,7 @@ const SpecificationsEdit: FC = () => {
           <Col xs={24} sm={12}>
             <Form.Item
               label="Единицы измерения"
-              name="unit"
+              name="prefix"
               rules={[{ required: true }]}
             >
               <Select placeholder="Выберите единицу">

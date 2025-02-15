@@ -23,8 +23,7 @@ const ParamsFilterCreatePage = () => {
   const filteredParams =
     JSON.parse(localStorage.getItem("selectedValues")) || [];
 
-  const handleRadioChange = (value, machineName) => {
-    const name = machineName.replaceAll(" ", "_");
+  const handleRadioChange = (value, name) => {
     setSelectedValues((prev) => ({
       ...prev,
       [name]: value, // Mashina nomini kalit qilib saqlash
@@ -128,12 +127,9 @@ const ParamsFilterCreatePage = () => {
                     <Radio.Group
                       buttonStyle="solid"
                       optionType="button"
-                      value={
-                        selectedValues[machine.nameEn.replaceAll(" ", "_")] ||
-                        ""
-                      }
+                      value={selectedValues[machine.key] || ""}
                       onChange={(e) =>
-                        handleRadioChange(e.target.value, machine.nameEn)
+                        handleRadioChange(e.target.value, machine.key)
                       }
                     >
                       {machine.params.map((param, index) => (
