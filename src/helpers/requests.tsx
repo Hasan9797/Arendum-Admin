@@ -84,8 +84,10 @@ export const requests = {
     $api.get(`${API_URL}/machines-params`, { params }),
   postSpecificationCreate: (params: SpecificationParamsType) =>
     $api.post(`${API_URL}/machines-params/create`, params),
-  specificationGetByMachine: (params) =>
-    $api.post(`${API_URL}/machines-params/by-machine`, params),
+  specificationGetByMachine: (id) =>
+    $api.get(`${API_URL}/machines-params/get-by-machine-id?id=${id}`),
+  // specificationGetByMachine: (params) =>
+  //   $api.post(`${API_URL}/machines-params/by-machine`, params),
   fetchSpecificationDetail: (id: string) =>
     $api.get(`${API_URL}/machines-params/${id}`), //! done
   specificationUpdate: (id: string, params: SpecificationParamsType) =>

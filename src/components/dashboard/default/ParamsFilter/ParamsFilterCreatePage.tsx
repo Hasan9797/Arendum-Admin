@@ -15,13 +15,13 @@ const ParamsFilterCreatePage = () => {
   const [selectedMachineId, setSelectedMachineId] = useState<number>(null);
   const [machineParams, setMachineParams] = useState([]);
   const [selectedValues, setSelectedValues] = useState({});
-
+  const [filteredParams, setFilteredParams] = useState([]);
   const { getParamsByMachineId } = useSpecification();
   const { getMachines, machines, listLoading } = useMachines();
   const { create, createLoading, getList } = useParamsFilter();
 
-  const filteredParams =
-    JSON.parse(localStorage.getItem("selectedValues")) || [];
+  // const filteredParams =
+  //   JSON.parse(localStorage.getItem("selectedValues")) || [];
 
   const handleRadioChange = (value, name) => {
     setSelectedValues((prev) => ({
@@ -43,8 +43,9 @@ const ParamsFilterCreatePage = () => {
       });
     } else {
       // Yangi qiymatni qo'shish va localStorage'ni yangilash
-      filteredParams.push(selectedValues);
-      localStorage.setItem("selectedValues", JSON.stringify(filteredParams));
+      setFilteredParams((prev) => [...prev, selectedValues]);
+      // filteredParams.push(selectedValues);
+      // localStorage.setItem("selectedValues", JSON.stringify(filteredParams));
       setSelectedValues({});
       message.success({
         content: "Фильтр добавлен",
@@ -58,7 +59,7 @@ const ParamsFilterCreatePage = () => {
 
   useEffect(() => {
     if (selectedMachineId) {
-      getParamsByMachineId({ machineId: selectedMachineId }).then((res) => {
+      getParamsByMachineId(selectedMachineId).then((res) => {
         if (res.status === 200) {
           setMachineParams(res.data.data);
         } else {
@@ -71,7 +72,6 @@ const ParamsFilterCreatePage = () => {
   }, [selectedMachineId]);
 
   const onFinish = (values) => {
-    console.log(values);
     const allValues = { ...values, params: filteredParams };
     create(allValues).then((res) => {
       if (res.status === 201) {
@@ -80,7 +80,8 @@ const ParamsFilterCreatePage = () => {
           content: "Успешно создано",
         });
         form.resetFields();
-        localStorage.setItem("selectedValues", JSON.stringify([]));
+        // localStorage.setItem("selectedValues", JSON.stringify([]));
+        setFilteredParams([]);
         navigate(-1);
       } else {
         showErrors(res);

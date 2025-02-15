@@ -39,10 +39,10 @@ const useSpecification = create(
         }
       }
     },
-    getParamsByMachineId: async (params) => {
+    getParamsByMachineId: async (id) => {
       set({ postLoading: true });
       try {
-        const data = await requests.specificationGetByMachine(params);
+        const data = await requests.specificationGetByMachine(id);
         // set({
         //   specifications: data?.data,
         //   pagination: data?.pagination,
