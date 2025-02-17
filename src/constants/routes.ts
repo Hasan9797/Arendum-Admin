@@ -22,6 +22,7 @@ export const PATH_DASHBOARD = {
   categories_of_equipment: path(ROOTS_DASHBOARD, "/categories_of_equipment"),
   specifications: path(ROOTS_DASHBOARD, "/specifications"),
   pricing: path(ROOTS_DASHBOARD, "/pricing"),
+  tax_amount: path(ROOTS_DASHBOARD, "/tax_amount"),
   moderators: path(ROOTS_DASHBOARD, "/moderators"),
   params_filter: path(ROOTS_DASHBOARD, "/params_filter"),
   user_detail: path(ROOTS_DASHBOARD, "/user/:id"),

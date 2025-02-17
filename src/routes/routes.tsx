@@ -35,6 +35,7 @@ import UserCreatePage from "../components/dashboard/default/User/UserCreatePage"
 import ParamsFilter from "../pages/dashboards/ParamsFilter";
 import ParamsFilterCreatePage from "../components/dashboard/default/ParamsFilter/ParamsFilterCreatePage";
 import SpecificactionsEdiPage from "../components/dashboard/default/Specifications/SpecificationsEditPage";
+import Tax_amount from "../pages/dashboards/Tax_amount";
 
 export const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -181,6 +182,10 @@ const router = createBrowserRouter([
       {
         path: "pricing",
         element: <Pricing />,
+      },
+      {
+        path: "tax_amount",
+        element: <Tax_amount />,
       },
       {
         path: "params_filter",

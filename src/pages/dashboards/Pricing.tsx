@@ -1,6 +1,6 @@
 import { FC } from "react";
-import { Card } from "antd";
-import { FormOutlined } from "@ant-design/icons";
+import { Card, Col, Row } from "antd";
+import { FormOutlined, WalletOutlined } from "@ant-design/icons";
 import { Helmet } from "react-helmet-async";
 import { PageHeader } from "../../components";
 import MainButton from "../../components/MainButton/MainButton";
@@ -14,18 +14,33 @@ const Pricing: FC = () => {
     <div>
       <Card style={{ marginBottom: "1.5rem" }}>
         <Helmet>
-          <title>Параметры техники</title>
+          <title>Ценообразование</title>
         </Helmet>
         <PageHeader
-          title="Параметры техники"
+          title="Ценообразование"
           extra={
-            <MainButton
-              buttonText="Создать"
-              tooltipText="Создать"
-              icon={<FormOutlined />}
-              type="primary"
-              onClick={() => navigate("/dashboards/pricing/create")}
-            />
+            <>
+              <Row gutter={[16, 16]}>
+                <Col>
+                  <MainButton
+                    buttonText="Сумма налога"
+                    tooltipText="Сумма налога"
+                    icon={<WalletOutlined  />}
+                    type="primary"
+                    onClick={() => navigate("/dashboards/tax_amount")}
+                  />
+                </Col>
+                <Col>
+                  <MainButton
+                    buttonText="Создать"
+                    tooltipText="Создать"
+                    icon={<FormOutlined />}
+                    type="primary"
+                    onClick={() => navigate("/dashboards/pricing/create")}
+                  />
+                </Col>
+              </Row>
+            </>
           }
         />
       </Card>
