@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   Button,
@@ -21,6 +22,7 @@ import { showErrors } from "../../../../errorHandler/errors.js";
 const { Option } = Select;
 
 interface Parameter {
+  [x: string]: any;
   additionalParameters: [
     {
       parameterName: string;
@@ -30,9 +32,8 @@ interface Parameter {
     },
   ];
   machineId: number;
-  minAmount: string;
-  minHourTime: string;
-  tariffName: string;
+  minAmount: number;
+  minimum: number;
 }
 
 const PricingCreatePage = () => {
@@ -55,14 +56,17 @@ const PricingCreatePage = () => {
         return {
           ...item,
           type: item.type || initialType || "another_type", // type ni saqlash yoki initialValue'dan olish
+          parameter: +item.parameter,
         };
       }
     );
 
     const finalData = {
       ...values,
-      minHourTime: values?.minHourTime ? values.minHourTime : "",
+      minimum: +values?.minimum,
+      minAmount: +values?.minAmount,
       additionalParameters: formattedParameters, // Formatlangan ma'lumotlarni qo'shish
+      priceMode: calculationType,
     };
 
     create(finalData).then((res) => {
@@ -169,6 +173,30 @@ const PricingCreatePage = () => {
                       <Button type="primary">UZS</Button>
                     </Col>
                   </Row>
+                  <Typography.Text
+                    style={{ display: "block", maxWidth: "500px" }}
+                  >
+                    Указывается минимальное число часов для аренды техники,
+                    которое, выводится на фронт умножая на расчетную цену км
+                  </Typography.Text>
+                  <Row gutter={[16, 16]}>
+                    <Col>
+                      <Button type="default" disabled>
+                        Минимальное
+                      </Button>
+                    </Col>
+                    <Col>
+                      <Form.Item
+                        name="minimum"
+                        rules={[{ required: true, message: "Введите число" }]}
+                      >
+                        <Input placeholder="Укажите число" />
+                      </Form.Item>
+                    </Col>
+                    <Col>
+                      <Button type="primary">КМ</Button>
+                    </Col>
+                  </Row>
                 </>
               )}
 
@@ -212,7 +240,7 @@ const PricingCreatePage = () => {
                     </Col>
                     <Col>
                       <Form.Item
-                        name="minHourTime"
+                        name="minimum"
                         rules={[{ required: true, message: "Введите число" }]}
                       >
                         <Input placeholder="Укажите число" />
@@ -247,7 +275,6 @@ const PricingCreatePage = () => {
                 type: "fine_payment",
                 unit: "UZS",
               },
-            
             ]}
           >
             {(fields, { remove }) => (

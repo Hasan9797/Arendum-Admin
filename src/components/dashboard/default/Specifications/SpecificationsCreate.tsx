@@ -10,6 +10,15 @@ import { showErrors } from "../../../../errorHandler/errors.js";
 
 const { Option } = Select;
 
+interface Parameter {
+  machineId: number;
+  nameEn: string;
+  nameRu: string;
+  nameUz: string;
+  params: [{ param: number; amount: number }];
+  prefix: string;
+}
+
 const SpecificationsCreate: React.FC = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -20,8 +29,14 @@ const SpecificationsCreate: React.FC = () => {
     getMachines();
   }, []);
 
-  const onFinish = (values: unknown) => {
-    create(values).then((res) => {
+  const onFinish = (values: Parameter) => {
+    const filteredValue = values?.params.map((value) => {
+      return {
+        param: +value.param,
+        amount: +value.amount,
+      };
+    });
+    create({ ...values, params: filteredValue }).then((res) => {
       if (res.status === 201) {
         getList({ limit: 10, page: 1 });
         message.success({
