@@ -214,11 +214,11 @@ export const addFilterDataTree = (setParams, key, value) => {
 
 export const addFilter = (setParams, column, value, operator = "contains") => {
   setParams((prevParams) => {
+    // console.log("prevParams", prevParams)
     const newFilters = [...prevParams.filters];
     const existingFilterIndex = newFilters.findIndex(
       (filter) => filter.column === column
     );
-    console.log(existingFilterIndex)
     if (typeof value !== "number" && !value) {
       if (existingFilterIndex !== -1) {
         newFilters.splice(existingFilterIndex, 1);
