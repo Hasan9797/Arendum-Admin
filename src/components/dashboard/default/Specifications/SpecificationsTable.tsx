@@ -197,9 +197,9 @@ const SpecificationsTable = () => {
               }
             />
           ),
-          dataIndex: "registrationDate",
-          key: "registrationDate",
-          render: (date) => dayjs(date).format("DD-MM-YYYY HH:mm:ss"),
+          dataIndex: "createdAt",
+          key: "createdAt",
+          render: (createdAt) => dayjs(createdAt).format("DD-MM-YYYY HH:mm:ss"),
         },
       ],
     },

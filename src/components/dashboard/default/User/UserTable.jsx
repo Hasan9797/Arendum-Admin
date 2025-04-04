@@ -28,7 +28,7 @@ const UserTable = () => {
   const { users, getList } = useUser();
   // const { roles, getRoles } = useRoles();
   // const { user } = useAuth();
-  console.log(users);
+  // console.log(users);
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
@@ -163,16 +163,16 @@ const UserTable = () => {
               onChange={(e, v) =>
                 addFilter(
                   setParams,
-                  "registrationDate",
+                  "createdAt",
                   getDateTime(e, v),
                   "between"
                 )
               }
             />
           ),
-          dataIndex: "registrationDate",
-          key: "registrationDate",
-          render: (date) => dayjs(date).format("DD-MM-YYYY HH:mm:ss"),
+          dataIndex: "createdAt",
+          key: "createdAt",
+          render: (createdAt) => dayjs(createdAt).format("DD-MM-YYYY HH:mm:ss"),
         },
       ],
     },

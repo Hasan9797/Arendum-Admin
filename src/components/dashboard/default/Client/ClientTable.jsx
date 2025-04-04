@@ -24,7 +24,6 @@ import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import useClient from "../../../../hooks/client/useClient";
 import useRegion from "../../../../hooks/region/useRegion";
-import { render } from "react-dom";
 
 const ClientTable = () => {
   const { clients, getList, remove, listLoading } = useClient();
@@ -34,6 +33,8 @@ const ClientTable = () => {
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
+    filters: [],
+
   });
   const navigate = useNavigate();
 
@@ -158,25 +159,20 @@ const ClientTable = () => {
     {
       title: "Ro‘yxatdan o‘tish sanasi",
       width: "15%",
-      children: [
-        {
-          title: (
-            <DatePicker.RangePicker
-              onChange={(e, v) =>
-                addFilter(
-                  setParams,
-                  "registrationDate",
-                  getDateTime(e, v),
-                  "between"
-                )
-              }
-            />
-          ),
-          dataIndex: "registrationDate",
-          key: "registrationDate",
-          render: (date) => dayjs(date).format("DD-MM-YYYY HH:mm:ss"),
-        },
-      ],
+           children: [
+             {
+               title: (
+                 <DatePicker.RangePicker
+                   onChange={(e, v) =>
+                     addFilter(setParams, "createdAt", getDateTime(e, v), "between")
+                   }
+                 />
+               ),
+               dataIndex: "createdAt",
+               key: "createdAt",
+               render: (createdAt) => dayjs(createdAt).format("DD-MM-YYYY HH:mm:ss"),
+             },
+           ],
     },
     {
       title: "Holati",

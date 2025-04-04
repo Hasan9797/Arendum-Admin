@@ -158,6 +158,29 @@ const DriversTable = () => {
         },
       ],
     },
+    // {
+    //   title: "Значение",
+    //   width: "30%",
+    //   key: "params",
+    //   render: ({ params }) => {
+    //     if (params && Array.isArray(params)) {
+    //       return params.map((param, index) => (
+    //         <Flex  gap={5} align="center">
+    //           <Typography>{param?.key}:</Typography>
+    //           <Badge
+    //             style={{ marginRight: "3px", paddingBottom: "2px" }}
+    //             key={index}
+    //             count={`${param?.params[index]}`}
+    //             showZero
+    //             color="blue"
+    //             overflowCount={Infinity}
+    //           />
+    //         </Flex>
+    //       ));
+    //     }
+    //     return "No parameters available";
+    //   },
+    // },
     {
       title: "Адрес электронной почты",
       width: "15%",
@@ -183,12 +206,14 @@ const DriversTable = () => {
           title: (
             <Input
               type="string"
-              onChange={(e) => addFilter(setParams, "email", e.target.value)}
+              onChange={(e) =>
+                addFilter(setParams, "companyInn", e.target.value)
+              }
               onKeyPress={onKeyPress}
             />
           ),
-          dataIndex: "inn",
-          key: "inn",
+          dataIndex: "companyInn",
+          key: "companyInn",
         },
       ],
     },
@@ -274,9 +299,9 @@ const DriversTable = () => {
               }
             />
           ),
-          dataIndex: "registrationDate",
-          key: "registrationDate",
-          render: (date) => dayjs(date).format("DD-MM-YYYY HH:mm:ss"),
+          dataIndex: "createdAt",
+          key: "createdAt",
+          render: (createdAt) => dayjs(createdAt).format("DD-MM-YYYY HH:mm:ss"),
         },
       ],
     },
@@ -333,7 +358,7 @@ const DriversTable = () => {
   return (
     <>
       <Table
-        scroll={{ x: 1000 }}
+        scroll={{ x: 1600 }}
         className="card"
         columns={columns}
         dataSource={data}

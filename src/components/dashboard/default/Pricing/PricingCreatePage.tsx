@@ -63,7 +63,7 @@ const PricingCreatePage = () => {
 
     const finalData = {
       ...values,
-      minimum: +values?.minimum,
+      ...(values.minimum && { minimum: +values.minimum }),
       minAmount: +values?.minAmount,
       additionalParameters: formattedParameters, // Formatlangan ma'lumotlarni qo'shish
       priceMode: calculationType,
@@ -141,6 +141,7 @@ const PricingCreatePage = () => {
             >
               <Radio.Button value="km">По километражу</Radio.Button>
               <Radio.Button value="hour">По часам</Radio.Button>
+              <Radio.Button value="non">Фиксированный</Radio.Button>
             </Radio.Group>
             <Space
               direction="vertical"
@@ -248,6 +249,33 @@ const PricingCreatePage = () => {
                     </Col>
                     <Col>
                       <Button type="primary">ЧАС</Button>
+                    </Col>
+                  </Row>
+                </>
+              )}
+              {calculationType === "non" && (
+                <>
+                  <Typography.Text
+                    style={{ display: "block", maxWidth: "500px" }}
+                  >
+                   Является базовой расчетной ценой тарифа и используется как основа для установления фиксированной цены
+                  </Typography.Text>
+                  <Row gutter={[16, 16]}>
+                    <Col>
+                      <Button type="default" disabled>
+                        Стоимость 1
+                      </Button>
+                    </Col>
+                    <Col>
+                      <Form.Item
+                        name="minAmount"
+                        rules={[{ required: true, message: "Введите число" }]}
+                      >
+                        <Input type="number" placeholder="Укажите число" />
+                      </Form.Item>
+                    </Col>
+                    <Col>
+                      <Button type="primary">UZS</Button>
                     </Col>
                   </Row>
                 </>

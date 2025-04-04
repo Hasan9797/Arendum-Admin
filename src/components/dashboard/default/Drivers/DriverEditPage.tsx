@@ -6,6 +6,7 @@ import {
   Form,
   Input,
   message,
+  Radio,
   Row,
   Select,
   Spin,
@@ -54,6 +55,7 @@ const DriverEditPage: FC = () => {
   );
 
   const districts = regions.find((region) => region.id === selectedRegion);
+  const [isLegalPerson, setIsLegalPerson] = useState(detail?.legal === "legal" || false)
 
   useEffect(() => {
     if (detail?.regionId) {
@@ -87,6 +89,10 @@ const DriverEditPage: FC = () => {
         photoLicense: detail?.photoLicense,
         photoPassport: detail?.photoPassport,
         photoTexPassport: detail?.photoTexPassport,
+        legal: detail?.legal ? "legal" :"physical",
+        companyName:detail?.companyName,
+        companyInn:detail?.companyInn
+
       });
     }
   }, [detail, form]);
@@ -238,6 +244,56 @@ const DriverEditPage: FC = () => {
         />
       ),
     },
+    {
+      label: "Тип пользователя",
+      // name: "legal",
+      required: true,
+      message: "Выберите тип пользователя",
+      child: (
+        <Radio.Group
+        value={isLegalPerson ? 'legal' : 'physical'} // Forma bilan sinxronlash
+      onChange={(e) => {
+        setIsLegalPerson(e.target.value === "legal" ? true : false);
+        form.setFieldsValue({ legal: e.target.value === "legal" ? true : false });
+
+      }}
+        >
+          <Radio value="legal">Юридическое лицо</Radio>
+          <Radio value="physical">Физическое лицо</Radio>
+        </Radio.Group>
+      ),
+      colSpan: 24,
+    },
+    ...(isLegalPerson
+      ? [
+          {
+            label: "ФИО / Название организации",
+            name: "companyName",
+            required: true,
+            message: "Введите ИФИО / Название организации",
+            child: (
+              <Input
+                onChange={(e) =>
+                  form.setFieldValue("companyName", e.target.value)
+                }
+              />
+            ),
+          },
+          {
+            label: "ИНН Мерчанта",
+            name: "companyInn",
+            required: true,
+            message: "Введите ИНН Мерчанта",
+            child: (
+              <Input
+                onChange={(e) =>
+                  form.setFieldValue("companyInn", e.target.value)
+                }
+              />
+            ),
+          },
+        ]
+      : []),
     {
       label: "Регион проживания",
       name: "regionId",
