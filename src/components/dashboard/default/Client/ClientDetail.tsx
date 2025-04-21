@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Col, Descriptions, DescriptionsProps, Image, Row, Switch } from "antd";
+import { Col, Descriptions, DescriptionsProps, Image, Row, Spin, Switch } from "antd";
 import { Card, RevenueCard } from "../../..";
 import { useStylesContext } from "../../../../context";
 import { IMAGES } from "../../../../assets/images/images";
@@ -325,7 +325,7 @@ export const ClientDetailsPage = () => {
 
   return (
     <>
-      {/* {detailLoading ? (
+      {detailLoading ? (
         <div
           style={{
             display: "flex",
@@ -336,7 +336,7 @@ export const ClientDetailsPage = () => {
         >
           <Spin />
         </div>
-      ) : ( */}
+      ) : (
       <Row gutter={[16, 16]}>
         <Card>
           <Row {...stylesContext?.rowProps}>
@@ -416,7 +416,7 @@ export const ClientDetailsPage = () => {
           </Row>
         </Card>
       </Row>
-      {/* )} */}
+      )}
     </>
   );
 };

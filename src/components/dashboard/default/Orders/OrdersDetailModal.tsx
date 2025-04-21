@@ -1,8 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Descriptions, Modal, Spin, Steps, Tag } from "antd";
+import { Descriptions, Modal, Spin, Tag } from "antd";
 import { FC, useEffect, useMemo } from "react";
-import dayjs from "dayjs";
-import { Tranzactions } from "../../../../constants";
 import {
   setIconFromApplicaionStatus,
   setColorFromApplicaionStatus,
