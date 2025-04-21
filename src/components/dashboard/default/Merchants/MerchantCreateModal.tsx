@@ -1,13 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Form, Input, message, Modal, Upload } from "antd";
+import { Button, Form, Input, Modal, Upload } from "antd";
 import { FC, useEffect, useState } from "react";
-import useUser from "../../../../hooks/user/useUser.jsx";
 // import useFacility from "../../../../hooks/facility/useFacility.jsx";
-import useRegion from "../../../../hooks/region/useRegion.jsx";
 import { copyText } from "../../../../utils/index";
 import { CopyOutlined, UploadOutlined } from "@ant-design/icons";
-import { showErrors } from "../../../../errorHandler/errors.js";
 
 interface MerchantCreateModalProps {
   open: boolean;
@@ -18,7 +15,7 @@ interface MerchantCreateModalProps {
 const MerchantCreateModal: FC<MerchantCreateModalProps> = ({
   open,
   onCancel,
-  onSuccessFields,
+  // onSuccessFields,
 }) => {
   const [form] = Form.useForm();
   // const { createLoading, create, getList, getRoles, getPermissions } =
@@ -26,9 +23,9 @@ const MerchantCreateModal: FC<MerchantCreateModalProps> = ({
   // const { getRegions } = useRegion();
   // const { getFacilities } = useFacility();
 
-  const [, setLogin] = useState("");
-  const [, setPassword] = useState("");
-  const [, setSelectedRegion] = useState("");
+  // const [, setLogin] = useState("");
+  // const [, setPassword] = useState("");
+  // const [, setSelectedRegion] = useState("");
   const [selectedRole] = useState("");
   const [, setValue] = useState<string>();
 

@@ -1,14 +1,5 @@
-import { Card } from "antd";
-import { Helmet } from "react-helmet-async";
-import { PageHeader } from "../../components";
-import MainButton from "../../components/MainButton/MainButton";
-import { FormOutlined } from "@ant-design/icons";
-import MerchantsTable from "../../components/dashboard/default/Merchants/MerchantsTable";
-import MerchantCreateModal from "../../components/dashboard/default/Merchants/MerchantCreateModal";
-import { useState } from "react";
 
 const Merchants = () => {
-  const [modal, setModal] = useState(false);
 
   return (
     <>

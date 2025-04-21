@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { CardProps, Flex, Space, Statistic, Typography } from "antd";
+import { CardProps, Flex, Statistic, Typography } from "antd";
 import CountUp from "react-countup";
 import { Card } from "../../../index.ts";
 import { CSSProperties } from "react";
-import { green, red } from "@ant-design/colors";
-import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 
 type Props = {
   title: string;
