@@ -12,10 +12,10 @@ const User = () => {
     <>
       <Card style={{ marginBottom: "1.5rem" }}>
         <Helmet>
-          <title>Параметры техники</title>
+          <title>Модераторы</title>
         </Helmet>
         <PageHeader
-          title="Параметры техники"
+          title="Модераторы"
           extra={
             <MainButton
               buttonText="Создать"

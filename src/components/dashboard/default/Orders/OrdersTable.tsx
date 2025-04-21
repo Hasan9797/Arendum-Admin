@@ -13,10 +13,10 @@ import {
   Typography,
 } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 // import useAuth from "../../../../hooks/auth/useAuth";
-import { Statuses, Tranzactions } from "../../../../constants";
+import { Statuses, } from "../../../../constants";
 import {
   getDateTime,
   addFilter,
@@ -25,30 +25,41 @@ import {
 } from "../../../../utils/index";
 import { TransactionTableType } from "../../../../types";
 import OrdersDetailModal from "./OrdersDetailModal";
+import useOrders from "../../../../hooks/orders/useOrders.jsx";
+import useStatics from "../../../../hooks/statics/useStatics.jsx";
 
 const OrdersTable = () => {
+  const { getOrders, orders, pagination, listLoading } = useOrders();
+  const { getOrderStatus, orderStatus,  orderLoading } = useStatics();
   const [detailModal, setDetailModal] = useState(false);
   const [detailId, setDetailId] = useState(null);
   const [params, setParams] = useState({
-    pageNumber: 1,
-    pageSize: 20,
+    page: 1,
+    limit: 10,
+    filters: [],
   });
+
+  useEffect(() => {
+    getOrders(params);
+    getOrderStatus()
+  }, []);
+
   const filter = () => {
     const newParams = { ...params };
     newParams["pageNumber"] = 1;
     setParams(newParams);
-    // getList(newParams);
+    getOrders(newParams);
   };
   const onKeyPress = (e) => {
     if (e.key === "Enter") {
       filter();
     }
   };
-
+console.log(orderStatus)
   const columns: TableColumnsType<TransactionTableType> = [
     {
       title: "ID заказа",
-      width: "5%",
+      width: "1%",
       children: [
         {
           title: (
@@ -69,12 +80,13 @@ const OrdersTable = () => {
         {
           title: (
             <Input
-              onChange={(e) => addFilter(setParams, "id", e.target.value)}
+              onChange={(e) => addFilter(setParams, "fullName", e.target.value)}
               onKeyPress={onKeyPress}
             />
           ),
-          key: "driver",
-          dataIndex: "driver",
+          render:(client)=>client?.fullName,
+          key: "client",
+          dataIndex: "client",
         },
       ],
     },
@@ -85,7 +97,7 @@ const OrdersTable = () => {
         {
           title: (
             <Input
-              onChange={(e) => addFilter(setParams, "id", e.target.value)}
+              onChange={(e) => addFilter(setParams, "amount", e.target.value)}
               onKeyPress={onKeyPress}
             />
           ),
@@ -101,31 +113,32 @@ const OrdersTable = () => {
         {
           title: (
             <Input
-              onChange={(e) => addFilter(setParams, "id", e.target.value)}
+              onChange={(e) => addFilter(setParams, "amountType", e.target.value)}
               onKeyPress={onKeyPress}
             />
           ),
-          dataIndex: "payment",
-          key: "payment",
+          dataIndex: "amountType",
+          render:(amountType)=>amountType?.text,
+          key: "amountType",
         },
       ],
     },
-    {
-      title: "Тип заказа",
-      width: "10%",
-      children: [
-        {
-          title: (
-            <Input
-              onChange={(e) => addFilter(setParams, "id", e.target.value)}
-              onKeyPress={onKeyPress}
-            />
-          ),
-          dataIndex: "type_order",
-          key: "type_order",
-        },
-      ],
-    },
+    // {
+    //   title: "Тип заказа",
+    //   width: "10%",
+    //   children: [
+    //     {
+    //       title: (
+    //         <Input
+    //           onChange={(e) => addFilter(setParams, "id", e.target.value)}
+    //           onKeyPress={onKeyPress}
+    //         />
+    //       ),
+    //       dataIndex: "type_order",
+    //       key: "type_order",
+    //     },
+    //   ],
+    // },
     {
       title: "Тип техники",
       width: "10%",
@@ -133,12 +146,13 @@ const OrdersTable = () => {
         {
           title: (
             <Input
-              onChange={(e) => addFilter(setParams, "id", e.target.value)}
+              onChange={(e) => addFilter(setParams, "machine", e.target.value)}
               onKeyPress={onKeyPress}
             />
           ),
-          dataIndex: "type_of_equipment",
-          key: "type_of_equipment",
+          dataIndex: "machine",
+          key: "machine",
+          render:(machine)=>machine?.name
         },
       ],
     },
@@ -153,8 +167,9 @@ const OrdersTable = () => {
               onKeyPress={onKeyPress}
             />
           ),
-          key: "user",
-          dataIndex: "user",
+          key: "driver",
+          dataIndex: "driver",
+          render:(driver)=>driver?.fullName
         },
       ],
     },
@@ -166,8 +181,8 @@ const OrdersTable = () => {
           title: (
             <Select
               className="w-100 "
-              // loading={listLoading}
-              // disabled={listLoading}
+              loading={listLoading}
+              disabled={listLoading}
               showSearch
               allowClear
               filterOption={(inputValue, option) =>
@@ -176,10 +191,10 @@ const OrdersTable = () => {
                   .indexOf(inputValue.toUpperCase()) >= 0
               }
               options={
-                Statuses &&
-                Statuses?.map((item) => ({
-                  value: item.title,
-                  label: item.title,
+                orderStatus &&
+                orderStatus?.map((status) => ({
+                  value: status.value,
+                  label: status.label,
                 }))
               }
               onChange={(e) => addFilter(setParams, "status", e)}
@@ -221,18 +236,18 @@ const OrdersTable = () => {
   ];
 
   const data = useMemo(() => {
-    return Tranzactions?.map((item) => {
+    return orders?.map((item) => {
       return {
         ...item,
         key: item.id,
         statusColumn: {
-          int: item?.status,
+          int: item?.status?.id,
           string: (
             <Tag
-              icon={setIconFromApplicaionStatus(item?.status)}
-              color={setColorFromApplicaionStatus(item?.status)}
+              icon={setIconFromApplicaionStatus(item?.status?.text)}
+              color={setColorFromApplicaionStatus(item?.status?.text)}
             >
-              {item.status}
+              {item.status?.text}
             </Tag>
           ),
         },
@@ -249,16 +264,16 @@ const OrdersTable = () => {
         ),
       };
     });
-  }, [Tranzactions]);
+  }, [orders]);
 
   return (
     <>
       <Table
         className="card"
-        scroll={{ x: 1600 }}
+        scroll={{  x: 'max-content'}}
         columns={columns}
         dataSource={data}
-        // loading={listLoading}
+        loading={listLoading}
         title={() => (
           <Row
             style={{
@@ -299,7 +314,24 @@ const OrdersTable = () => {
             </Col>
           </Row>
         )}
-        pagination={false}
+        pagination={{
+          onChange: (page, pageSize) => {
+            const newParams = { ...params };
+            newParams.page = page;
+            newParams.limit = pageSize;
+            setParams(newParams);
+            getOrders(newParams);
+          },
+          total: pagination?.total,
+          showTotal: (total, range) => (
+            <div className="show-total-pagination">
+              Показаны <b>{range[0]}</b> - <b>{range[1]}</b> из <b>{total}</b>{" "}
+              записи.
+            </div>
+          ),
+          pageSize: params.limit,
+          current: pagination?.current_page,
+        }}
       />
       <OrdersDetailModal
         open={detailModal}

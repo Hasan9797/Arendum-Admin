@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   Card,
@@ -18,6 +19,7 @@ import useDrivers from "../../../../hooks/drivers/useDrivers.jsx";
 import useMachines from "../../../../hooks/machines/useMachines.jsx";
 import useRegions from "../../../../hooks/region/useRegion.jsx";
 import { showErrors } from "../../../../errorHandler/errors.js";
+import useSpecification from "../../../../hooks/specifications/useSpecification.jsx";
 
 export interface UploadFile {
   uid: string;
@@ -25,6 +27,34 @@ export interface UploadFile {
   status?: "uploading" | "done" | "error" | "removed";
   url?: string;
   thumbUrl?: string;
+}
+interface MachineParam {
+  createdAt: string;
+  id: number;
+  key: string;
+  machineId: number;
+  name: string;
+  params: { param: string }[];
+  prefix: string;
+  status: number;
+  updatedAt: string;
+}
+
+// forms massivi uchun umumiy interfeys aniqlaymiz
+interface FormItem {
+  label: string;
+  required: boolean;
+  message: string;
+  child: JSX.Element;
+  name?: string; // name ixtiyoriy qilamiz, chunki ba'zi elementlarda yo'q
+  colSpan?: number; // colSpan ixtiyoriy xususiyat sifatida qo'shiladi
+}
+
+// selectedMachineParams uchun tur aniqlaymiz
+interface SelectedMachineParam {
+  key: string;
+  params: string[];
+  title:string
 }
 
 export interface UploadedFilesType {
@@ -37,16 +67,40 @@ const DriverCreatePage = () => {
   const { uploadImg, create, createLoading } = useDrivers();
   const { getMachines, machines, listLoading } = useMachines();
   const { getRegions, regions, listLoading: regionLoading } = useRegions();
-
+  const { getParamsByMachineId } = useSpecification(); // Texnikaga oid parametrlarni olish uchun
   const [isLegalPerson, setIsLegalPerson] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesType>({});
   const [selectedRegion, setSelectedRegion] = useState<number>(0);
   const [fileList, setFileList] = useState<Record<string, UploadFile[]>>({});
+  const [selectedMachineId, setSelectedMachineId] = useState<number | null>(
+    null
+  ); // Tanlangan texnika IDsi
+  const [machineParams, setMachineParams] = useState<MachineParam[]>([]); // Texnikaga oid parametrlarni saqlash uchun
+  const [selectedMachineParams, setSelectedMachineParams] = useState<
+    SelectedMachineParam[]
+  >([]);
 
   useEffect(() => {
     getMachines();
     getRegions();
   }, []);
+
+  // Texnika tanlanganda unga tegishli parametrlarni olish
+  useEffect(() => {
+    if (selectedMachineId) {
+      getParamsByMachineId(selectedMachineId).then((res) => {
+        if (res.status === 200) {
+          setMachineParams(res.data.data);
+          setSelectedMachineParams([]);
+        } else {
+          showErrors(res);
+        }
+      });
+    } else {
+      setMachineParams([]);
+      setSelectedMachineParams([]);
+    }
+  }, [selectedMachineId]);
 
   const districts = regions.find((region) => region.id === selectedRegion);
 
@@ -75,12 +129,22 @@ const DriverCreatePage = () => {
 
     return false;
   };
-
+console.log(selectedMachineParams)
   const handleFormSubmit = (values) => {
+    const updatedValues = { ...values }; // `values` ni o'zgartirmaslik uchun nusxa olamiz
+
+    selectedMachineParams.forEach((item) => {
+      const key = item?.key;
+      if (key && key in updatedValues) {
+        delete updatedValues[key]; // `values` dan `item.key` ga mos kalitni o'chirish
+      }
+    });
+    
     const finalValues = {
-      ...values,
+      ...updatedValues,
       ...uploadedFiles,
       legal: isLegalPerson,
+      params: selectedMachineParams, //! Tanlangan parametrlarni qo'shamiz
     };
     create(finalValues).then((res) => {
       if (res.success === true) {
@@ -111,7 +175,32 @@ const DriverCreatePage = () => {
     }));
   };
 
-  const forms = [
+  // Select onChange funksiyasi
+  const handleParamsChange = (
+    values: string[],
+    machineKey: string,
+    machineName: string
+  ) => {
+    setSelectedMachineParams((prev) => {
+      // Avvalgi tanlovlar ichidan bu key mavjudligini tekshiramiz
+      const existingIndex = prev.findIndex((item) => item.key === machineKey);
+      if (existingIndex !== -1) {
+        // Agar key mavjud bo'lsa, yangi tanlovlar bilan yangilaymiz
+        const updatedParams = [...prev];
+        updatedParams[existingIndex] = {
+          key: machineKey,
+          title: machineName,
+          params: values,
+        };
+        return updatedParams;
+      } else {
+        // Agar key mavjud bo'lmasa, yangi obyekt qo'shamiz
+        return [...prev, { key: machineKey, title:machineName, params: values }];
+      }
+    });
+  };
+
+  const forms:FormItem[] = [
     {
       label: "Ваше ФИО",
       name: "fullName",
@@ -146,9 +235,42 @@ const DriverCreatePage = () => {
               };
             })
           }
+          onChange={(value) => setSelectedMachineId(value)}
         />
       ),
     },
+    // Faqat machine tanlanganda parametrlarni ko'rsatamiz
+    ...(selectedMachineId && machineParams.length > 0
+      ? machineParams.map((machine, index) => ({
+          label: `${machine.name}`,
+          name: `${machine.key}`,
+          required: false,
+          message: `Выберите параметры для ${machine.name}`,
+          child: (
+            <Select
+              mode="multiple"
+              style={{ width: "100%" }}
+              placeholder={`Выберите параметры (${machine.prefix})`}
+              value={
+                selectedMachineParams.find((item) => item.key === machine.key)
+                  ?.params || []
+              }
+              onChange={(values) =>
+                handleParamsChange(values, machine.key, machine.name)
+              }
+            >
+              {machine.params.map((param, paramIndex) => (
+                <Select.Option
+                  key={`${index}-${paramIndex}`}
+                  value={param.param}
+                >
+                  {param.param}
+                </Select.Option>
+              ))}
+            </Select>
+          ),
+        }))
+      : []),
     {
       label: "Гос.номер авто",
       name: "machineNumber",
@@ -427,7 +549,7 @@ const DriverCreatePage = () => {
             >
               <Form.Item
                 label={item.label}
-                name={item.name}
+                name={item?.name}
                 rules={[{ required: item.required, message: item.message }]}
               >
                 {item.child}

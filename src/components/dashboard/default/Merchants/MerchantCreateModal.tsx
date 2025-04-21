@@ -21,9 +21,9 @@ const MerchantCreateModal: FC<MerchantCreateModalProps> = ({
   onSuccessFields,
 }) => {
   const [form] = Form.useForm();
-  const { createLoading, create, getList, getRoles, getPermissions } =
-    useUser();
-  const { getRegions } = useRegion();
+  // const { createLoading, create, getList, getRoles, getPermissions } =
+  //   useUser();
+  // const { getRegions } = useRegion();
   // const { getFacilities } = useFacility();
 
   const [, setLogin] = useState("");
@@ -34,9 +34,9 @@ const MerchantCreateModal: FC<MerchantCreateModalProps> = ({
 
   useEffect(() => {
     // getFacilities({ pageNumber: 1, pageSize: 20 });
-    getRegions();
-    getRoles();
-    getPermissions();
+    // getRegions();
+    // getRoles();
+    // getPermissions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -189,28 +189,28 @@ const MerchantCreateModal: FC<MerchantCreateModalProps> = ({
       title="Создать мерчанты"
       open={open}
       onOk={() => {
-        form.validateFields().then(() => {
-          const values = form.getFieldsValue();
-          create(values).then((res) => {
-            console.log(res);
-            if (res?.status === 200) {
-              getList({ pageNumber: 1, pageSize: 20 });
-              onSuccessFields && onSuccessFields();
-              message.success({
-                content: res?.data?.answereComment,
-              });
-              form.resetFields();
-              setPassword("");
-              setLogin("");
-              setSelectedRegion(null);
-            } else {
-              showErrors(res);
-            }
-          });
-        });
+        // form.validateFields().then(() => {
+        //   const values = form.getFieldsValue();
+        //   create(values).then((res) => {
+        //     console.log(res);
+        //     if (res?.status === 200) {
+        //       getList({ pageNumber: 1, pageSize: 20 });
+        //       onSuccessFields && onSuccessFields();
+        //       message.success({
+        //         content: res?.data?.answereComment,
+        //       });
+        //       form.resetFields();
+        //       setPassword("");
+        //       setLogin("");
+        //       setSelectedRegion(null);
+        //     } else {
+        //       showErrors(res);
+        //     }
+        //   });
+        // });
       }}
       okText="Сохранить"
-      okButtonProps={{ loading: createLoading, disabled: createLoading }}
+      // okButtonProps={{ loading: createLoading, disabled: createLoading }}
       cancelText="Закрыть"
       onCancel={onCancel}
       centered

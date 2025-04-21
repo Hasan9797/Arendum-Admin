@@ -1,58 +1,80 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Form, Input, Select, TreeSelect } from "antd";
+import { Button, Card, Col, Form, Input, message, Row, Select } from "antd";
 import { FC, useEffect, useState } from "react";
 import useUser from "../../../../hooks/user/useUser.jsx";
-import useRegion from "../../../../hooks/region/useRegion.jsx";
 import { copyText } from "../../../../utils/index";
 import { CopyOutlined } from "@ant-design/icons";
-import { doctypeList } from "../../../list.js";
 import MainButton from "../../../MainButton/MainButton.js";
 import useAuth from "../../../../hooks/auth/useAuth.jsx";
+import useStatics from "../../../../hooks/statics/useStatics.jsx";
 import { generatePassword } from "../../../../utils/index";
+import { useNavigate } from "react-router-dom";
+import { showErrors } from "../../../../errorHandler/errors.js";
 
 const UserCreatePage: FC = () => {
   const [form] = Form.useForm();
-  const { createLoading, roles, getRoles, getPermissions, permissions } =
-    useUser();
-  const { regions, getRegions } = useRegion();
-  const { user } = useAuth();
+  const { createLoading, create, getList } = useUser();
+  const { getUserRoles, roles, rolesLoading, getClientStatus } = useStatics();
+  const { user, getMe } = useAuth();
+  const navigate = useNavigate();
 
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
-  const [selectedRegion, setSelectedRegion] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
-  const [value, setValue] = useState<string>();
-  console.log(selectedRegion);
 
   useEffect(() => {
-    getRegions();
-    getRoles();
-    getPermissions();
+    getUserRoles();
+    getClientStatus();
+    getMe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onChange = (newValue: string) => {
-    setValue(newValue);
+  const userRole = roles
+    ? roles?.role?.find((role) => role.value === user.role)
+    : {};
+
+  const filterRoles =
+    userRole?.value == 2
+      ? roles?.role?.filter(
+          (role) => role.label !== "Client" && role.label !== "Driver"
+        )
+      : roles?.role?.filter(
+          (role) =>
+            role.label !== "Client" &&
+            role.label !== "Driver" &&
+            role.label !== "Super Admin"
+        );
+
+  const handleFormSubmit = (values) => {
+    create(values).then((res) => {
+      if (res.success) {
+        getList({ limit: 10, page: 1 });
+        message.success({
+          content: "Успешно создано",
+        });
+        form.resetFields();
+        navigate(-1);
+      } else {
+        showErrors(res.message);
+      }
+    });
   };
 
-  useEffect(() => {
-    setValue(null);
-    form.setFieldValue("permissions", undefined);
-  }, [selectedRole]);
-
-  const filterRoles = roles.filter(
-    (role) => role.name !== "admin" && role.name !== "super_admin"
-  );
-  const allowedNames = ["manage", "semimanage"];
-
-  const filteredPermissions =
-    (selectedRole === "super_admin" &&
-      permissions.filter((item) => item?.name === "manage")) ||
-    (selectedRole === "admin" &&
-      permissions.filter((item) => item?.name === "semimanage")) ||
-    permissions.filter((item) => !allowedNames.includes(item?.name));
-
   const forms = [
+    {
+      label: "Имя и фамилия",
+      name: "fullName",
+      required: true,
+      message: "Заполните",
+      child: (
+        <div>
+          <Input
+            onChange={(e) => {
+              form.setFieldValue("fullName", e.target.value);
+            }}
+          />
+        </div>
+      ),
+    },
     {
       label: "Логин",
       name: "login",
@@ -87,7 +109,7 @@ const UserCreatePage: FC = () => {
         <div>
           <Input
             minLength={6}
-            maxLength={12}
+            maxLength={14}
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
@@ -111,48 +133,15 @@ const UserCreatePage: FC = () => {
       ),
     },
     {
-      label: "Имя и фамилия",
-      name: "fullName",
+      label: "Номер телефона",
+      name: "phone",
       required: true,
-      message: "Заполните",
+      message: "Введите номер телефона",
       child: (
-        <div>
-          <Input
-            onChange={(e) => {
-              form.setFieldValue("fullName", e.target.value);
-            }}
-          />
-        </div>
-      ),
-    },
-    {
-      label: "Серийный номер например: (AC1234567)",
-      name: "serialNumber",
-      required: true,
-      message: "Заполните",
-      child: (
-        <div>
-          <Input
-            onChange={(e) => {
-              form.setFieldValue("serialNumber", e.target.value);
-            }}
-          />
-        </div>
-      ),
-    },
-    {
-      label: "ПИНФЛ",
-      name: "pinpp",
-      required: true,
-      message: "Заполните",
-      child: (
-        <div>
-          <Input
-            onChange={(e) => {
-              form.setFieldValue("pinpp", e.target.value);
-            }}
-          />
-        </div>
+        <Input
+          type="tel"
+          onChange={(e) => form.setFieldValue("phone", e.target.value)}
+        />
       ),
     },
     {
@@ -164,90 +153,27 @@ const UserCreatePage: FC = () => {
         <Select
           showSearch
           allowClear
-          loading={createLoading}
-          disabled={createLoading}
+          loading={rolesLoading}
+          disabled={rolesLoading}
           filterOption={(
             inputValue,
             option: { label: string; value: string }
           ) =>
             option?.label?.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
           }
-          options={
-            (user?.role === "admin" &&
-              filterRoles?.map((item) => ({
-                value: item.name,
-                label: item.name.toUpperCase(),
-              }))) ||
-            (user?.role === "super_admin" &&
-              roles?.map((item) => ({
-                value: item.name,
-                label: item.name.toUpperCase(),
-              })))
-          }
+          options={filterRoles?.map((item) => ({
+            value: item.value,
+            label: item.label,
+          }))}
           onChange={(e) => {
-            setSelectedRole(e);
             form.setFieldValue("role", e);
           }}
         />
       ),
     },
-    {
-      label: "Doctype",
-      name: "doctype",
-      required: true,
-      message: "Заполните",
-      child: (
-        <Select
-          showSearch
-          allowClear
-          loading={createLoading}
-          disabled={createLoading}
-          filterOption={(inputValue, option: { label: string }) =>
-            option?.label?.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
-          }
-          options={
-            doctypeList &&
-            doctypeList?.map((item) => ({
-              value: item.value,
-              label: item.label,
-            }))
-          }
-          onChange={(e) => form.setFieldValue("doctype", e)}
-        />
-      ),
-    },
-    {
-      label: "Регион",
-      name: "region",
-      required: true,
-      message: "Заполните",
-      child: (
-        <Select
-          showSearch
-          allowClear
-          loading={createLoading}
-          disabled={createLoading}
-          filterOption={(inputValue, option: { label: string }) =>
-            option?.label?.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
-          }
-          options={
-            regions &&
-            regions?.map((item) => {
-              return {
-                value: item.id,
-                label: item.regionNameRU,
-              };
-            })
-          }
-          onChange={(e) => {
-            setSelectedRegion(e);
-          }}
-        />
-      ),
-    },
     // {
-    //   label: "Объект",
-    //   name: "facilityId",
+    //   label: "Регион",
+    //   name: "region",
     //   required: true,
     //   message: "Заполните",
     //   child: (
@@ -260,67 +186,91 @@ const UserCreatePage: FC = () => {
     //         option?.label?.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
     //       }
     //       options={
-    //         selectedRegion
-    //           ? regions
-    //               .find((item) => item.id === selectedRegion)
-    //               ?.facilities?.map((facility) => ({
-    //                 value: facility.id,
-    //                 label: facility.facilityNameRU,
-    //               }))
-    //           : facilties &&
-    //             facilties?.map((facility) => ({
-    //               value: facility.id,
-    //               label: facility.facilityNameRU,
-    //             }))
+    //         regions &&
+    //         regions?.map((item) => {
+    //           return {
+    //             value: item.id,
+    //             label: item.regionNameRU,
+    //           };
+    //         })
     //       }
-    //       onChange={(e) => form.setFieldValue("facilityId", e)}
+    //       onChange={(e) => {
+    //         setSelectedRegion(e);
+    //       }}
     //     />
     //   ),
     // },
-    {
-      label: "Доступы",
-      name: "permissions",
-      required: true,
-      message: "Заполните",
-      child: (
-        <TreeSelect
-          showSearch
-          style={{ width: "100%" }}
-          value={value}
-          dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
-          placeholder="Please select"
-          allowClear
-          multiple
-          disabled={createLoading}
-          treeDefaultExpandAll
-          onChange={onChange}
-          treeData={
-            permissions
-              ? filteredPermissions.length > 0 &&
-                filteredPermissions.map((permission) => ({
-                  title: permission?.name.toUpperCase(),
-                  value: permission.name,
-                }))
-              : ""
-          }
-        />
-      ),
-    },
+    // {
+    //   label: "Доступы",
+    //   name: "permissions",
+    //   required: true,
+    //   message: "Заполните",
+    //   child: (
+    //     <TreeSelect
+    //       showSearch
+    //       style={{ width: "100%" }}
+    //       value={value}
+    //       dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+    //       placeholder="Please select"
+    //       allowClear
+    //       multiple
+    //       disabled={createLoading}
+    //       treeDefaultExpandAll
+    //       onChange={onChange}
+    //       treeData={
+    //         permissions
+    //           ? filteredPermissions.length > 0 &&
+    //             filteredPermissions.map((permission) => ({
+    //               title: permission?.name.toUpperCase(),
+    //               value: permission.name,
+    //             }))
+    //           : ""
+    //       }
+    //     />
+    //   ),
+    // },
   ];
 
   return (
-    <Form form={form} layout="vertical">
-      {forms.map((item, index) => (
-        <Form.Item
-          key={index}
-          label={item.label}
-          name={item.name}
-          rules={[{ required: item.required, message: item.message }]}
-        >
-          {item.child}
-        </Form.Item>
-      ))}
-    </Form>
+    <Card>
+      <Form form={form} layout="vertical" onFinish={handleFormSubmit}>
+        {forms.map((item, index) => (
+          <Form.Item
+            key={index}
+            label={item.label}
+            name={item.name}
+            rules={[{ required: item.required, message: item.message }]}
+          >
+            {item.child}
+          </Form.Item>
+        ))}
+        <Row justify="end" gutter={[16, 16]}>
+          <Col>
+            <Button
+              onClick={() => {
+                form.resetFields();
+                navigate(-1);
+              }}
+              danger
+              loading={createLoading}
+              disabled={createLoading}
+            >
+              Cancel
+            </Button>
+          </Col>
+          <Col>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={createLoading}
+              disabled={createLoading}
+            >
+              Submit
+            </Button>
+          </Col>
+        </Row>
+      </Form>
+    </Card>
   );
 };
 

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { requests } from "../../helpers/requests";
-import { setExpireIn, setToken } from "../../helpers/api";
+import { removeToken, setExpireIn, setToken } from "../../helpers/api";
 
 const useAuth = create(
   devtools((set) => ({
@@ -28,15 +28,19 @@ const useAuth = create(
       try {
         const { data } = await requests.fetchMe();
         set({
-          user: data,
+          user: data?.data,
           userLoading: false,
         });
         return data;
-      } catch ({ response }) {
+      } catch (err ) {
         set({
           userLoading: false,
         });
-        return response?.data;
+         if (err.response.status === 401) {
+                  removeToken();
+                  window.location = "/auth/signin";
+                }
+        return err.response?.data;
       }
     },
     logout: async () => {

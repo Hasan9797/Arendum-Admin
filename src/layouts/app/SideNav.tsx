@@ -64,7 +64,7 @@ const SideNav = ({ ...others }: SiderProps) => {
       <SlidersOutlined />
     ),
     getItem(
-      <Link to={PATH_DASHBOARD.users}>Пользователи</Link>,
+      <Link to={PATH_DASHBOARD.clients}>Пользователи</Link>,
       "users",
       <UserOutlined />
     ),

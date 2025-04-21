@@ -7,7 +7,6 @@ import { PATH_AUTH, PATH_DASHBOARD } from "../constants";
 import { appToken } from "../config";
 import User from "../pages/dashboards/User";
 import Servieces from "../pages/dashboards/Orders";
-import { UserProfileDetailsPage } from "../components/dashboard/default/User/UserDetail";
 import Transaction from "../pages/dashboards/Merchants";
 import Report from "../pages/dashboards/Report";
 import Analitika from "../pages/dashboards/Analitika";
@@ -20,7 +19,6 @@ import MerchanEquipmentPage from "../components/dashboard/default/Merchants/Merc
 import { MerchantDriversPage } from "../components/dashboard/default/Merchants/MerchantDrivers";
 import MerchantOrdersPage from "../components/dashboard/default/Merchants/MerchantsOrdersTable";
 import Drivers from "../pages/dashboards/Drivers";
-import { DriverDetailPage } from "../components/dashboard/default/Drivers/DriverDetail";
 import DriverEditPage from "../components/dashboard/default/Drivers/DriverEditPage";
 import DriverCreatePage from "../components/dashboard/default/Drivers/DriverCreatePage";
 import Region from "../pages/dashboards/Region";
@@ -36,6 +34,12 @@ import ParamsFilter from "../pages/dashboards/ParamsFilter";
 import ParamsFilterCreatePage from "../components/dashboard/default/ParamsFilter/ParamsFilterCreatePage";
 import SpecificactionsEdiPage from "../components/dashboard/default/Specifications/SpecificationsEditPage";
 import Tax_amount from "../pages/dashboards/Tax_amount";
+import UserEditPage from "../components/dashboard/default/User/UserEditPage";
+import { DriverAccountLayout } from "../layouts/driverLayout";
+import DriverTranzactions from "../components/dashboard/default/Drivers/DriverTranzactions";
+import DriverOrders from "../components/dashboard/default/Drivers/DriverOrders";
+import DriverDepozits from "../components/dashboard/default/Drivers/DriverDepozits";
+import { ClientDetailsPage } from "../components/dashboard/default/Client/ClientDetail";
 
 export const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -92,12 +96,48 @@ const router = createBrowserRouter([
         element: <Servieces />,
       },
       {
+        path: "clients",
+        element: <Client />,
+      },
+      {
+        path: "client/:id",
+        element: <ClientDetailsPage />,
+      },
+      {
+        path: "user/:id",
+        element: <UserEditPage />,
+      },
+     
+      {
+        path: "user/create",
+        element: <UserCreatePage />,
+      },
+      {
         path: "drivers",
         element: <Drivers />,
       },
       {
-        path: "driver/:id/detail",
-        element: <DriverDetailPage />,
+        path: "driver/:id",
+        element: <DriverAccountLayout />,
+        children: [
+          {
+            index: true,
+            path: "driver-orders",
+            element: <DriverOrders />,
+          },
+          {
+            path: "driver-depozit",
+            element: <DriverDepozits />,
+          },
+          {
+            path: "driver-tranzactions",
+            element: <DriverTranzactions />,
+          },
+          // {
+          //   path: "update-driver",
+          //   element: <MerchantEditPage />,
+          // },
+        ],
       },
       {
         path: "driver/create",
@@ -106,18 +146,6 @@ const router = createBrowserRouter([
       {
         path: "driver/:id/update",
         element: <DriverEditPage />,
-      },
-      {
-        path: "users",
-        element: <Client />,
-      },
-      {
-        path: "user/:id",
-        element: <UserProfileDetailsPage />,
-      },
-      {
-        path: "user/create",
-        element: <UserCreatePage />,
       },
       {
         path: "merchants",

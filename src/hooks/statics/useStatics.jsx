@@ -1,28 +1,30 @@
-import { create } from "zustand";
+  import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { requests } from "../../helpers/requests";
 import { removeToken } from "../../helpers/api";
 
 const useStatics = create(
   devtools((set) => ({
-    driverStatus: [],
+    activateStatus: [],
     clientStatus: [],
     orderStatus: [],
+    roles:[],
     orderLoading: false,
+    rolesLoading:false,
     clientLoading: false,
-    driverLoading: false,
+    statusLoading: false,
 
-    getDriverStatus: async (params) => {
-      set({ driverLoading: true });
+    getActivateStatus: async (params) => {
+      set({ statusLoading: true });
       try {
         const { data } = await requests.fetchDriverStatus(params);
         set({
-          driverStatus: data?.data,
-          driverLoading: false,
+          activateStatus: data?.data,
+          statusLoading: false,
         });
       } catch (err) {
         set({
-          driverLoading: false,
+          statusLoading: false,
         });
         if (err.response.status === 401) {
           removeToken();
@@ -59,6 +61,24 @@ const useStatics = create(
       } catch (err) {
         set({
           orderLoading: false,
+        });
+        if (err.response.status === 401) {
+          removeToken();
+          window.location = "/auth/signin";
+        }
+      }
+    },
+    getUserRoles: async (params) => {
+      set({ rolesLoading: true });
+      try {
+        const { data } = await requests.fetchUserRoles(params);
+        set({
+          roles: data?.data,
+          rolesLoading: false,
+        });
+      } catch (err) {
+        set({
+          rolesLoading: false,
         });
         if (err.response.status === 401) {
           removeToken();

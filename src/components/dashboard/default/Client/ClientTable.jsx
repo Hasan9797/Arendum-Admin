@@ -7,34 +7,36 @@ import {
   Popconfirm,
   Select,
   Space,
+  Switch,
   Table,
   Tag,
 } from "antd";
-import { DeleteOutlined, UserOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EyeOutlined, FormOutlined } from "@ant-design/icons";
 import { useEffect, useMemo, useState } from "react";
 import {
   addFilter,
   getDateTime,
   setColorFromRole,
-  setColorFromStatus,
-  setIconFromStatus,
 } from "../../../../utils";
 import TableTitle from "../../../TableTitle/TableTitle";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import useClient from "../../../../hooks/client/useClient";
 import useRegion from "../../../../hooks/region/useRegion";
+import useStatics from "../../../../hooks/statics/useStatics";
+
 
 const ClientTable = () => {
-  const { clients, getList, remove, listLoading } = useClient();
+  const { clients, getList, remove, listLoading,update,updateLoading } = useClient();
   const { regions, getRegions, listLoading: regionLoading } = useRegion();
+  const { activateStatus, getActivateStatus, statusLoading } = useStatics();
+
   // const { user } = useAuth();
   console.log(clients);
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
     filters: [],
-
   });
   const navigate = useNavigate();
 
@@ -51,21 +53,35 @@ const ClientTable = () => {
     }
   };
 
+  const handleStatusChange = async (checked, id) => {
+    const newStatus = checked ? 2 : 1;
+    try {
+      await update(id, {
+        status: newStatus,
+      });
+      await getList(params);
+    } catch (error) {
+      message.error("Statusni o'zgartirishda xatolik:", error);
+    }
+  };
+
   useEffect(() => {
     getList(params);
     getRegions(params);
-    // getStatus();
+    getActivateStatus();
   }, [params]);
 
   const columns = [
     {
-      title: "ID raqami",
+      title: "Ид номер",
       width: "10%",
       children: [
         {
           title: (
             <Input
-              onChange={(e) => addFilter(setParams, "id", e.target.value)}
+              onChange={(e) =>
+                addFilter(setParams, "id", e.target.value, "equals")
+              }
               onKeyPress={onKeyPress}
             />
           ),
@@ -75,7 +91,7 @@ const ClientTable = () => {
       ],
     },
     {
-      title: "F.I.Sh. / Tashkilot nomi",
+      title: "Ф.И.О",
       width: "20%",
       children: [
         {
@@ -91,7 +107,7 @@ const ClientTable = () => {
       ],
     },
     {
-      title: "Telefon raqami",
+      title: "Номер телефона",
       width: "15%",
       children: [
         {
@@ -108,7 +124,7 @@ const ClientTable = () => {
       ],
     },
     {
-      title: "Email manzili",
+      title: "Адрес электронной почты",
       width: "15%",
       children: [
         {
@@ -125,7 +141,7 @@ const ClientTable = () => {
       ],
     },
     {
-      title: "Foydalanuvchi mintaqasi",
+      title: "Регион пользователя",
       width: "15%",
       children: [
         {
@@ -148,34 +164,19 @@ const ClientTable = () => {
                   label: region.name,
                 }))
               }
-              onChange={(value) => addFilter(setParams, "regionId", value)}
+              onChange={(value) =>
+                addFilter(setParams, "regionId", value, "equals")
+              }
             />
           ),
           dataIndex: "region",
+          render: (region) => region?.name,
           key: "region",
         },
       ],
     },
     {
-      title: "Ro‘yxatdan o‘tish sanasi",
-      width: "15%",
-           children: [
-             {
-               title: (
-                 <DatePicker.RangePicker
-                   onChange={(e, v) =>
-                     addFilter(setParams, "createdAt", getDateTime(e, v), "between")
-                   }
-                 />
-               ),
-               dataIndex: "createdAt",
-               key: "createdAt",
-               render: (createdAt) => dayjs(createdAt).format("DD-MM-YYYY HH:mm:ss"),
-             },
-           ],
-    },
-    {
-      title: "Holati",
+      title: "Статус",
       width: "10%",
       children: [
         {
@@ -184,48 +185,53 @@ const ClientTable = () => {
               className="w-100"
               showSearch
               allowClear
-              // loading={listLoading}
-              // disabled={listLoading}
+              loading={statusLoading}
+              disabled={statusLoading}
               filterOption={(inputValue, option) =>
                 option?.label
                   ?.toUpperCase()
                   .indexOf(inputValue.toUpperCase()) >= 0
               }
-              options={[
-                { value: "active", label: "Faol" },
-                { value: "blocked", label: "Bloklangan" },
-              ]}
-              onChange={(value) => addFilter(setParams, "status", value)}
+              options={
+                activateStatus &&
+                activateStatus.map((status) => ({
+                  value: status.value,
+                  label: status.label,
+                }))
+              }
+              onChange={(value) =>
+                addFilter(setParams, "status", value, "equals")
+              }
             />
           ),
-          // dataIndex: "status",
-          render: ({ status }) => (
-            <Tag key={status} color={setColorFromStatus(status)}>
-              {status.value}
-            </Tag>
-          ),
+          dataIndex: "status",
           key: "status",
         },
       ],
     },
     {
-      title: "",
-      width: "5%",
+      title: "Дата регистрации",
+      width: "25%",
       children: [
         {
-          title: "",
-          dataIndex: "actions",
-          key: "actions",
-          render: (text, record) => (
-            <Button
-              type="primary"
-              onClick={() => navigate(`/dashboards/user/${record?.id}`)}
-            >
-              Tahrirlash
-            </Button>
+          title: (
+            <DatePicker.RangePicker
+              onChange={(e, v) =>
+                addFilter(setParams, "createdAt", getDateTime(e, v), "between")
+              }
+            />
           ),
+          dataIndex: "createdAt",
+          key: "createdAt",
+          render: (createdAt) => dayjs(createdAt).format("DD-MM-YYYY HH:mm:ss"),
         },
       ],
+    },
+    {
+      title: "",
+      width: "160px",
+      dataIndex: "others",
+      key: "others",
     },
   ];
 
@@ -244,26 +250,37 @@ const ClientTable = () => {
             </>
           ),
         },
-        statusColumn: {
-          int: item?.status,
-          string: (
-            <Tag
-              icon={setIconFromStatus(item.status)}
-              color={setColorFromStatus(item.status)}
-            >
-              {item.status}
-            </Tag>
-          ),
-        },
+        status: (
+          <Space>
+            <Switch
+              checked={item.status?.key === 2}
+              checkedChildren={"Активный"}
+              unCheckedChildren={
+                (item.status?.key === 0 && "Созданный") ||
+                (item.status?.key === 1 && "Неактивный")
+              }
+              disabled={updateLoading}
+              onChange={(cheched) => handleStatusChange(cheched, item.id)}
+            />
+          </Space>
+        ),
         others: (
           <Space>
-            <Button
+            <Button disabled
               onClick={() => {
-                navigate(`/dashboards/user/${item?.id}`);
+                navigate(`/dashboards/client/${item?.id}`);
               }}
-              icon={<UserOutlined />}
+              icon={<EyeOutlined />}
+            />
+            <Button
+            disabled
+              onClick={() => {
+                navigate(`/dashboards/user/${item?.id}/update`);
+              }}
+              icon={<FormOutlined />}
             />
             <Popconfirm
+              placement="topLeft"
               title="Вы точно хотите удалить?"
               okText="Да"
               cancelText="Нет"

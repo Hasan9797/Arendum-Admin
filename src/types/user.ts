@@ -1,16 +1,14 @@
 export type UserParamsType = {
-  pinpp: string;
-  doctype: number;
-  serialNumber: string;
-  password: string;
+  fullName: string;
+  phone: string;
+  role: number;
   login: string;
-  roles: [string];
-  facilityId: number;
+  password: string;
 };
 
 export type UserFilterType = {
-  pageNumber: number | string;
-  pageSize: number | string;
+  page: number | string;
+  limit: number | string;
   uz: string;
   ru: string;
   date: string;

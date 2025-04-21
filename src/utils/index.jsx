@@ -481,22 +481,25 @@ export const setIconFrom4Status = (int) => {
 export const setColorFromRole = (int) => {
   let color = "";
   switch (int) {
-    case "super_admin":
+    case 2:
       color = "processing";
       break;
-    case "admin":
+    case 1:
       color = "success";
       break;
-    case "user":
+    case 6:
       color = "gold";
       break;
-    case "accountant":
+    case 9:
+      color = "gold";
+      break;
+    case 3:
       color = "purple";
       break;
-    case "moderator":
+    case 7:
       color = "error";
       break;
-    case "operator":
+    case 8:
       color = "orange";
       break;
     default:

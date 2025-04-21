@@ -38,7 +38,7 @@ const SpecificationsTable = () => {
     pagination,
   } = useSpecification();
   const { getMachines, machines, listLoading: machineLoading } = useMachines();
-  const { getDriverStatus, driverStatus, driverLoading } = useStatics();
+  const { activateStatus, getActivateStatus, statusLoading } = useStatics();
 
   const [params, setParams] = useState({
     page: 1,
@@ -74,7 +74,7 @@ const SpecificationsTable = () => {
   useEffect(() => {
     getList(params);
     getMachines({ page: 1, limit: 200 });
-    getDriverStatus();
+    getActivateStatus();
   }, []);
   console.log(specifications);
   const columns = [
@@ -161,16 +161,16 @@ const SpecificationsTable = () => {
               className="w-100"
               showSearch
               allowClear
-              loading={driverLoading}
-              disabled={driverLoading}
+              loading={statusLoading}
+              disabled={statusLoading}
               filterOption={(inputValue, option) =>
                 String(option?.label)
                   .toUpperCase()
                   .indexOf(inputValue.toUpperCase()) >= 0
               }
               options={
-                driverStatus &&
-                driverStatus.map((status) => ({
+                activateStatus &&
+                activateStatus.map((status) => ({
                   value: status.value,
                   label: status.label,
                 }))

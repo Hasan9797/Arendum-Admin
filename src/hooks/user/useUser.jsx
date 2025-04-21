@@ -7,7 +7,6 @@ const useUser = create(
   devtools((set) => ({
     users: [],
     pagination: {},
-    permissions: [],
     roles: [],
     status: [],
     detail: {},
@@ -40,7 +39,7 @@ const useUser = create(
       set({ createLoading: true });
       try {
         const data = await requests.postUserCreate(params);
-        return data;
+        return data.data;
       } catch (err) {
         return err?.response?.data;
       } finally {
@@ -51,7 +50,7 @@ const useUser = create(
       set({ detailLoading: true });
       const { data } = await requests.fetchUserDetail(id);
       set({
-        detail: data,
+        detail: data?.data,
         detailLoading: false,
       });
     },
@@ -59,7 +58,7 @@ const useUser = create(
       set({ updateLoading: true });
       try {
         const data = await requests.userUpdate(id, params);
-        return data;
+        return data?.data;
       } catch ({ response }) {
         return response;
       } finally {
@@ -75,45 +74,6 @@ const useUser = create(
       } catch ({ response }) {
         set({ removeLoading: false });
         return response;
-      }
-    },
-    getPermissions: async () => {
-      set({ listLoading: true });
-      try {
-        const { data } = await requests.fetchUserPermissions();
-        set({
-          permissions: data,
-          listLoading: false,
-        });
-      } catch (err) {
-        set({ listLoading: false });
-        console.log(err);
-      }
-    },
-    getRoles: async () => {
-      set({ listLoading: true });
-      try {
-        const { data } = await requests.fetchUserRoles();
-        set({
-          roles: data,
-          listLoading: false,
-        });
-      } catch (err) {
-        set({ listLoading: false });
-        console.log(err);
-      }
-    },
-    getStatus: async () => {
-      set({ listLoading: true });
-      try {
-        const { data } = await requests.fetchUserStatus();
-        set({
-          status: data,
-          listLoading: false,
-        });
-      } catch (err) {
-        set({ listLoading: false });
-        console.log(err);
       }
     },
     changeUserStatus: async (id, params) => {
