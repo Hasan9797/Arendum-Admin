@@ -181,13 +181,13 @@ console.log(orderStatus)
           title: (
             <Select
               className="w-100 "
-              loading={listLoading}
-              disabled={listLoading}
+              loading={orderLoading}
+              disabled={orderLoading}
               showSearch
               allowClear
               filterOption={(inputValue, option) =>
-                option?.label
-                  ?.toUpperCase()
+                String(option?.label) // `label` ni stringga aylantiramiz
+                  .toUpperCase()
                   .indexOf(inputValue.toUpperCase()) >= 0
               }
               options={
