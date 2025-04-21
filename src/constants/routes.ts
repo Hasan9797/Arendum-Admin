@@ -4,6 +4,7 @@ function path(root: string, sublink: string) {
 
 const ROOTS_DASHBOARD = "/dashboards";
 const ROOTS_PROFILE = "/user-profile";
+const ROOTS_DRIVER_PROFILE = "/driver-profile";
 const ROOTS_LAYOUT = "/layouts";
 const ROOTS_AUTH = "/auth";
 
@@ -14,7 +15,7 @@ export const PATH_DASHBOARD = {
   orders: path(ROOTS_DASHBOARD, `/orders`),
   drivers: path(ROOTS_DASHBOARD, `/drivers`),
   merchants: path(ROOTS_DASHBOARD, "/merchants"),
-  users: path(ROOTS_DASHBOARD, "/users"),
+  clients: path(ROOTS_DASHBOARD, "/clients"),
   finances: path(ROOTS_DASHBOARD, "/finances"),
   user_reviews: path(ROOTS_DASHBOARD, "/user_reviews"),
   work_regions: path(ROOTS_DASHBOARD, "/work_regions"),
@@ -34,6 +35,13 @@ export const PATH_USER_PROFILE = {
   equipment: path(ROOTS_PROFILE, "/merchant-equipment"),
   drivers: path(ROOTS_PROFILE, "/merchant-drivers"),
   update: path(ROOTS_PROFILE, "/update-merchant"),
+};
+export const PATH_DRIVER_PROFILE = {
+  root: ROOTS_DRIVER_PROFILE,
+  orders: path(ROOTS_DRIVER_PROFILE, "/driver-orders"),
+  depozit: path(ROOTS_DRIVER_PROFILE, "/driver-depozit"),
+  tranzaction: path(ROOTS_DRIVER_PROFILE, "/driver-tranzactions"),
+  // update: path(ROOTS_DRIVER_PROFILE, "/update-merchant"),
 };
 
 export const PATH_LAYOUT = {

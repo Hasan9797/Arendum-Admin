@@ -25,23 +25,18 @@ import { getDateTime } from "./../../../../utils/index";
 import dayjs from "dayjs";
 
 const MerchantsTable: React.FC = () => {
-  // const { getApplications, application, listLoading, pagination } =
-  //   useApplication();
-  // const { services, listLoading: servicesLoading, getServices } = useServices();
-
-  // const [detailId, setDetailId] = useState(null);
+  const navigate = useNavigate();
   const [params, setParams] = useState({
-    pageNumber: 1,
-    pageSize: 20,
+    page: 1,
+    limit: 10,
+    filters: [],
   });
 
-  const navigate = useNavigate();
-
-  const filter = () => {
+const filter = () => {
     const newParams = { ...params };
-    newParams["pageNumber"] = 1;
+    newParams["page"] = 1;
     setParams(newParams);
-    // getApplications(newParams);
+    // getDrivers(newParams);
   };
 
   const onKeyPress = (e) => {

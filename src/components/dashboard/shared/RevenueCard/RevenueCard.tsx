@@ -32,7 +32,7 @@ const RevenueCard = (props: Props) => {
           <Typography.Title level={2} style={{ margin: 0 }}>
             <Statistic value={value} formatter={formatter} />
           </Typography.Title>
-          <Space style={{ color: diff > 0 ? green[6] : red[5] }}>
+          {/* <Space style={{ color: diff > 0 ? green[6] : red[5] }}>
             {diff > 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
             <Typography.Text
               style={{
@@ -42,7 +42,7 @@ const RevenueCard = (props: Props) => {
             >
               <CountUp end={diff} />%
             </Typography.Text>
-          </Space>
+          </Space> */}
         </Flex>
       </Flex>
     </Card>

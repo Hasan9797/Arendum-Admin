@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   Button,
@@ -6,6 +7,7 @@ import {
   Form,
   Input,
   message,
+  Modal,
   Radio,
   Row,
   Select,
@@ -19,6 +21,9 @@ import useDrivers from "../../../../hooks/drivers/useDrivers.jsx";
 import useMachines from "../../../../hooks/machines/useMachines.jsx";
 import useRegions from "../../../../hooks/region/useRegion.jsx";
 import { showErrors } from "../../../../errorHandler/errors.js";
+import useSpecification from "../../../../hooks/specifications/useSpecification.jsx";
+import TextArea from "antd/es/input/TextArea.js";
+
 interface UploadFile {
   uid: string;
   name: string;
@@ -37,6 +42,33 @@ interface CustomUploadFile extends UploadFile {
   };
 }
 
+interface MachineParam {
+  createdAt: string;
+  id: number;
+  key: string;
+  machineId: number;
+  name: string;
+  params: { param: string }[];
+  prefix: string;
+  status: number;
+  updatedAt: string;
+}
+
+interface SelectedMachineParam {
+  key: string;
+  params: string[];
+  title: string;
+}
+
+interface FormItem {
+  label: string;
+  required?: boolean;
+  message: string;
+  child: JSX.Element;
+  name?: string;
+  colSpan?: number;
+}
+
 const DriverEditPage: FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -46,23 +78,30 @@ const DriverEditPage: FC = () => {
     useDrivers();
   const { getMachines, machines, listLoading } = useMachines();
   const { getRegions, regions, listLoading: regionLoading } = useRegions();
+  const { getParamsByMachineId } = useSpecification();
 
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilesType>({});
-  const [selectedRegion, setSelectedRegion] = useState<number>(detail.regionId);
+  const [selectedRegion, setSelectedRegion] = useState<number>(0);
   const [isFormChanged, setIsFormChanged] = useState(false);
   const [fileList, setFileList] = useState<Record<string, CustomUploadFile[]>>(
     {}
   );
+  const [isLegalPerson, setIsLegalPerson] = useState(false);
+  const [modalVisible, setModalVisible] = useState({
+    visible: false,
+    imgUrl: "",
+  });
+  const [selectedMachineId, setSelectedMachineId] = useState<number | null>(
+    null
+  );
+  const [machineParams, setMachineParams] = useState<MachineParam[]>([]);
+  const [selectedMachineParams, setSelectedMachineParams] = useState<
+    SelectedMachineParam[]
+  >([]);
 
   const districts = regions.find((region) => region.id === selectedRegion);
-  const [isLegalPerson, setIsLegalPerson] = useState(detail?.legal === "legal" || false)
 
-  useEffect(() => {
-    if (detail?.regionId) {
-      setSelectedRegion(detail.regionId);
-    }
-  }, [detail]);
-
+  // Dastlabki ma'lumotlarni yuklash
   useEffect(() => {
     if (id) {
       getDetail(id);
@@ -70,11 +109,11 @@ const DriverEditPage: FC = () => {
       getRegions({ page: 1, limit: 20 });
     }
   }, [id]);
-  console.log(detail);
 
+  // `detail` o'zgarganda holatni yangilash
   useEffect(() => {
     if (detail) {
-      form.setFieldsValue({
+      const initialValues: any = {
         fullName: detail?.fullName,
         machineId: detail?.machineId,
         machineNumber: detail?.machineNumber,
@@ -89,27 +128,74 @@ const DriverEditPage: FC = () => {
         photoLicense: detail?.photoLicense,
         photoPassport: detail?.photoPassport,
         photoTexPassport: detail?.photoTexPassport,
-        legal: detail?.legal ? "legal" :"physical",
-        companyName:detail?.companyName,
-        companyInn:detail?.companyInn
+        legal: detail?.legal ? "legal" : "physical",
+        companyName: detail?.companyName,
+        companyInn: detail?.companyInn,
+        comment: detail?.comment
+      };
 
-      });
+      // `params` ni dinamik ravishda `initialValues` ga qo'shamiz
+      if (detail.params && Array.isArray(detail.params)) {
+        detail.params.forEach((param: SelectedMachineParam) => {
+          initialValues[param.key] = param.params;
+        });
+        setSelectedMachineParams(detail.params);
+      }
+
+      form.setFieldsValue(initialValues);
+
+      setIsLegalPerson(detail?.legal === true || detail?.legal === "legal");
+      setSelectedRegion(detail.regionId || 0);
+      setSelectedMachineId(detail.machineId || null);
     }
   }, [detail, form]);
 
-  const handleFormChange = (allValues) => {
-    const isEqual = JSON.stringify(allValues) === JSON.stringify(detail);
-    setIsFormChanged(!isEqual); // Agar qiymatlar bir xil bo'lsa, false bo'ladi
+  // `selectedMachineId` o'zgarganda `machineParams` ni yuklash
+  useEffect(() => {
+    if (selectedMachineId) {
+      getParamsByMachineId(selectedMachineId).then((res) => {
+        if (res.status === 200) {
+          setMachineParams(res.data.data);
+          // Agar yangi mashina tanlansa, `selectedMachineParams` ni tozalash
+          if (selectedMachineId !== detail?.machineId) {
+            setSelectedMachineParams([]);
+            // Formadagi eski parametrlarni tozalash
+            machineParams.forEach((machine) => {
+              form.setFieldsValue({ [machine.key]: undefined });
+            });
+          }
+        } else {
+          showErrors(res);
+          setMachineParams([]);
+          setSelectedMachineParams([]);
+        }
+      });
+    } else {
+      setMachineParams([]);
+      setSelectedMachineParams([]);
+    }
+  }, [selectedMachineId, detail?.machineId]);
+
+  const handleFormChange = (allValues: any) => {
+    const detailWithParams = {
+      ...detail,
+      ...detail.params?.reduce((acc: any, param: SelectedMachineParam) => {
+        acc[param.key] = param.params;
+        return acc;
+      }, {}),
+    };
+    const isEqual =
+      JSON.stringify(allValues) === JSON.stringify(detailWithParams);
+    setIsFormChanged(!isEqual);
   };
 
-  const handleFileUpload = async (file, name) => {
+  const handleFileUpload = async (file: any, name: string) => {
     const formData = new FormData();
     if (file) {
       formData.append("img", file);
     }
     try {
       const response = await uploadImg(formData);
-
       if (response?.imgUrl) {
         setUploadedFiles((prev) => ({
           ...prev,
@@ -123,7 +209,6 @@ const DriverEditPage: FC = () => {
       console.error("Error uploading file:", error);
       message.error("An error occurred during file upload.");
     }
-
     return false;
   };
 
@@ -132,31 +217,67 @@ const DriverEditPage: FC = () => {
     navigate("/dashboards/drivers");
     setUploadedFiles({});
     setFileList({});
+    setSelectedMachineParams([]);
   };
 
-  const handleFileListChange = (fileList, name) => {
+  const handleFileListChange = (fileList: CustomUploadFile[], name: string) => {
     setFileList((prev) => ({
       ...prev,
       [name]: fileList,
     }));
   };
 
+  const handleParamsChange = (
+    values: string[],
+    machineKey: string,
+    machineName: string
+  ) => {
+    setSelectedMachineParams((prev) => {
+      const existingIndex = prev.findIndex((item) => item.key === machineKey);
+      if (existingIndex !== -1) {
+        const updatedParams = [...prev];
+        updatedParams[existingIndex] = {
+          key: machineKey,
+          title: machineName,
+          params: values,
+        };
+        return updatedParams;
+      } else {
+        return [
+          ...prev,
+          { key: machineKey, title: machineName, params: values },
+        ];
+      }
+    });
+  };
+
   const onSave = async () => {
     await form.validateFields().then(() => {
       const values = form.getFieldsValue();
+
+      // `values` dan `selectedMachineParams` kalitlarini o'chirish
+      const updatedValues = { ...values };
+      selectedMachineParams.forEach((item) => {
+        const key = item?.key;
+        if (key && key in updatedValues) {
+          delete updatedValues[key];
+        }
+      });
+
       const finalValues = {
-        ...values,
+        ...updatedValues,
         ...uploadedFiles,
+        params: selectedMachineParams,
       };
 
       update(id, finalValues).then((res) => {
-        console.log(res);
         if (res.success) {
           getDrivers({ page: 1, limit: 20 });
           message.success({ content: "Обновлено успешно" });
           form.resetFields();
           setUploadedFiles({});
           setFileList({});
+          setSelectedMachineParams([]);
           navigate("/dashboards/drivers");
         } else {
           showErrors(res);
@@ -165,10 +286,11 @@ const DriverEditPage: FC = () => {
     });
   };
 
-  const forms = [
+  const forms: FormItem[] = [
     {
       label: "Ваше ФИО",
       name: "fullName",
+      required: true,
       message: "Введите ФИО или название организации",
       child: (
         <Input
@@ -179,6 +301,7 @@ const DriverEditPage: FC = () => {
     {
       label: "Тип вашей спецтехники",
       name: "machineId",
+      required: true,
       message: "Введите тип спецтехники",
       child: (
         <Select
@@ -198,12 +321,45 @@ const DriverEditPage: FC = () => {
               };
             })
           }
+          onChange={(value) => setSelectedMachineId(value)}
         />
       ),
     },
+    ...(selectedMachineId && machineParams.length > 0
+      ? machineParams.map((machine, index) => ({
+          label: `${machine.name}`,
+          name: machine.key, // Har bir parametr uchun `name` sifatida `machine.key` ni ishlatamiz
+          required: false,
+          message: `Выберите параметры для ${machine.name}`,
+          child: (
+            <Select
+              mode="multiple"
+              style={{ width: "100%" }}
+              placeholder={`Выберите параметры (${machine.prefix})`}
+              value={
+                selectedMachineParams.find((item) => item.key === machine.key)
+                  ?.params || []
+              }
+              onChange={(values) =>
+                handleParamsChange(values, machine.key, machine.name)
+              }
+            >
+              {machine.params.map((param, paramIndex) => (
+                <Select.Option
+                  key={`${index}-${paramIndex}`}
+                  value={param.param}
+                >
+                  {param.param}
+                </Select.Option>
+              ))}
+            </Select>
+          ),
+        }))
+      : []),
     {
       label: "Гос.номер авто",
       name: "machineNumber",
+      required: true,
       message: "Введите ГРН спецтехники",
       child: (
         <Input
@@ -214,6 +370,7 @@ const DriverEditPage: FC = () => {
     {
       label: "Цвет авто",
       name: "machineColor",
+      required: true,
       message: "Введите ГРН спецтехники",
       child: (
         <Input
@@ -224,6 +381,7 @@ const DriverEditPage: FC = () => {
     {
       label: "Номер телефона",
       name: "phone",
+      required: true,
       message: "Введите номер телефона",
       child: (
         <Input
@@ -246,17 +404,17 @@ const DriverEditPage: FC = () => {
     },
     {
       label: "Тип пользователя",
-      // name: "legal",
       required: true,
       message: "Выберите тип пользователя",
       child: (
         <Radio.Group
-        value={isLegalPerson ? 'legal' : 'physical'} // Forma bilan sinxronlash
-      onChange={(e) => {
-        setIsLegalPerson(e.target.value === "legal" ? true : false);
-        form.setFieldsValue({ legal: e.target.value === "legal" ? true : false });
-
-      }}
+          value={isLegalPerson ? "legal" : "physical"}
+          onChange={(e) => {
+            setIsLegalPerson(e.target.value === "legal" ? true : false);
+            form.setFieldsValue({
+              legal: e.target.value === "legal" ? true : false,
+            });
+          }}
         >
           <Radio value="legal">Юридическое лицо</Radio>
           <Radio value="physical">Физическое лицо</Radio>
@@ -297,6 +455,7 @@ const DriverEditPage: FC = () => {
     {
       label: "Регион проживания",
       name: "regionId",
+      required: true,
       message: "Выберите регион",
       child: (
         <Select
@@ -323,6 +482,7 @@ const DriverEditPage: FC = () => {
     {
       label: "Район проживания",
       name: "structureId",
+      required: true,
       message: "Выберите регион",
       child: (
         <Select
@@ -355,7 +515,7 @@ const DriverEditPage: FC = () => {
             <div
               style={{
                 display: "flex",
-                justifyContent: "space-between",
+                gap: "10px",
                 flexWrap: "wrap",
               }}
             >
@@ -363,9 +523,15 @@ const DriverEditPage: FC = () => {
                 detail?.photoDriverLicense.map((img, index) => (
                   <img
                     key={index}
+                    onClick={() =>
+                      setModalVisible({
+                        visible: true,
+                        imgUrl: `http://hasandev.uz${img}`,
+                      })
+                    }
                     src={`http://hasandev.uz${img}`}
                     alt="Driver License"
-                    style={{ maxWidth: "500px", marginBottom: "10px" }}
+                    style={{ maxWidth: "100px", marginBottom: "10px" }}
                   />
                 ))}
             </div>
@@ -390,21 +556,6 @@ const DriverEditPage: FC = () => {
                   updatedFileList.map((file) => file.url)
                 );
               }}
-              // onRemove={(file) => {
-              //   const updatedFileList = fileList.photoDriverLicense.filter(
-              //     (item) => item.uid !== file.uid
-              //   );
-              //   console.log(file);
-              //   setFileList((prev) => ({
-              //     ...prev,
-              //     photoDriverLicense: updatedFileList,
-              //   }));
-
-              //   form.setFieldValue(
-              //     "photoDriverLicense",
-              //     updatedFileList.map((file) => file.url)
-              //   );
-              // }}
               fileList={fileList?.photoDriverLicense || []}
             >
               <Button icon={<UploadOutlined />}>Загрузить новое фото</Button>
@@ -423,7 +574,7 @@ const DriverEditPage: FC = () => {
             <div
               style={{
                 display: "flex",
-                justifyContent: "space-between",
+                gap: "10px",
                 flexWrap: "wrap",
               }}
             >
@@ -432,8 +583,14 @@ const DriverEditPage: FC = () => {
                   <img
                     key={index}
                     src={`http://hasandev.uz${img}`}
+                    onClick={() =>
+                      setModalVisible({
+                        visible: true,
+                        imgUrl: `http://hasandev.uz${img}`,
+                      })
+                    }
                     alt="Driver License"
-                    style={{ width: "500px", marginBottom: "10px" }}
+                    style={{ width: "100px", marginBottom: "10px" }}
                   />
                 ))}
             </div>
@@ -464,7 +621,7 @@ const DriverEditPage: FC = () => {
             <div
               style={{
                 display: "flex",
-                justifyContent: "space-between",
+                gap: "10px",
                 flexWrap: "wrap",
               }}
             >
@@ -473,8 +630,14 @@ const DriverEditPage: FC = () => {
                   <img
                     key={index}
                     src={`http://hasandev.uz${img}`}
+                    onClick={() =>
+                      setModalVisible({
+                        visible: true,
+                        imgUrl: `http://hasandev.uz${img}`,
+                      })
+                    }
                     alt="Driver License"
-                    style={{ width: "500px", marginBottom: "10px" }}
+                    style={{ width: "100px", marginBottom: "10px" }}
                   />
                 ))}
             </div>
@@ -503,7 +666,7 @@ const DriverEditPage: FC = () => {
             <div
               style={{
                 display: "flex",
-                justifyContent: "space-between",
+                gap: "10px",
                 flexWrap: "wrap",
               }}
             >
@@ -512,8 +675,14 @@ const DriverEditPage: FC = () => {
                   <img
                     key={index}
                     src={`http://hasandev.uz${img}`}
+                    onClick={() =>
+                      setModalVisible({
+                        visible: true,
+                        imgUrl: `http://hasandev.uz${img}`,
+                      })
+                    }
                     alt="Driver License"
-                    style={{ width: "500px", marginBottom: "10px" }}
+                    style={{ width: "100px", marginBottom: "10px" }}
                   />
                 ))}
             </div>
@@ -544,7 +713,7 @@ const DriverEditPage: FC = () => {
             <div
               style={{
                 display: "flex",
-                justifyContent: "space-between",
+                gap: "10px",
                 flexWrap: "wrap",
               }}
             >
@@ -553,8 +722,14 @@ const DriverEditPage: FC = () => {
                   <img
                     key={index}
                     src={`http://hasandev.uz${img}`}
+                    onClick={() =>
+                      setModalVisible({
+                        visible: true,
+                        imgUrl: `http://hasandev.uz${img}`,
+                      })
+                    }
                     alt="Driver License"
-                    style={{ width: "500px", marginBottom: "10px" }}
+                    style={{ width: "100px", marginBottom: "10px" }}
                   />
                 ))}
             </div>
@@ -583,7 +758,7 @@ const DriverEditPage: FC = () => {
             <div
               style={{
                 display: "flex",
-                justifyContent: "space-between",
+                gap: "10px",
                 flexWrap: "wrap",
               }}
             >
@@ -592,8 +767,14 @@ const DriverEditPage: FC = () => {
                   <img
                     key={index}
                     src={`http://hasandev.uz${img}`}
+                    onClick={() =>
+                      setModalVisible({
+                        visible: true,
+                        imgUrl: `http://hasandev.uz${img}`,
+                      })
+                    }
                     alt="Driver License"
-                    style={{ width: "500px", marginBottom: "10px" }}
+                    style={{ width: "100px", marginBottom: "10px" }}
                   />
                 ))}
             </div>
@@ -612,50 +793,83 @@ const DriverEditPage: FC = () => {
         </>
       ),
     },
+    {
+      label: "Комментарий",
+      name: "comment",
+      message: "Введите",
+      child: (
+        <TextArea
+          rows={4}
+          placeholder="Оставить комментарий"
+          onChange={(e) => form.setFieldValue("comment", e.target.value)}
+        />
+      ),
+    },
   ];
+
   return detailLoading ? (
     <Spin />
   ) : (
-    <Card>
-      <Form
-        form={form}
-        layout="vertical"
-        onValuesChange={handleFormChange}
-        onFinish={onSave}
-      >
-        <Row gutter={[16, 16]}>
-          {forms.map((item, idx) => (
-            <Col
-              xs={24}
-              sm={24}
-              // md={item?.colSpan || 12}
-              // lg={item?.colSpan || 12}
-              key={idx}
-            >
-              <Form.Item
-                label={item.label}
-                name={item.name}
-                rules={[{ required: item.required, message: item.message }]}
+    <>
+      <Card>
+        <Form
+          form={form}
+          layout="vertical"
+          onValuesChange={handleFormChange}
+          onFinish={onSave}
+        >
+          <Row gutter={[16, 16]}>
+            {forms.map((item, idx) => (
+              <Col
+                xs={24}
+                sm={24}
+                md={item?.colSpan || 12}
+                lg={item?.colSpan || 12}
+                key={idx}
               >
-                {item.child}
-              </Form.Item>
+                <Form.Item
+                  label={item.label}
+                  name={item.name}
+                  rules={[{ required: item.required, message: item.message }]}
+                >
+                  {item.child}
+                </Form.Item>
+              </Col>
+            ))}
+          </Row>
+          <Row justify="end" gutter={[16, 16]}>
+            <Col>
+              <Button onClick={handleFormCancel} danger>
+                Cancel
+              </Button>
             </Col>
-          ))}
-        </Row>
-        <Row justify="end" gutter={[16, 16]}>
-          <Col>
-            <Button onClick={handleFormCancel} danger>
-              Cancel
-            </Button>
-          </Col>
-          <Col>
-            <Button type="primary" htmlType="submit" disabled={!isFormChanged}>
-              Submit
-            </Button>
-          </Col>
-        </Row>
-      </Form>
-    </Card>
+            <Col>
+              <Button
+                type="primary"
+                htmlType="submit"
+                disabled={!isFormChanged}
+              >
+                Submit
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+      <Modal
+        visible={modalVisible.visible}
+        footer={null}
+        onCancel={() => setModalVisible({ visible: false, imgUrl: "" })}
+        centered
+        width="auto"
+        bodyStyle={{ padding: 0, margin: 0 }}
+      >
+        <img
+          src={modalVisible.imgUrl}
+          alt="Kattalashtirilgan"
+          style={{ maxWidth: "450px", width: "100%", height: "auto" }}
+        />
+      </Modal>
+    </>
   );
 };
 

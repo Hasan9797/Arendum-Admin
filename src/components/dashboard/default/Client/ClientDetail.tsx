@@ -8,12 +8,13 @@ import { IMAGES } from "../../../../assets/images/images";
 import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
-import useUser from "../../../../hooks/user/useUser";
+import useClient from "../../../../hooks/client/useClient";
 
-export const UserProfileDetailsPage = () => {
+export const ClientDetailsPage = () => {
   const { id } = useParams();
   const stylesContext = useStylesContext();
-  const { detail, getDetail } = useUser();
+  const { detail, getDetail, detailLoading} = useClient();
+  
   // const [isActive, setIsActive] = useState(detail?.status === "active");
   // useEffect(() => {
   //   setIsActive(detail?.status === "active");

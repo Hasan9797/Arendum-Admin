@@ -1,12 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
+  Badge,
   Button,
   DatePicker,
+  Flex,
   Input,
   Popconfirm,
   Select,
   Space,
+  Switch,
   Table,
+  Typography,
   message,
 } from "antd";
 import { DeleteOutlined, EyeOutlined, FormOutlined } from "@ant-design/icons";
@@ -22,9 +26,17 @@ import useStatics from "../../../../hooks/statics/useStatics";
 import useMachines from "../../../../hooks/machines/useMachines";
 
 const DriversTable = () => {
-  const { getDrivers, drivers, pagination, listLoading, remove } = useDrivers();
+  const {
+    getDrivers,
+    drivers,
+    pagination,
+    listLoading,
+    remove,
+    updateLoading,
+    update,
+  } = useDrivers();
   const { getRegions, regions, listLoading: regionLoading } = useRegions();
-  const { getDriverStatus, driverStatus, driverLoading } = useStatics();
+  const { activateStatus, getActivateStatus, statusLoading } = useStatics();
   const { getMachines, machines, listLoading: machineLoading } = useMachines();
   const navigate = useNavigate();
   const [params, setParams] = useState({
@@ -49,10 +61,22 @@ const DriversTable = () => {
   useEffect(() => {
     getDrivers(params);
     getRegions(params);
-    getDriverStatus();
+    getActivateStatus();
     getMachines();
   }, []);
   console.log(drivers);
+
+  const handleStatusChange = async (checked, id) => {
+    const newStatus = checked ? 2 : 1;
+    try {
+      await update(id, {
+        status: newStatus,
+      });
+      await getDrivers(params);
+    } catch (error) {
+      message.error("Statusni o'zgartirishda xatolik:", error);
+    }
+  };
   const columns = [
     {
       title: "Ид номер",
@@ -89,7 +113,23 @@ const DriversTable = () => {
       ],
     },
     {
-      title: "Ф.И.О/Название организации",
+      title: "Баланс счета",
+      width: "20%",
+      children: [
+        {
+          title: (
+            <Input
+              onChange={(e) => addFilter(setParams, "balance", e.target.value)}
+              onKeyPress={onKeyPress}
+            />
+          ),
+          dataIndex: "balance",
+          key: "balance",
+        },
+      ],
+    },
+    {
+      title: "Название организации",
       width: "20%",
       children: [
         {
@@ -158,29 +198,32 @@ const DriversTable = () => {
         },
       ],
     },
-    // {
-    //   title: "Значение",
-    //   width: "30%",
-    //   key: "params",
-    //   render: ({ params }) => {
-    //     if (params && Array.isArray(params)) {
-    //       return params.map((param, index) => (
-    //         <Flex  gap={5} align="center">
-    //           <Typography>{param?.key}:</Typography>
-    //           <Badge
-    //             style={{ marginRight: "3px", paddingBottom: "2px" }}
-    //             key={index}
-    //             count={`${param?.params[index]}`}
-    //             showZero
-    //             color="blue"
-    //             overflowCount={Infinity}
-    //           />
-    //         </Flex>
-    //       ));
-    //     }
-    //     return "No parameters available";
-    //   },
-    // },
+    {
+      title: "Значение",
+      width: "20%",
+      key: "params",
+      render: ({ params }) => {
+        console.log(params);
+        if (params && Array.isArray(params)) {
+          return params.map((param, index) => (
+            <Flex gap={5} align="center" key={index} >
+              <Typography style={{whiteSpace:'nowrap'}}>{param?.key}:</Typography>
+              {param.params?.map((item, index) => (
+                <Badge
+                  style={{ marginRight: "3px", paddingBottom: "2px" }}
+                  key={index}
+                  count={`${param?.params[index]}`}
+                  showZero
+                  color="blue"
+                  overflowCount={Infinity}
+                />
+              ))}
+            </Flex>
+          ));
+        }
+        return "No parameters available";
+      },
+    },
     {
       title: "Адрес электронной почты",
       width: "15%",
@@ -262,16 +305,16 @@ const DriversTable = () => {
               className="w-100"
               showSearch
               allowClear
-              loading={driverLoading}
-              disabled={driverLoading}
+              loading={statusLoading}
+              disabled={statusLoading}
               filterOption={(inputValue, option) =>
                 option?.label
                   ?.toUpperCase()
                   .indexOf(inputValue.toUpperCase()) >= 0
               }
               options={
-                driverStatus &&
-                driverStatus.map((status) => ({
+                activateStatus &&
+                activateStatus.map((status) => ({
                   value: status.value,
                   label: status.label,
                 }))
@@ -282,7 +325,6 @@ const DriversTable = () => {
             />
           ),
           dataIndex: "status",
-          render: (status) => status.value,
           key: "status",
         },
       ],
@@ -322,7 +364,7 @@ const DriversTable = () => {
           <Space>
             <Button
               onClick={() => {
-                navigate(`/dashboards/driver/${item?.id}/detail`);
+                navigate(`/dashboards/driver/${item?.id}`);
               }}
               icon={<EyeOutlined />}
             />
@@ -352,13 +394,27 @@ const DriversTable = () => {
             </Popconfirm>
           </Space>
         ),
+        status: (
+          <Space>
+            <Switch
+              checked={item.status?.key === 2}
+              checkedChildren={"Активный"}
+              unCheckedChildren={
+                (item.status?.key === 0 && "Созданный") ||
+                (item.status?.key === 1 && "Неактивный")
+              }
+              disabled={updateLoading}
+              onChange={(cheched) => handleStatusChange(cheched, item.id)}
+            />
+          </Space>
+        ),
       };
     });
   }, [drivers]);
   return (
     <>
       <Table
-        scroll={{ x: 1600 }}
+        scroll={{ x: 'max-content' }}
         className="card"
         columns={columns}
         dataSource={data}

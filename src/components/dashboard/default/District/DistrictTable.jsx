@@ -31,7 +31,7 @@ const DistrictTable = () => {
     updateLoading,
     pagination,
   } = useStructure();
-  const { getDriverStatus, driverStatus, driverLoading } = useStatics();
+  const { activateStatus, getActivateStatus, statusLoading } = useStatics();
 
   const [detailModal, setDetailModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
@@ -44,7 +44,7 @@ const DistrictTable = () => {
 
   useEffect(() => {
     getStructure(params);
-    getDriverStatus();
+    getActivateStatus();
   }, []);
 
   const filter = () => {
@@ -99,16 +99,16 @@ const DistrictTable = () => {
               className="w-100"
               showSearch
               allowClear
-              loading={driverLoading}
-              disabled={driverLoading}
+              loading={statusLoading}
+              disabled={statusLoading}
               filterOption={(inputValue, option) =>
                 option?.label
                   ?.toUpperCase()
                   .indexOf(inputValue.toUpperCase()) >= 0
               }
               options={
-                driverStatus &&
-                driverStatus.map((status) => ({
+                activateStatus &&
+                activateStatus.map((status) => ({
                   value: status.value,
                   label: status.label,
                 }))

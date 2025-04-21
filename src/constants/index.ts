@@ -9,7 +9,7 @@ const DASHBOARD_ITEMS = [
   { title: "Главная", path: PATH_DASHBOARD.default },
   { title: "Аналитика", path: PATH_DASHBOARD.analitika },
   { title: "Заказы", path: PATH_DASHBOARD.orders },
-  { title: "Пользователи", path: PATH_DASHBOARD.users },
+  { title: "Пользователи", path: PATH_DASHBOARD.clients },
   { title: "Водители", path: PATH_DASHBOARD.drivers },
   { title: "Мерчанты", path: PATH_DASHBOARD.merchants },
   { title: "Финансы", path: PATH_DASHBOARD.finances },
@@ -46,6 +46,28 @@ const USER_PROFILE_ITEMS = [
     path: PATH_USER_PROFILE.update,
   },
 ];
+const DRIVER_PROFILE_ITEMS = [
+  {
+    title: "Заказов",
+    label: "driver-orders",
+    path: PATH_USER_PROFILE.orders,
+  },
+  {
+    title: "История депозитов",
+    label: "driver-depozit",
+    path: PATH_USER_PROFILE.equipment,
+  },
+  {
+    title: "Транзакции",
+    label: "driver-tranzactions",
+    path: PATH_USER_PROFILE.drivers,
+  },
+  // {
+  //   title: "Редактировать мерчанты",
+  //   label: "update-merchant",
+  //   path: PATH_USER_PROFILE.update,
+  // },
+];
 
 const DIRECTORY_ITEMS = [];
 
@@ -59,6 +81,7 @@ export {
   AUTHENTICATION_ITEMS,
   DIRECTORY_ITEMS,
   USER_PROFILE_ITEMS,
+  DRIVER_PROFILE_ITEMS
 };
 
 export const PricingTypes = [

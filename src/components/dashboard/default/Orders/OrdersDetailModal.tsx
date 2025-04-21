@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Descriptions, Modal, Steps, Tag } from "antd";
-import { FC, useMemo } from "react";
+import { Descriptions, Modal, Spin, Steps, Tag } from "antd";
+import { FC, useEffect, useMemo } from "react";
 import dayjs from "dayjs";
 import { Tranzactions } from "../../../../constants";
 import {
   setIconFromApplicaionStatus,
   setColorFromApplicaionStatus,
 } from "./../../../../utils/index";
+import useOrders from '../../../../hooks/orders/useOrders.jsx' 
 
 interface OrdersDetailModalProps {
   open: boolean;
@@ -19,7 +20,13 @@ const OrdersDetailModal: FC<OrdersDetailModalProps> = ({
   onCancel,
   id,
 }) => {
-  const detail = Tranzactions.find((item) => item.id === id);
+  const {getDetail,detail, detailLoading} = useOrders()
+console.log(detail)
+  useEffect(() => {
+    if(id){
+      getDetail(id)
+    }
+  }, [id]);
 
   const items = useMemo(() => {
     return [
@@ -27,22 +34,22 @@ const OrdersDetailModal: FC<OrdersDetailModalProps> = ({
         label: "Статус",
         children: (
           <Tag
-            icon={setIconFromApplicaionStatus(detail?.status)}
-            color={setColorFromApplicaionStatus(detail?.status)}
+            icon={setIconFromApplicaionStatus(detail?.status?.id)}
+            color={setColorFromApplicaionStatus(detail?.status?.id)}
           >
-            {detail?.status}
+            {detail?.status?.text}
           </Tag>
         ),
         span: 4,
       },
       {
         label: "Заказчик",
-        children: detail?.driver,
+        children: detail?.client?.fullName,
         span: 1,
       },
       {
         label: "Водитель",
-        children: detail?.user,
+        children: detail?.driver?.fullName,
         span: 2,
       },
       {
@@ -52,17 +59,17 @@ const OrdersDetailModal: FC<OrdersDetailModalProps> = ({
       },
       {
         label: "Тип техники",
-        children: detail?.type_of_equipment,
+        children: detail?.machine?.name,
         span: 1,
       },
-      {
-        label: "Тип заказа",
-        children: detail?.type_order,
-        span: 2,
-      },
+      // {
+      //   label: "Тип заказа",
+      //   children: detail?.type_order,
+      //   span: 2,
+      // },
       {
         label: "Тип оплаты",
-        children: detail?.payment,
+        children: detail?.amountType?.text,
         span: 1,
       },
       {
@@ -73,7 +80,7 @@ const OrdersDetailModal: FC<OrdersDetailModalProps> = ({
     ];
   }, [detail]);
 
-  return (
+  return detailLoading ?  (<Spin/>) : (
     <Modal
       title={`ID заказа : ${detail?.id}`}
       open={open}
@@ -92,7 +99,7 @@ const OrdersDetailModal: FC<OrdersDetailModalProps> = ({
           alignItems: "center",
         }}
       />
-      <Steps
+      {/* <Steps
         style={{ marginTop: "20px" }}
         progressDot
         direction="vertical"
@@ -112,7 +119,7 @@ const OrdersDetailModal: FC<OrdersDetailModalProps> = ({
             status: "finish", // Oxirgi element "success" rangda
           };
         })}
-      />
+      /> */}
 
       {/* {detailLoading ? <Spin /> : <Descriptions bordered items={items} />} */}
     </Modal>

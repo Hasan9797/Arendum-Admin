@@ -27,7 +27,7 @@ export const requests = {
   //* AUTH
   postLogin: (params: LoginParamsType) =>
     $api.post(`${API_URL}/auth/login`, params),
-  fetchMe: () => $api.get(`${API_URL}/auth/profile`),
+  fetchMe: () => $api.get(`${API_URL}/users/me`),
   postLogout: () => $api.get(`${API_URL}/auth/logout`),
   postRefreshToken: () => $api.post(`${API_URL}/auth/refresh-token`),
   //* REGION
@@ -70,6 +70,11 @@ export const requests = {
   driverUpdate: (id: string, params: DriversParamsType) =>
     $api.put(`${API_URL}/driver/update/${id}`, params), //! done
   driverDelete: (id: string) => $api.delete(`${API_URL}/driver/delete/${id}`), //! done
+  //* Orders
+  fetchOrdersList: (params: DriversFilterType) =>
+    $api.get(`${API_URL}/order`, { params }),
+  fetchOrderDetail: (id: string) => $api.get(`${API_URL}/order/${id}`), //! done
+  
   //* Services
   fetchServicesList: (params: ServicesFilterType) =>
     $api.get(`${API_URL}/services`, { params }),
@@ -121,25 +126,22 @@ export const requests = {
   fetchUserList: (params: AccountFilterType) =>
     $api.get(`${API_URL}/users`, { params }),
   postUserCreate: (params: UserParamsType) =>
-    $api.post(`${API_URL}/users`, params),
+    $api.post(`${API_URL}/users/create`, params),
   userUpdate: (id: string, params: UserParamsType) =>
-    $api.patch(`${API_URL}/users/${id}`, params),
+    $api.put(`${API_URL}/users/update/${id}`, params),
   fetchUserDetail: (id: string) => $api.get(`${API_URL}/users/${id}`),
-  userDelete: (id: string) => $api.delete(`${API_URL}/users/${id}`),
-  fetchUserRoles: () => $api.get(`${API_URL}/roles`),
-  fetchUserPermissions: () => $api.get(`${API_URL}/permissions`),
-  fetchUserStatus: () => $api.get(`${API_URL}/users/status/user-status`),
-  updateUserChangeStatus: (id: string, params: AccountFilterType) => {
-    const queryParams = new URLSearchParams(params as any).toString();
-    $api.post(`${API_URL}/users/change-status/${id}?${queryParams}`);
-  },
+  userDelete: (id: string) => $api.delete(`${API_URL}/users/delete/${id}`),
+  // updateUserChangeStatus: (id: string, params: AccountFilterType) => {
+  //   const queryParams = new URLSearchParams(params as any).toString();
+  //   $api.post(`${API_URL}/users/change-status/${id}?${queryParams}`);
+  // },
   //* CLIENT
   fetchClientList: (params: AccountFilterType) =>
     $api.get(`${API_URL}/client`, { params }),
   clientUpdate: (id: string, params: ClientParamsType) =>
     $api.patch(`${API_URL}/client/${id}`, params),
   fetchClientDetail: (id: string) => $api.get(`${API_URL}/client/${id}`),
-  clientDelete: (id: string) => $api.delete(`${API_URL}/client/${id}`),
+  clientDelete: (id: string) => $api.delete(`${API_URL}/client/delete/${id}`),
   // fetchUserRoles: () => $api.get(`${API_URL}/roles`),
   // fetchUserPermissions: () => $api.get(`${API_URL}/permissions`),
   // fetchUserStatus: () => $api.get(`${API_URL}/users/status/user-status`),
@@ -155,6 +157,8 @@ export const requests = {
     $api.get(`${API_URL}/static/client/status`, { params }),
   fetchOrderStatus: (params) =>
     $api.get(`${API_URL}/static/order/status`, { params }),
+  fetchUserRoles: (params) =>
+    $api.get(`${API_URL}/static/users/options`, { params }),
 
   //* Roles
   fetchRolesList: (params: AccountFilterType) =>
