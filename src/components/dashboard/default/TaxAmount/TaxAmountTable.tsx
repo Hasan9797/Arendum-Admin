@@ -15,10 +15,9 @@ import {
   setColorFromApplicaionStatus,
 } from "../../../../utils/index";
 import useTaxAmount from "../../../../hooks/taxAmount/useTaxAmount";
-import { useNavigate } from "react-router-dom";
 
 const TaxAmountTable = () => {
-  const { listLoading, taxAmounts, getTaxAmounts,pagination,remove } = useTaxAmount();
+  const { listLoading, taxAmounts, getTaxAmounts,pagination } = useTaxAmount();
 // const navigate = useNavigate();
   const [params, setParams] = useState({
     page: 1,
@@ -56,8 +55,6 @@ const TaxAmountTable = () => {
         dataIndex: "driverBalance",
         key: "driverBalance",
       },
-    
-     
     ];
 
   const data = useMemo(() => {
