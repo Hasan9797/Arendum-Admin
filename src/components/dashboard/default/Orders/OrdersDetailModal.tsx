@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Descriptions, Modal, Spin, Tag } from "antd";
+import { Descriptions, Modal, Spin, Steps, Tag } from "antd";
 import { FC, useEffect, useMemo } from "react";
 import {
   setIconFromApplicaionStatus,
   setColorFromApplicaionStatus,
 } from "./../../../../utils/index";
 import useOrders from '../../../../hooks/orders/useOrders.jsx' 
+import dayjs from "dayjs";
+import { detail_data } from "../../../../constants/index.js";
 
 interface OrdersDetailModalProps {
   open: boolean;
@@ -67,7 +69,7 @@ console.log(detail)
       // },
       {
         label: "Тип оплаты",
-        children: detail?.amountType?.text,
+        children: detail?.paymentType?.text,
         span: 1,
       },
       {
@@ -97,14 +99,14 @@ console.log(detail)
           alignItems: "center",
         }}
       />
-      {/* <Steps
+      <Steps
         style={{ marginTop: "20px" }}
         progressDot
         direction="vertical"
         responsive={true}
         current={1} // Agar kerak bo'lsa, dinamik ravishda belgilang
-        items={detail?.detail_order.map((item, index) => {
-          const isLastItem = index === detail.detail_order.length - 1;
+        items={detail_data?.map((item, index) => {
+          const isLastItem = index === detail_data.length - 1;
           return {
             title: isLastItem ? (
               <span style={{ color: "green" }}>{item.title}</span>
@@ -117,7 +119,7 @@ console.log(detail)
             status: "finish", // Oxirgi element "success" rangda
           };
         })}
-      /> */}
+      />
 
       {/* {detailLoading ? <Spin /> : <Descriptions bordered items={items} />} */}
     </Modal>

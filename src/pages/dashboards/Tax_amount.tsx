@@ -1,19 +1,19 @@
-// import { useState } from "react";
-// import { Card, PageHeader } from "../../components";
-// import { Helmet } from "react-helmet-async";
 import MainButton from "../../components/MainButton/MainButton";
-import { ArrowLeftOutlined } from "@ant-design/icons";
-// import TaxAmountTable from "../../components/dashboard/default/TaxAmount/TaxAmountTable";
-// import TaxAmountCreateModal from "../../components/dashboard/default/TaxAmount/TaxAmountCreateModal";
-import { Col, Row } from "antd";
-import { useNavigate } from "react-router-dom";
+import {  FormOutlined } from "@ant-design/icons";
+import { Card,  } from "antd";
+import { Helmet } from "react-helmet-async";
+// import { useNavigate } from "react-router-dom";
+import { PageHeader } from "../../components";
+import { useState } from "react";
+import TaxAmountTable from "../../components/dashboard/default/TaxAmount/TaxAmountTable";
+import TaxAmountCreateModal from "../../components/dashboard/default/TaxAmount/TaxAmountCreateModal";
 
 const Tax_amount = () => {
-  //   const [modal, setModal] = useState(false);
-  const navigate = useNavigate();
+    const [modal, setModal] = useState(false);
+  // const navigate = useNavigate();
   return (
     <>
-      <Row gutter={[16, 16]} align={"middle"}>
+      {/* <Row gutter={[16, 16]} align={"middle"}>
         <Col>
           <MainButton
             buttonText="Назад"
@@ -26,8 +26,8 @@ const Tax_amount = () => {
         <Col>
           <h1>Скоро он будет запущен!</h1>
         </Col>
-      </Row>
-      {/* <div>
+      </Row> */}
+      <div>
         <Card style={{ marginBottom: "1.5rem" }}>
           <Helmet>
             <title>Сумма налога</title>
@@ -53,7 +53,7 @@ const Tax_amount = () => {
         onCancel={() => {
           setModal(false);
         }}
-      /> */}
+      />
     </>
   );
 };

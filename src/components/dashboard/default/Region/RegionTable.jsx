@@ -24,15 +24,26 @@ const RegionTable = () => {
     getRegions(params);
   }, []);
 
-  const handleStatusChange = async (checked, id) => {
-    const newStatus = checked ? 2 : 1;
-    try {
-      await update(id, {
-        status: newStatus,
-      });
-      await getRegions(params);
-    } catch (error) {
-      message.error("Statusni o'zgartirishda xatolik:", error);
+  const handleStatusChange = async (status, checked, id) => {
+    if (status) {
+      const newStatus = checked ? 2 : 1;
+      try {
+        await update(id, {
+          status: newStatus,
+        });
+        await getRegions(params);
+      } catch (error) {
+        message.error("Statusni o'zgartirishda xatolik:", error);
+      }
+    }else{
+      try {
+        await update(id, {
+          isOpen: checked,
+        });
+        await getRegions(params);
+      } catch (error) {
+        message.error("Statusni o'zgartirishda xatolik:", error);
+      }
     }
   };
   const columns = [
@@ -47,6 +58,12 @@ const RegionTable = () => {
       dataIndex: "status",
       width: "20%",
       key: "status",
+    },
+    {
+      title: "Найти",
+      dataIndex: "isOpen",
+      width: "20%",
+      key: "isOpen",
     },
     {
       title: "Дата создания",
@@ -119,7 +136,20 @@ const RegionTable = () => {
                 (item.status === 1 && "Неактивный")
               }
               disabled={updateLoading}
-              onChange={(cheched) => handleStatusChange(cheched, item.id)}
+              onChange={(cheched) => handleStatusChange(true, cheched, item.id)}
+            />
+          </Space>
+        ),
+        isOpen: (
+          <Space>
+            <Switch
+              checked={item.isOpen === true}
+              checkedChildren={"Открыть"}
+              unCheckedChildren={item.isOpen === false && "Закрыто"}
+              disabled={updateLoading}
+              onChange={(cheched) =>
+                handleStatusChange(false, cheched, item.id)
+              }
             />
           </Space>
         ),

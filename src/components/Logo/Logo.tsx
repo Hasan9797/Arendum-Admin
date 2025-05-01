@@ -4,6 +4,7 @@ import { CSSProperties } from "react";
 
 import "./styles.css";
 import { IMAGES } from "../../assets/images/images";
+import { Link } from "react-router-dom";
 
 type LogoProps = {
   color: CSSProperties["color"];
@@ -22,7 +23,7 @@ const Logo = ({ asLink, href, imgSize, ...others }: LogoProps) => {
   // } = theme.useToken();
 
   return asLink ? (
-    // <Link to={href || "#"} className="logo-link">
+    <Link to={href || "#"} className="logo-link">
     <Flex gap={others.gap || "small"} align="center" {...others}>
       <img
         src={IMAGES.logo}
@@ -30,8 +31,8 @@ const Logo = ({ asLink, href, imgSize, ...others }: LogoProps) => {
         height={imgSize?.h || 48}
       />
     </Flex>
+    </Link>
   ) : (
-    // </Link>
     <Flex gap={others.gap || "small"} align="center" {...others}>
       <img
         src={IMAGES.logo}

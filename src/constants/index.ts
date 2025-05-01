@@ -50,17 +50,17 @@ const DRIVER_PROFILE_ITEMS = [
   {
     title: "Заказов",
     label: "driver-orders",
-    path: PATH_USER_PROFILE.orders,
+    // path: PATH_USER_PROFILE.orders,
   },
   {
     title: "История депозитов",
     label: "driver-depozit",
-    path: PATH_USER_PROFILE.equipment,
+    // path: PATH_USER_PROFILE.equipment,
   },
   {
     title: "Транзакции",
     label: "driver-tranzactions",
-    path: PATH_USER_PROFILE.drivers,
+    // path: PATH_USER_PROFILE.drivers,
   },
   // {
   //   title: "Редактировать мерчанты",
@@ -102,6 +102,14 @@ export const PricingTypes = [
     value: "another",
   },
 ];
+
+export const detail_data = [
+  { title: "Заказ создан", date: "2022-01-15" },
+      { title: "Заказ принят", date: "------" },
+      { title: "На месте", date: "------" },
+      { title: "Начал работу", date: "-------" },
+      { title: "ВЫПОЛНЕН" },
+]
 
 export const Tranzactions = [
   {

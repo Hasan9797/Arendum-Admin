@@ -242,7 +242,7 @@ const DriversTable = () => {
       ],
     },
     {
-      title: "ИНН организации",
+      title: "ИНН / ПИНФЛ",
       width: "15%",
       children: [
         {

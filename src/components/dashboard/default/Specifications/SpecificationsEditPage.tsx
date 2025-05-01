@@ -64,6 +64,7 @@ const SpecificationsEdit: FC = () => {
   const onSave = async () => {
     await form.validateFields().then(() => {
       const values = form.getFieldsValue();
+      console.log(values);
       update(id, values).then((res) => {
         if (res.success) {
           getList({ page: 1, limit: 20 });
@@ -127,8 +128,6 @@ const SpecificationsEdit: FC = () => {
                 <Option value="m">м</Option>
                 <Option value="km">км</Option>
                 <Option value="m3">m3</Option>
-                {/* <Option value="yes">Эсть</Option> */}
-                {/* <Option value="no">Нет</Option> */}
               </Select>
             </Form.Item>
           </Col>
@@ -146,14 +145,22 @@ const SpecificationsEdit: FC = () => {
                   <Form.Item
                     {...restField}
                     name={[name, "param"]}
-                    rules={[{ required: true }]}
+                    rules={[{ required: true, message: "Введите значение" }]}
+                    getValueFromEvent={(e) => {
+                      const value = e.target.value;
+                      return value ? Number(value) : null; // Convert to number
+                    }}
                   >
-                    <Input placeholder="Значение" />
+                    <Input placeholder="Значение" type="number" />
                   </Form.Item>
                   <Form.Item
                     {...restField}
                     name={[name, "amount"]}
-                    rules={[{ required: true }]}
+                    rules={[{ required: true, message: "Введите сумму" }]}
+                    getValueFromEvent={(e) => {
+                      const value = e.target.value;
+                      return value ? Number(value) : null; // Convert to number
+                    }}
                   >
                     <Input placeholder="Сумма" type="number" />
                   </Form.Item>

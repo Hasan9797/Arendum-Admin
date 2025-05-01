@@ -29,7 +29,7 @@ import useStatics from "../../../../hooks/statics/useStatics.jsx";
 
 const OrdersTable = () => {
   const { getOrders, orders, pagination, listLoading } = useOrders();
-  const { getOrderStatus, orderStatus,  orderLoading } = useStatics();
+  const { getOrderStatus, orderStatus, orderLoading } = useStatics();
   const [detailModal, setDetailModal] = useState(false);
   const [detailId, setDetailId] = useState(null);
   const [params, setParams] = useState({
@@ -40,7 +40,7 @@ const OrdersTable = () => {
 
   useEffect(() => {
     getOrders(params);
-    getOrderStatus()
+    getOrderStatus();
   }, []);
 
   const filter = () => {
@@ -54,7 +54,7 @@ const OrdersTable = () => {
       filter();
     }
   };
-console.log(orderStatus)
+  console.log(orderStatus);
   const columns: TableColumnsType<TransactionTableType> = [
     {
       title: "ID заказа",
@@ -83,14 +83,14 @@ console.log(orderStatus)
               onKeyPress={onKeyPress}
             />
           ),
-          render:(client)=>client?.fullName,
+          render: (client) => client?.fullName,
           key: "client",
           dataIndex: "client",
         },
       ],
     },
     {
-      title: "Сумма заказа",
+      title: "Минимальная сумма",
       width: "10%",
       children: [
         {
@@ -106,19 +106,40 @@ console.log(orderStatus)
       ],
     },
     {
+      title: "Сумма заказа",
+      width: "10%",
+      children: [
+        {
+          title: (
+            <Input
+              onChange={(e) =>
+                addFilter(setParams, "totalAmount", e.target.value)
+              }
+              onKeyPress={onKeyPress}
+            />
+          ),
+          dataIndex: "totalAmount",
+          render: (totalAmount) => (totalAmount ? totalAmount : 0),
+          key: "totalAmount",
+        },
+      ],
+    },
+    {
       title: "Тип оплаты",
       width: "10%",
       children: [
         {
           title: (
             <Input
-              onChange={(e) => addFilter(setParams, "amountType", e.target.value)}
+              onChange={(e) =>
+                addFilter(setParams, "paymentType", e.target.value)
+              }
               onKeyPress={onKeyPress}
             />
           ),
-          dataIndex: "amountType",
-          render:(amountType)=>amountType?.text,
-          key: "amountType",
+          dataIndex: "paymentType",
+          render: (paymentType) => paymentType?.text,
+          key: "paymentType",
         },
       ],
     },
@@ -151,7 +172,7 @@ console.log(orderStatus)
           ),
           dataIndex: "machine",
           key: "machine",
-          render:(machine)=>machine?.name
+          render: (machine) => machine?.name,
         },
       ],
     },
@@ -168,7 +189,7 @@ console.log(orderStatus)
           ),
           key: "driver",
           dataIndex: "driver",
-          render:(driver)=>driver?.fullName
+          render: (driver) => driver?.fullName,
         },
       ],
     },
@@ -212,13 +233,13 @@ console.log(orderStatus)
           title: (
             <DatePicker.RangePicker
               onChange={(e, v) =>
-                addFilter(setParams, "filterDate", getDateTime(e, v), "between")
+                addFilter(setParams, "createdAt", getDateTime(e, v), "between")
               }
             />
           ),
-          dataIndex: "date",
-          key: "date",
-          render: (date) => dayjs(date).format("DD-MM-YYYY HH:mm:ss"),
+          dataIndex: "createdAt",
+          key: "createdAt",
+          render: (createdAt) => dayjs(createdAt).format("DD-MM-YYYY HH:mm:ss"),
         },
       ],
     },
@@ -269,7 +290,7 @@ console.log(orderStatus)
     <>
       <Table
         className="card"
-        scroll={{  x: 'max-content'}}
+        scroll={{ x: "max-content" }}
         columns={columns}
         dataSource={data}
         loading={listLoading}

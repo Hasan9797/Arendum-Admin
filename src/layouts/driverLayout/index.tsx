@@ -59,7 +59,7 @@ export const DriverAccountLayout = () => {
   };
 
   const driverRegion = regions.find((region)=>region.id ===detail.regionId)?.name
-
+console.log(detail)
 
   const DESCRIPTION_ITEMS: DescriptionsProps["items"] = [
     {
@@ -113,7 +113,7 @@ export const DriverAccountLayout = () => {
       key: "balance",
       label: "Баланс счета",
       // children: <span></span>,
-      children: <Tag color="success">{detail?.balance ? detail?.balance : 0} so'm</Tag>,
+      children: <Tag color="success">{detail?.balance?.balance ? detail.balance?.balance : 0} so'm</Tag>,
     },
   ];
 
