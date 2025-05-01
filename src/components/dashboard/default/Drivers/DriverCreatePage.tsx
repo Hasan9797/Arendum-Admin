@@ -311,7 +311,8 @@ console.log(selectedMachineParams)
       required: true,
       message: "Выберите тип пользователя",
       child: (
-        <Radio.Group
+        <Radio.Group 
+        defaultValue={"physical"}
           onChange={(e) => {
             setIsLegalPerson(e.target.value === "legal" ? true : false);
           }}
@@ -351,7 +352,21 @@ console.log(selectedMachineParams)
             ),
           },
         ]
-      : []),
+      : [
+        {
+          label: "ПИНФЛ",
+          name: "pinfl",
+          required: true,
+          message: "Введите ПИНФЛ",
+          child: (
+            <Input type="number" maxLength={14} 
+              onChange={(e) =>
+                form.setFieldValue("pinfl", e.target.value)
+              }
+            />
+          ),
+        },
+      ]),
     {
       label: "Электронная почта",
       name: "email",

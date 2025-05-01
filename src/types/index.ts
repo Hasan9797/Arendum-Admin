@@ -47,8 +47,10 @@ import type { StructureParamsType } from "./structure";
 import type { VendorParamsType } from "./vendor";
 import type { VendorFormParamsType } from "./vendorForm";
 import type { SuspiciousAccountsParamsType } from "./suspiciousAccounts";
+import type {TaxAmountFilterType}from './taxAmount'
 
 export type {
+  TaxAmountFilterType,
   Tasks,
   AccountFilterType,
   RegionParamsType,

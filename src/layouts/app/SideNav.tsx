@@ -65,7 +65,7 @@ const SideNav = ({ ...others }: SiderProps) => {
     ),
     getItem(
       <Link to={PATH_DASHBOARD.clients}>Пользователи</Link>,
-      "users",
+      "clients",
       <UserOutlined />
     ),
     getItem(
@@ -170,7 +170,7 @@ const SideNav = ({ ...others }: SiderProps) => {
           <Logo
             color="blue"
             asLink
-            // href={PATH_DASHBOARD.default}
+            href={PATH_DASHBOARD.default}
             justify="center"
             gap="small"
             imgSize={{ h: 28, w: 28 }}

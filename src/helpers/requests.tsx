@@ -21,6 +21,7 @@ import { PricingParamsType } from "../types/pricing";
 import { SpecificationParamsType } from "../types/specification";
 import { StructureFilterType, StructureParamsType } from "../types/structure";
 import { $api } from "./api";
+import { TaxAmountFilterType } from "../types/taxAmount";
 
 export const requests = {
   //TODO: API Requests
@@ -30,6 +31,7 @@ export const requests = {
   fetchMe: () => $api.get(`${API_URL}/users/me`),
   postLogout: () => $api.get(`${API_URL}/auth/logout`),
   postRefreshToken: () => $api.post(`${API_URL}/auth/refresh-token`),
+
   //* REGION
   postRegionCreate: (params: RegionParamsType) =>
     $api.post(`${API_URL}/region/create`, params), //! done
@@ -39,6 +41,7 @@ export const requests = {
     $api.put(`${API_URL}/region/update/${id}`, params), //! done
   fetchRegionDetail: (id: string) => $api.get(`${API_URL}/region/${id}`), //! done
   regionDelete: (id: string) => $api.delete(`${API_URL}/region/delete/${id}`), //! done
+
   //* Machines
   postMachinesCreate: (params: MachinesParamsType) =>
     $api.post(`${API_URL}/machines/create`, params), //! done
@@ -49,6 +52,7 @@ export const requests = {
   fetchMachinesDetail: (id: string) => $api.get(`${API_URL}/machines/${id}`), //! done
   machinesDelete: (id: string) =>
     $api.delete(`${API_URL}/machines/delete/${id}`), //! done
+
   //* Structure
   postStructureCreate: (params: StructureFilterType) =>
     $api.post(`${API_URL}/structure/create`, params), //! done
@@ -59,6 +63,7 @@ export const requests = {
   fetchStructureDetail: (id: string) => $api.get(`${API_URL}/structure/${id}`), //! done
   structureDelete: (id: string) =>
     $api.delete(`${API_URL}/structure/delete/${id}`), //! done
+
   //* Drivers
   fetchDriversList: (params: DriversFilterType) =>
     $api.get(`${API_URL}/driver`, { params }),
@@ -70,6 +75,7 @@ export const requests = {
   driverUpdate: (id: string, params: DriversParamsType) =>
     $api.put(`${API_URL}/driver/update/${id}`, params), //! done
   driverDelete: (id: string) => $api.delete(`${API_URL}/driver/delete/${id}`), //! done
+
   //* Orders
   fetchOrdersList: (params: DriversFilterType) =>
     $api.get(`${API_URL}/order`, { params }),
@@ -84,6 +90,16 @@ export const requests = {
   servicesUpdate: (id: string, params: ServicesParamsType) =>
     $api.patch(`${API_URL}/services/${id}`, params), //! done
   servicesDelete: (id: string) => $api.delete(`${API_URL}/services/${id}`),
+  //* Tax_Amounts
+  fetchTaxAmountList: (params: TaxAmountFilterType) =>
+    $api.get(`${API_URL}/service-commission`, { params }),
+  postTaxAmountCreate: (params: TaxAmountFilterType) =>
+    $api.post(`${API_URL}/service-commission/create`, params),
+  fetchTaxAmountDetail: (id: string) => $api.get(`${API_URL}/service-commission/${id}`), //! done
+  taxAmountUpdate: (id: string, params: TaxAmountFilterType) =>
+    $api.patch(`${API_URL}/service-commission/${id}`, params), //! done
+  taxAmountDelete: (id: string) => $api.delete(`${API_URL}/service-commission/${id}`),
+
   //* Specifications
   fetchSpecificationList: (params: AccountFilterType) =>
     $api.get(`${API_URL}/machines-params`, { params }),
@@ -111,6 +127,7 @@ export const requests = {
     $api.put(`${API_URL}/machine-price/update/${id}`, params), //! done
   pricingDelete: (id: string) =>
     $api.delete(`${API_URL}/machine-price/delete/${id}`),
+
   //* ParamsFilter
   fetchParamsFilterList: (params: AccountFilterType) =>
     $api.get(`${API_URL}/params-filter`, { params }),
@@ -122,6 +139,7 @@ export const requests = {
     $api.patch(`${API_URL}/params-filter/${id}`, params), //! done
   paramsFilterDelete: (id: string) =>
     $api.delete(`${API_URL}/params-filter/delete/${id}`),
+
   //* USER
   fetchUserList: (params: AccountFilterType) =>
     $api.get(`${API_URL}/users`, { params }),
@@ -135,11 +153,12 @@ export const requests = {
   //   const queryParams = new URLSearchParams(params as any).toString();
   //   $api.post(`${API_URL}/users/change-status/${id}?${queryParams}`);
   // },
+
   //* CLIENT
   fetchClientList: (params: AccountFilterType) =>
     $api.get(`${API_URL}/client`, { params }),
   clientUpdate: (id: string, params: ClientParamsType) =>
-    $api.patch(`${API_URL}/client/${id}`, params),
+    $api.put(`${API_URL}/client/update/${id}`, params),
   fetchClientDetail: (id: string) => $api.get(`${API_URL}/client/${id}`),
   clientDelete: (id: string) => $api.delete(`${API_URL}/client/delete/${id}`),
   // fetchUserRoles: () => $api.get(`${API_URL}/roles`),
@@ -169,6 +188,7 @@ export const requests = {
     $api.patch(`${API_URL}/roles/${id}`, params),
   fetchRolesDetail: (id: string) => $api.get(`${API_URL}/roles/${id}`),
   rolesDelete: (id: string) => $api.delete(`${API_URL}/roles/${id}`),
+  
   //*Reports
   fetchReportList: (params: ReportFilterType) =>
     $api.get(`${API_URL}/applications/find/reports`, { params }),

@@ -5,48 +5,63 @@ import {
   Row,
   Space,
   Table,
-  TableColumnsType,
   Tag,
   Typography,
 } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
-import { useMemo } from "react";
-// import useAuth from "../../../../hooks/auth/useAuth";
-import { Tranzactions } from "../../../../constants";
+import { useEffect, useMemo, useState } from "react";
 import {
   setIconFromApplicaionStatus,
   setColorFromApplicaionStatus,
 } from "../../../../utils/index";
-import { TransactionTableType } from "../../../../types";
+import useTaxAmount from "../../../../hooks/taxAmount/useTaxAmount";
+import { useNavigate } from "react-router-dom";
 
 const TaxAmountTable = () => {
-  const columns: TableColumnsType<TransactionTableType> = [
-    {
-      title: "ID заказа",
-      width: "5%",
-      key: "id",
-      dataIndex: "id",
-    },
-    {
-      title: "Заказчик",
-      width: "10%",
-      key: "driver",
-      dataIndex: "driver",
-    },
-    {
-      title: "Actions",
-      children: [
-        {
-          title: "",
-          dataIndex: "others",
-          key: "others",
-        },
-      ],
-    },
-  ];
+  const { listLoading, taxAmounts, getTaxAmounts,pagination,remove } = useTaxAmount();
+// const navigate = useNavigate();
+  const [params, setParams] = useState({
+    page: 1,
+    limit: 10,
+    filters: [],
+  });
+    useEffect(() => {
+      getTaxAmounts(params);
+    }, []);
+
+  const columns = [
+      {
+        title: "Ид номер",
+        width: "10%",
+        dataIndex: "id",
+        key: "id",
+      },
+      {
+        title: "Комиссия",
+        width: "10%",
+        dataIndex: "arendumAmount",
+        key: "arendumAmount",
+        render:(text,record) =><span>{`${text} ${record?.arendumPercentage ? '(%)': '(UZS)' } `}</span>
+      },
+      {
+        title: "НДС",
+        width: "10%",
+        dataIndex: "ndsAmount",
+        key: "ndsAmount",
+        render:(text,record) =><span>{`${text} ${record?.ndsPercentage ? '(%)': '(UZS)' } `}</span>
+      },
+      {
+        title: "Баланс водителя (UZS)",
+        width: "10%",
+        dataIndex: "driverBalance",
+        key: "driverBalance",
+      },
+    
+     
+    ];
 
   const data = useMemo(() => {
-    return Tranzactions?.map((item) => {
+    return taxAmounts?.map((item) => {
       return {
         ...item,
         key: item.id,
@@ -74,16 +89,16 @@ const TaxAmountTable = () => {
         ),
       };
     });
-  }, [Tranzactions]);
+  }, [taxAmounts]);
 
   return (
     <>
       <Table
         className="card"
-        scroll={{ x: 1600 }}
+        scroll={{ x:'max-content'}}
         columns={columns}
         dataSource={data}
-        // loading={listLoading}
+        loading={listLoading}
         title={() => (
           <Row
             style={{
@@ -110,7 +125,24 @@ const TaxAmountTable = () => {
             </Col>
           </Row>
         )}
-        pagination={false}
+        pagination={{
+          onChange: (page, pageSize) => {
+            const newParams = { ...params };
+            newParams.page = page;
+            newParams.limit = pageSize;
+            setParams(newParams);
+            getTaxAmounts(newParams);
+          },
+          total: pagination?.total,
+          showTotal: (total, range) => (
+            <div className="show-total-pagination">
+              Показаны <b>{range[0]}</b> - <b>{range[1]}</b> из <b>{total}</b>{" "}
+              записи.
+            </div>
+          ),
+          pageSize: params.limit,
+          current: pagination?.current_page,
+        }}
       />
       {/* <OrdersDetailModal
         open={detailModal}

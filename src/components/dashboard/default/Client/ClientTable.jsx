@@ -124,6 +124,23 @@ const ClientTable = () => {
       ],
     },
     {
+      title: "Баланс счета",
+      width: "15%",
+      children: [
+        {
+          title: (
+            <Input
+              type="tel"
+              onChange={(e) => addFilter(setParams, "balance", e.target.value)}
+              onKeyPress={onKeyPress}
+            />
+          ),
+          dataIndex: "balance",
+          key: "balance",
+        },
+      ],
+    },
+    {
       title: "Адрес электронной почты",
       width: "15%",
       children: [
