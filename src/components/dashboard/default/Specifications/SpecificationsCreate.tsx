@@ -117,6 +117,8 @@ const SpecificationsCreate: React.FC = () => {
                 <Option value="m">м</Option>
                 <Option value="km">км</Option>
                 <Option value="m3">m3</Option>
+                <Option value="none">нет</Option>
+                <Option value="piece">шт</Option>
               </Select>
             </Form.Item>
           </Space>
