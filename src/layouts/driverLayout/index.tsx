@@ -36,13 +36,12 @@ export const DriverAccountLayout = () => {
   const location = useLocation();
   const { getDetail, detail, detailLoading, update, updateLoading } =
     useDrivers();
-  const { getRegions, regions,  } = useRegions();
-
+  const { getRegions, regions } = useRegions();
 
   useEffect(() => {
     if (id) {
       getDetail(id);
-      getRegions()
+      getRegions();
     }
   }, [id]);
 
@@ -58,8 +57,9 @@ export const DriverAccountLayout = () => {
     }
   };
 
-  const driverRegion = regions.find((region)=>region.id ===detail.regionId)?.name
-console.log(detail)
+  const driverRegion = regions.find((region) => region.id === detail.regionId)
+    ?.name;
+  console.log(detail);
 
   const DESCRIPTION_ITEMS: DescriptionsProps["items"] = [
     {
@@ -112,11 +112,12 @@ console.log(detail)
     {
       key: "balance",
       label: "Баланс счета",
-      // children: <span></span>,
-      children: <Tag color="success">{detail?.balance?.balance ? detail.balance?.balance : 0} so'm</Tag>,
+      children: (
+        <Tag color="success">{detail?.balance ? detail.balance : 0} so'm</Tag>
+      ),
     },
   ];
-
+  console.log(detail);
   const TAB_ITEMS: TabsProps["items"] = DRIVER_PROFILE_ITEMS.map((u) => ({
     key: u.label,
     label: u.title,
@@ -154,7 +155,6 @@ console.log(detail)
               activeKey={activeKey}
               items={TAB_ITEMS}
               onChange={onChange}
-              // style={{ textTransform: "capitalize" }}
             />
           </ConfigProvider>,
         ]}
@@ -162,9 +162,9 @@ console.log(detail)
         <Row {...stylesContext?.rowProps}>
           <Col xs={24} sm={8} lg={4}>
             <Image
-              src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"
+              src={detail?.img ? `http://hasandev.uz${detail?.img}` : 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60'}
               alt="user profile image"
-              height="100%"
+              height="200px"
               width="100%"
               style={{ borderRadius }}
             />

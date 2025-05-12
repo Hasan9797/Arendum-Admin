@@ -40,6 +40,8 @@ import DriverTranzactions from "../components/dashboard/default/Drivers/DriverTr
 import DriverOrders from "../components/dashboard/default/Drivers/DriverOrders";
 import DriverDepozits from "../components/dashboard/default/Drivers/DriverDepozits";
 import { ClientDetailsPage } from "../components/dashboard/default/Client/ClientDetail";
+import UserBalance from "../pages/dashboards/UserBalance";
+import Deposit from "../pages/dashboards/Deposit";
 
 export const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -180,8 +182,12 @@ const router = createBrowserRouter([
         element: <Transaction />,
       },
       {
-        path: "finances",
-        element: <Report />,
+        path: "user_balance",
+        element: <UserBalance />,
+      },
+      {
+        path: "deposit",
+        element: <Deposit />,
       },
       {
         path: "work_regions",

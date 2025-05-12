@@ -57,6 +57,18 @@ const SideNav = ({ ...others }: SiderProps) => {
       "analitika",
       <SlidersOutlined />
     ),
+    getItem("Финансы", "finances", null, [
+      getItem(
+        <Link to={PATH_DASHBOARD.user_balance}>Балансы пользователей</Link>,
+        "user_balance",
+        <FileTextOutlined />
+      ),
+      getItem(
+        <Link to={PATH_DASHBOARD.deposit}>Депозиты</Link>,
+        "deposit",
+        <FileTextOutlined />
+      ),
+    ], "group"),
     getItem("Управление", "management", null, [], "group"),
     getItem(
       <Link to={PATH_DASHBOARD.orders}>Заказы</Link>,
@@ -78,11 +90,7 @@ const SideNav = ({ ...others }: SiderProps) => {
       "merchants",
       <UnorderedListOutlined />
     ),
-    getItem(
-      <Link to={PATH_DASHBOARD.finances}>Финансы</Link>,
-      "finances",
-      <FileTextOutlined />
-    ),
+   
     getItem(
       <Link to={PATH_DASHBOARD.user_reviews}>Оценки пользователей </Link>,
       "user_reviews",
