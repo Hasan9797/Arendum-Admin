@@ -255,7 +255,7 @@ const UserCreatePage: FC = () => {
               loading={createLoading}
               disabled={createLoading}
             >
-              Cancel
+              Отменить
             </Button>
           </Col>
           <Col>
@@ -265,7 +265,7 @@ const UserCreatePage: FC = () => {
               loading={createLoading}
               disabled={createLoading}
             >
-              Submit
+              Подтвердить
             </Button>
           </Col>
         </Row>

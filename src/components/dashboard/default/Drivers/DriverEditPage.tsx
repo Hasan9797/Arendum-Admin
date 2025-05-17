@@ -840,7 +840,7 @@ const DriverEditPage: FC = () => {
           <Row justify="end" gutter={[16, 16]}>
             <Col>
               <Button onClick={handleFormCancel} danger>
-                Cancel
+                Отменить
               </Button>
             </Col>
             <Col>
@@ -849,7 +849,7 @@ const DriverEditPage: FC = () => {
                 htmlType="submit"
                 disabled={!isFormChanged}
               >
-                Submit
+                Подтвердить
               </Button>
             </Col>
           </Row>

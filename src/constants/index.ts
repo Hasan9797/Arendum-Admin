@@ -12,7 +12,6 @@ const DASHBOARD_ITEMS = [
   { title: "Пользователи", path: PATH_DASHBOARD.clients },
   { title: "Водители", path: PATH_DASHBOARD.drivers },
   { title: "Мерчанты", path: PATH_DASHBOARD.merchants },
-  // { title: "Финансы", path: PATH_DASHBOARD.finances },
   { title: "Оценки пользователей", path: PATH_DASHBOARD.user_reviews },
   { title: "Регионы", path: PATH_DASHBOARD.work_regions },
   { title: "Район", path: PATH_DASHBOARD.work_districts },

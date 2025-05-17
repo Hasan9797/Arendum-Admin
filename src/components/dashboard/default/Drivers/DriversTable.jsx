@@ -203,11 +203,10 @@ const DriversTable = () => {
       width: "20%",
       key: "params",
       render: ({ params }) => {
-        console.log(params);
         if (params && Array.isArray(params)) {
           return params.map((param, index) => (
             <Flex gap={5} align="center" key={index} >
-              <Typography style={{whiteSpace:'nowrap'}}>{param?.key}:</Typography>
+              <Typography style={{whiteSpace:'nowrap'}}>{param?.title}:</Typography>
               {param.params?.map((item, index) => (
                 <Badge
                   style={{ marginRight: "3px", paddingBottom: "2px" }}

@@ -244,7 +244,7 @@ export const MerchantDriversPage = () => {
       ],
     },
     {
-      title: "Actions",
+      title: "Действие",
       children: [
         {
           title: "",

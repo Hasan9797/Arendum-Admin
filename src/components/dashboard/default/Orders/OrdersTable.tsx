@@ -54,7 +54,6 @@ const OrdersTable = () => {
       filter();
     }
   };
-  console.log(orderStatus);
   const columns: TableColumnsType<TransactionTableType> = [
     {
       title: "ID заказа",
@@ -143,22 +142,6 @@ const OrdersTable = () => {
         },
       ],
     },
-    // {
-    //   title: "Тип заказа",
-    //   width: "10%",
-    //   children: [
-    //     {
-    //       title: (
-    //         <Input
-    //           onChange={(e) => addFilter(setParams, "id", e.target.value)}
-    //           onKeyPress={onKeyPress}
-    //         />
-    //       ),
-    //       dataIndex: "type_order",
-    //       key: "type_order",
-    //     },
-    //   ],
-    // },
     {
       title: "Тип техники",
       width: "10%",
@@ -244,7 +227,7 @@ const OrdersTable = () => {
       ],
     },
     {
-      title: "Actions",
+      title: "Действие",
       children: [
         {
           title: "",
@@ -334,6 +317,24 @@ const OrdersTable = () => {
             </Col>
           </Row>
         )}
+        // pagination={{
+        //   onChange: (page, pageSize) => {
+        //     const newParams = { ...params };
+        //     newParams.page = page;
+        //     newParams.limit = pageSize;
+        //     setParams(newParams);
+        //     getOrders(newParams);
+        //   },
+        //   total: pagination?.total,
+        //   showTotal: (total, range) => (
+        //     <div className="show-total-pagination">
+        //       Показаны <b>{range[0]}</b> - <b>{range[1]}</b> из <b>{total}</b>{" "}
+        //       записи.
+        //     </div>
+        //   ),
+        //   pageSize: params.limit,
+        //   current: pagination?.current_page,
+        // }}
         pagination={{
           onChange: (page, pageSize) => {
             const newParams = { ...params };

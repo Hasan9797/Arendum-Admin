@@ -186,7 +186,7 @@ const UserEditPage: FC = () => {
               loading={detailLoading}
               disabled={detailLoading}
             >
-              Cancel
+              Отменить
             </Button>
           </Col>
           <Col>
@@ -196,7 +196,7 @@ const UserEditPage: FC = () => {
               loading={detailLoading}
               disabled={detailLoading}
             >
-              Submit
+              Подтвердить
             </Button>
           </Col>
         </Row>

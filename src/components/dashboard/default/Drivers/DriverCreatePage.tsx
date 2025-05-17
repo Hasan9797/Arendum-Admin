@@ -580,7 +580,7 @@ console.log(selectedMachineParams)
               loading={createLoading}
               disabled={createLoading}
             >
-              Cancel
+             Отменить
             </Button>
           </Col>
           <Col>
@@ -590,7 +590,7 @@ console.log(selectedMachineParams)
               loading={createLoading}
               disabled={createLoading}
             >
-              Submit
+              Подтвердить
             </Button>
           </Col>
         </Row>
