@@ -126,11 +126,7 @@ const DeleteUserWithModal: React.FC<DeleteUserModalProps> = ({
                     ? "error"
                     : ""
                 }
-                help={
-                  phoneNumber && !phoneDisplayPattern.test(phoneNumber)
-                    ? "Введите правильный номер (например, (90) 123 34 54)"
-                    : ""
-                }
+             
               >
                 <Input
                   placeholder="(xx) xxx-xx-xx"
