@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Button, Card, Image, List, Typography } from "antd";
+import { Button, Card, List, Typography } from "antd";
 import { Helmet } from "react-helmet-async";
 import DeleteUserWithModal from "../../components/dashboard/default/DeleteUser/DeleteUserWithModal";
+import { ArendumLogo } from "../../assets/icons";
 
 const DeleteUser: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -23,12 +24,7 @@ const DeleteUser: React.FC = () => {
             marginBottom: "20px",
           }}
         >
-          <Image
-            src="/src/assets/images/logo.svg"
-            width={300}
-            alt="Arendum"
-            preview={false}
-          />
+          <ArendumLogo width={300} height={100} />
         </div>
 
         <Card
