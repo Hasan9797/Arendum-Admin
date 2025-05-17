@@ -13,6 +13,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { ReactNode, useRef, useEffect, useState } from "react";
 import {
+  DeleteOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -74,11 +75,12 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     //   label: "settings",
     //   icon: <SettingOutlined />,
     // },
-    // {
-    //   key: "user-help-link",
-    //   label: "help center",
-    //   icon: <QuestionOutlined />,
-    // },
+    {
+      key: "delete-account",
+      label: "Delete account",
+      icon: <DeleteOutlined />,
+      onClick:()=>navigate("/auth/deleteUser")
+    },
     // {
     //   type: "divider",
     // },
