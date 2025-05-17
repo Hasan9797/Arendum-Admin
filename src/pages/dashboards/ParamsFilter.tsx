@@ -14,10 +14,10 @@ const ParamsFilter: FC = () => {
     <div>
       <Card style={{ marginBottom: "1.5rem" }}>
         <Helmet>
-          <title>Техника параметров фильтра</title>
+          <title>Фильтр параметров техники</title>
         </Helmet>
         <PageHeader
-          title="Техника параметров фильтра"
+          title="Фильтр параметров техники"
           extra={
             <MainButton
               buttonText="Создать"

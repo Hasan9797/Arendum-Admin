@@ -57,9 +57,8 @@ export const DriverAccountLayout = () => {
     }
   };
 
-  const driverRegion = regions.find((region) => region.id === detail.regionId)
+  const driverRegion = regions.find((region) => region?.id === detail?.regionId)
     ?.name;
-  console.log(detail);
 
   const DESCRIPTION_ITEMS: DescriptionsProps["items"] = [
     {
@@ -117,7 +116,6 @@ export const DriverAccountLayout = () => {
       ),
     },
   ];
-  console.log(detail);
   const TAB_ITEMS: TabsProps["items"] = DRIVER_PROFILE_ITEMS.map((u) => ({
     key: u.label,
     label: u.title,

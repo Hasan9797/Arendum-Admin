@@ -198,7 +198,7 @@ const filter = () => {
       ],
     },
     {
-      title: "Actions",
+      title: "Действие",
       children: [
         {
           title: "",

@@ -55,11 +55,11 @@ const SpecificationsCreate: React.FC = () => {
     <>
       <Col xs={24} sm={24} md={24} lg={24} style={{ marginBottom: "20px" }}>
         <Typography.Title>Добавление параметров спецтехнтки</Typography.Title>
-        <Typography.Text>Добавление новый параметр спецтехнтки</Typography.Text>
+        <Typography.Text>Добавление новых параметров спецтехники</Typography.Text>
       </Col>
       <Card>
         <Typography.Title level={2} style={{ marginTop: 0, color: "#3C8CDC" }}>
-          Заполите данные
+        Заполнить данные
         </Typography.Title>
 
         <Form onFinish={onFinish} form={form} layout="vertical">

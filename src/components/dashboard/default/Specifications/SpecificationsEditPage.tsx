@@ -201,7 +201,7 @@ const SpecificationsEdit: FC = () => {
         <Row justify="end" gutter={[16, 16]}>
           <Col>
             <Button onClick={handleFormCancel} danger>
-              Cancel
+            Отменить
             </Button>
           </Col>
           <Col>
@@ -210,7 +210,7 @@ const SpecificationsEdit: FC = () => {
               htmlType="submit"
               disabled={!isFormChanged || updateLoading}
             >
-              Сохранить
+              Подтвердить
             </Button>
           </Col>
         </Row>

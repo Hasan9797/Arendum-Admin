@@ -87,21 +87,21 @@ const MachinesCreateModal: FC<MachinesCreateModalProps> = ({
       <Form form={form} layout="vertical">
         <Form.Item
           name="nameRu"
-          label="Name(RU)"
+          label="Имя(RU)"
           rules={[{ required: true, message: "Please enter your name" }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name="nameUz"
-          label="Name(UZ)"
+          label="Имя(UZ)"
           rules={[{ required: true, message: "Please enter your name" }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           name="img"
-          label="Image"
+          label="Фото"
           valuePropName="fileList"
           getValueFromEvent={(e) => e?.fileList || []}
           rules={[{ required: true, message: "Please upload an image" }]}

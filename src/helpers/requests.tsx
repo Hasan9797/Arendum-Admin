@@ -177,6 +177,14 @@ export const requests = {
   fetchUserBalanceDetail: (id: string) => $api.get(`${API_URL}/user-balance/${id}`),
   // clientDelete: (id: string) => $api.delete(`${API_URL}/client/delete/${id}`),
 
+  //*Deposit 
+  fetchDepositList: (params: AccountFilterType) =>
+    $api.get(`${API_URL}/deposit`, { params }),
+  // userBalanceUpdate: (id: string, params: ClientParamsType) =>
+  //   $api.put(`${API_URL}/user-balance/update/${id}`, params),
+  fetchDepositDetail: (id: string) => $api.get(`${API_URL}/deposit/${id}`),
+  // clientDelete: (id: string) => $api.delete(`${API_URL}/client/delete/${id}`),
+
 
   //* Roles
   fetchRolesList: (params: AccountFilterType) =>

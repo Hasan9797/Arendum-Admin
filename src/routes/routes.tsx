@@ -13,7 +13,6 @@ import Analitika from "../pages/dashboards/Analitika";
 import Merchants from "../pages/dashboards/Merchants";
 import { ErrorPage } from "../pages/errors";
 import { UserAccountLayout } from "../layouts/userAccount";
-
 import MerchantEditPage from "../components/dashboard/default/Merchants/MerchantEdit";
 import MerchanEquipmentPage from "../components/dashboard/default/Merchants/MerchanEquipment";
 import { MerchantDriversPage } from "../components/dashboard/default/Merchants/MerchantDrivers";
@@ -42,6 +41,8 @@ import DriverDepozits from "../components/dashboard/default/Drivers/DriverDepozi
 import { ClientDetailsPage } from "../components/dashboard/default/Client/ClientDetail";
 import UserBalance from "../pages/dashboards/UserBalance";
 import Deposit from "../pages/dashboards/Deposit";
+import DepositDetail from "../components/dashboard/default/Deposit/DepositDetail";
+import DeleteUser from "../pages/dashboards/DeleteUser";
 
 export const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -109,7 +110,7 @@ const router = createBrowserRouter([
         path: "user/:id",
         element: <UserEditPage />,
       },
-     
+
       {
         path: "user/create",
         element: <UserCreatePage />,
@@ -190,6 +191,10 @@ const router = createBrowserRouter([
         element: <Deposit />,
       },
       {
+        path: "deposit/:id",
+        element: <DepositDetail />,
+      },
+      {
         path: "work_regions",
         element: <Region />,
       },
@@ -243,13 +248,16 @@ const router = createBrowserRouter([
       },
     ],
   },
-
   {
     path: "/auth",
     children: [
       {
         path: "signin",
         element: <SignInPage />,
+      },
+      {
+        path: "deleteUser",
+        element: <DeleteUser />,
       },
     ],
   },

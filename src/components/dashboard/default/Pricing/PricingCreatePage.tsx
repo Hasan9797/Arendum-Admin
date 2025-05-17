@@ -91,7 +91,7 @@ const PricingCreatePage = () => {
           Добавление параметров ценообразования
         </Typography.Title>
         <Typography.Text>
-          Добавление новый параметр ценообразования
+        Добавление новых параметров ценообразования
         </Typography.Text>
       </Col>
       <Card>

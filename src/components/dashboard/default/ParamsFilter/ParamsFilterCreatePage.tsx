@@ -92,7 +92,7 @@ const ParamsFilterCreatePage = () => {
     <>
       <Card>
         <Typography.Title level={2} style={{ marginTop: 0, color: "#3C8CDC" }}>
-          Техника параметров фильтра
+        Фильтр параметров техники
         </Typography.Title>
 
         <Form form={form} onFinish={onFinish} layout="vertical">

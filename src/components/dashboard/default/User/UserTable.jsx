@@ -26,7 +26,7 @@ import useStatics from "../../../../hooks/statics/useStatics";
 import useAuth from "../../../../hooks/auth/useAuth.jsx";
 
 const UserTable = () => {
-  const { users, getList,getId,listLoading,update,updateLoading,remove, } = useUser();
+  const { users, getList,getId,listLoading,pagination,update,updateLoading,remove, } = useUser();
   const { activateStatus, getActivateStatus, statusLoading } = useStatics();
  const { getUserRoles, roles, rolesLoading } = useStatics();
  const { user, getMe } = useAuth();
@@ -138,7 +138,7 @@ const UserTable = () => {
       ],
     },
     {
-      title: "Role",
+      title: "Роль",
       width: "100px",
       children: [
         {
@@ -307,8 +307,8 @@ const UserTable = () => {
   return  (
     <>
       <Table
-        scroll={{ x: 1200 }}
         className="card"
+        scroll={{ x: 'max-content' }}
         columns={columns}
         dataSource={data}
         title={() => (
@@ -325,20 +325,20 @@ const UserTable = () => {
         pagination={{
           onChange: (page, pageSize) => {
             const newParams = { ...params };
-            newParams.pageSize = pageSize;
-            newParams.pageNumber = page;
+            newParams.page = page;
+            newParams.limit = pageSize;
             setParams(newParams);
             getList(newParams);
           },
-          total: 10,
+          total: pagination?.total,
           showTotal: (total, range) => (
             <div className="show-total-pagination">
               Показаны <b>{range[0]}</b> - <b>{range[1]}</b> из <b>{total}</b>{" "}
               записи.
             </div>
           ),
-          pageSize: 10,
-          current: 1,
+          pageSize: params.limit,
+          current: pagination?.current_page,
         }}
       />
     </>

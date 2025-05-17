@@ -186,7 +186,7 @@ const LastTransactionsTable: FC = () => {
       ],
     },
     {
-      title: "Actions",
+      title: "Действие",
       children: [
         {
           title: "",
@@ -244,7 +244,7 @@ const LastTransactionsTable: FC = () => {
             }}
           >
             <Col style={{ fontSize: "24px", fontWeight: "bold" }}>
-              Информацию из заказам
+            Информация о заказах
             </Col>
             <Col
               style={{
