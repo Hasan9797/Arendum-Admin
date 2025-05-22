@@ -57,25 +57,25 @@ const DepositTable = () => {
     },
 
     {
-      title: "Currency",
+      title: "Денежная единица",
       dataIndex: "currency",
-      width: "20%",
+      width: "10%",
       key: "currency",
     },
     {
-      title: "PartnerId",
+      title: "Идентификационный номер Партнера",
       dataIndex: "partnerId",
-      width: "20%",
+      width: "10%",
       key: "partnerId",
     },
     {
-      title: "Card ID",
+      title: "Идентификационный номер карты",
       dataIndex: "cardId",
-      width: "20%",
+      width: "10%",
       key: "cardId",
     },
     {
-      title: "Status",
+      title: "Статус",
       dataIndex: "status",
       width: "20%",
       key: "status",

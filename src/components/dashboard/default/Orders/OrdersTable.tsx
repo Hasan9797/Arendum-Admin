@@ -45,7 +45,7 @@ const OrdersTable = () => {
 
   const filter = () => {
     const newParams = { ...params };
-    newParams["pageNumber"] = 1;
+    newParams["page"] = 1;
     setParams(newParams);
     getOrders(newParams);
   };
@@ -317,24 +317,7 @@ const OrdersTable = () => {
             </Col>
           </Row>
         )}
-        // pagination={{
-        //   onChange: (page, pageSize) => {
-        //     const newParams = { ...params };
-        //     newParams.page = page;
-        //     newParams.limit = pageSize;
-        //     setParams(newParams);
-        //     getOrders(newParams);
-        //   },
-        //   total: pagination?.total,
-        //   showTotal: (total, range) => (
-        //     <div className="show-total-pagination">
-        //       Показаны <b>{range[0]}</b> - <b>{range[1]}</b> из <b>{total}</b>{" "}
-        //       записи.
-        //     </div>
-        //   ),
-        //   pageSize: params.limit,
-        //   current: pagination?.current_page,
-        // }}
+     
         pagination={{
           onChange: (page, pageSize) => {
             const newParams = { ...params };

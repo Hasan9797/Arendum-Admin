@@ -97,8 +97,8 @@ export const requests = {
     $api.post(`${API_URL}/service-commission/create`, params),
   fetchTaxAmountDetail: (id: string) => $api.get(`${API_URL}/service-commission/${id}`), //! done
   taxAmountUpdate: (id: string, params: TaxAmountFilterType) =>
-    $api.patch(`${API_URL}/service-commission/${id}`, params), //! done
-  taxAmountDelete: (id: string) => $api.delete(`${API_URL}/service-commission/${id}`),
+    $api.put(`${API_URL}/service-commission/update/${id}`, params), //! done
+  taxAmountDelete: (id: string) => $api.delete(`${API_URL}/service-commission/delete/${id}`),
 
   //* Specifications
   fetchSpecificationList: (params: AccountFilterType) =>

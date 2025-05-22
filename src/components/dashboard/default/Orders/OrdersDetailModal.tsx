@@ -5,9 +5,10 @@ import {
   setIconFromApplicaionStatus,
   setColorFromApplicaionStatus,
 } from "./../../../../utils/index";
-import useOrders from '../../../../hooks/orders/useOrders.jsx' 
+import useOrders from "../../../../hooks/orders/useOrders.jsx";
 import dayjs from "dayjs";
-import { detail_data } from "../../../../constants/index.js";
+
+
 
 interface OrdersDetailModalProps {
   open: boolean;
@@ -20,13 +21,22 @@ const OrdersDetailModal: FC<OrdersDetailModalProps> = ({
   onCancel,
   id,
 }) => {
-  const {getDetail,detail, detailLoading} = useOrders()
-console.log(detail)
+  const { getDetail, detail, detailLoading } = useOrders();
+  console.log(detail);
   useEffect(() => {
-    if(id){
-      getDetail(id)
+    if (id) {
+      getDetail(id);
     }
   }, [id]);
+
+  const detail_data = [
+    { title: "Заказ создан", date: detail?.createdAt },
+        { title: "Заказ принят", date:detail?.updatedAt  },
+        { title: "На месте", date:detail?.driverArrivedTime },
+        { title: "Начал работу", date: "-------" },
+        { title: "ВЫПОЛНЕН" },
+  ]
+  console.log(detail_data)
 
   const items = useMemo(() => {
     return [
@@ -40,8 +50,13 @@ console.log(detail)
             {detail?.status?.text}
           </Tag>
         ),
-        span: 4,
+        span: detail?.startAt ? 1 : 4,
       },
+      ...(detail?.startAt ? [{
+        label: "Планируемый заказ",
+        children: dayjs(detail?.startAt).format("DD-MM-YYYY  HH:mm:ss"),
+        span: 1,
+      },] : []),
       {
         label: "Заказчик",
         children: detail?.client?.fullName,
@@ -80,7 +95,9 @@ console.log(detail)
     ];
   }, [detail]);
 
-  return detailLoading ?  (<Spin/>) : (
+  return detailLoading ? (
+    <Spin />
+  ) : (
     <Modal
       title={`ID заказа : ${detail?.id}`}
       open={open}
@@ -88,7 +105,7 @@ console.log(detail)
       okText="Закрыть"
       onOk={onCancel}
       onCancel={onCancel}
-      // width={1000}
+      width={700}
       centered
     >
       <Descriptions
@@ -97,7 +114,7 @@ console.log(detail)
         contentStyle={{
           display: "flex",
           alignItems: "center",
-        }}
+          flexWrap:'nowrap'       }}
       />
       <Steps
         style={{ marginTop: "20px" }}

@@ -131,6 +131,7 @@ const DriverEditPage: FC = () => {
         legal: detail?.legal ? "legal" : "physical",
         companyName: detail?.companyName,
         companyInn: detail?.companyInn,
+        pinfl: detail?.pinfl,
         comment: detail?.comment
       };
 
@@ -451,7 +452,21 @@ const DriverEditPage: FC = () => {
             ),
           },
         ]
-      : []),
+      : [
+        {
+          label: "ПИНФЛ",
+          name: "pinfl",
+          required: true,
+          message: "Введите ПИНФЛ",
+          child: (
+            <Input type="number" maxLength={14} 
+              onChange={(e) =>
+                form.setFieldValue("pinfl", e.target.value)
+              }
+            />
+          ),
+        },
+      ]),
     {
       label: "Регион проживания",
       name: "regionId",

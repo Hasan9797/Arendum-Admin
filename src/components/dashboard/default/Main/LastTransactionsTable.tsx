@@ -5,13 +5,13 @@ import { Button, Col, Row, Space, Table, TableColumnsType, Tag } from "antd";
 import {
   setIconFromApplicaionStatus,
   setColorFromApplicaionStatus,
-} from "../../utils";
-import { TransactionTableType } from "../../types/transactions";
+} from "../../../../utils";
+import { TransactionTableType } from "../../../../types/transactions";
 import dayjs from "dayjs";
-import OrdersDetailModal from "../dashboard/default/Orders/OrdersDetailModal";
+import OrdersDetailModal from "../../../dashboard/default/Orders/OrdersDetailModal";
 import { EyeOutlined } from "@ant-design/icons";
-import useOrders from "../../hooks/orders/useOrders.jsx";
-import useStatics from "../../hooks/statics/useStatics.jsx";
+import useOrders from "../../../../hooks/orders/useOrders.jsx";
+import useStatics from "../../../../hooks/statics/useStatics.jsx";
 
 const LastTransactionsTable: FC = () => {
   const [detailModal, setDetailModal] = useState(false);

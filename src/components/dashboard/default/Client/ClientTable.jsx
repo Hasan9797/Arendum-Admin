@@ -13,26 +13,22 @@ import {
 } from "antd";
 import { DeleteOutlined, EyeOutlined, FormOutlined } from "@ant-design/icons";
 import { useEffect, useMemo, useState } from "react";
-import {
-  addFilter,
-  getDateTime,
-  setColorFromRole,
-} from "../../../../utils";
+import { addFilter, getDateTime, setColorFromRole } from "../../../../utils";
 import TableTitle from "../../../TableTitle/TableTitle";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import useClient from "../../../../hooks/client/useClient";
 import useRegion from "../../../../hooks/region/useRegion";
 import useStatics from "../../../../hooks/statics/useStatics";
-
+import useAuth from "../../../../hooks/auth/useAuth.jsx";
 
 const ClientTable = () => {
-  const { clients, getList, remove, listLoading,update,updateLoading } = useClient();
+  const { clients, getList, remove, listLoading, update, updateLoading } =
+    useClient();
   const { regions, getRegions, listLoading: regionLoading } = useRegion();
   const { activateStatus, getActivateStatus, statusLoading } = useStatics();
+  const { getMe, user } = useAuth();
 
-  // const { user } = useAuth();
-  console.log(clients);
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
@@ -69,6 +65,7 @@ const ClientTable = () => {
     getList(params);
     getRegions(params);
     getActivateStatus();
+    getMe();
   }, [params]);
 
   const columns = [
@@ -244,12 +241,16 @@ const ClientTable = () => {
         },
       ],
     },
-    {
-      title: "",
-      width: "160px",
-      dataIndex: "others",
-      key: "others",
-    },
+    ...(user?.role !== 3
+      ? [
+          {
+            title: "",
+            width: "160px",
+            dataIndex: "others",
+            key: "others",
+          },
+        ]
+      : []),
   ];
 
   const data = useMemo(() => {
@@ -276,21 +277,22 @@ const ClientTable = () => {
                 (item.status?.key === 0 && "Созданный") ||
                 (item.status?.key === 1 && "Неактивный")
               }
-              disabled={updateLoading}
+              disabled={updateLoading || user?.role === 3}
               onChange={(cheched) => handleStatusChange(cheched, item.id)}
             />
           </Space>
         ),
         others: (
           <Space>
-            <Button disabled
+            <Button
+              disabled
               onClick={() => {
                 navigate(`/dashboards/client/${item?.id}`);
               }}
               icon={<EyeOutlined />}
             />
             <Button
-            disabled
+              disabled
               onClick={() => {
                 navigate(`/dashboards/user/${item?.id}/update`);
               }}

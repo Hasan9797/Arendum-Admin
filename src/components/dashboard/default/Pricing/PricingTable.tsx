@@ -15,6 +15,7 @@ import { useMemo, useState } from "react";
 import { useEffect } from "react";
 import useMachines from "../../../../hooks/machines/useMachines.jsx";
 import usePricing from "../../../../hooks/pricing/usePricing.jsx";
+import useAuth from "../../../../hooks/auth/useAuth.jsx";
 
 const PricingTable = () => {
   // const { getList, specifications, listLoading, remove, removeLoading } =
@@ -29,6 +30,7 @@ const PricingTable = () => {
     update,
     updateLoading,
   } = usePricing();
+  const { getMe, user } = useAuth();
 
   // const [detailId, setDetailId] = useState(null);
   const [params] = useState({
@@ -59,6 +61,7 @@ const PricingTable = () => {
   useEffect(() => {
     getList(params);
     getMachines(params);
+    getMe();
   }, []);
 
   const columns = [
@@ -149,12 +152,16 @@ const PricingTable = () => {
         );
       },
     },
-    {
-      // title: "",
-      width: "20%",
-      dataIndex: "others",
-      key: "others",
-    },
+    ...(user?.role !== 3
+      ? [
+          {
+            title: "",
+            width: "20%",
+            dataIndex: "others",
+            key: "others",
+          },
+        ]
+      : []),
   ];
   const data = useMemo(() => {
     return pricing?.map((item) => {
@@ -214,7 +221,7 @@ const PricingTable = () => {
                 (item.status === 0 && "Созданный") ||
                 (item.status === 1 && "Неактивный")
               }
-              disabled={updateLoading}
+              disabled={updateLoading||user?.role ===3}
               onChange={(cheched) => handleStatusChange(cheched, item.id)}
             />
           </Space>

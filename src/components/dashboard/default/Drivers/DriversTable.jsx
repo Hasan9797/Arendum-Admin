@@ -24,6 +24,7 @@ import useRegions from "../../../../hooks/region/useRegion";
 import { useNavigate } from "react-router-dom";
 import useStatics from "../../../../hooks/statics/useStatics";
 import useMachines from "../../../../hooks/machines/useMachines";
+import useAuth from "../../../../hooks/auth/useAuth.jsx";
 
 const DriversTable = () => {
   const {
@@ -38,6 +39,8 @@ const DriversTable = () => {
   const { getRegions, regions, listLoading: regionLoading } = useRegions();
   const { activateStatus, getActivateStatus, statusLoading } = useStatics();
   const { getMachines, machines, listLoading: machineLoading } = useMachines();
+  const { getMe, user } = useAuth();
+
   const navigate = useNavigate();
   const [params, setParams] = useState({
     page: 1,
@@ -63,8 +66,8 @@ const DriversTable = () => {
     getRegions(params);
     getActivateStatus();
     getMachines();
+    getMe();
   }, []);
-  console.log(drivers);
 
   const handleStatusChange = async (checked, id) => {
     const newStatus = checked ? 2 : 1;
@@ -205,8 +208,10 @@ const DriversTable = () => {
       render: ({ params }) => {
         if (params && Array.isArray(params)) {
           return params.map((param, index) => (
-            <Flex gap={5} align="center" key={index} >
-              <Typography style={{whiteSpace:'nowrap'}}>{param?.title}:</Typography>
+            <Flex gap={5} align="center" key={index}>
+              <Typography style={{ whiteSpace: "nowrap" }}>
+                {param?.title}:
+              </Typography>
               {param.params?.map((item, index) => (
                 <Badge
                   style={{ marginRight: "3px", paddingBottom: "2px" }}
@@ -346,12 +351,16 @@ const DriversTable = () => {
         },
       ],
     },
-    {
-      title: "",
-      width: "160px",
-      dataIndex: "others",
-      key: "others",
-    },
+    ...(user?.role !== 3
+      ? [
+          {
+            title: "",
+            width: "160px",
+            dataIndex: "others",
+            key: "others",
+          },
+        ]
+      : []),
   ];
 
   const data = useMemo(() => {
@@ -402,7 +411,7 @@ const DriversTable = () => {
                 (item.status?.key === 0 && "Созданный") ||
                 (item.status?.key === 1 && "Неактивный")
               }
-              disabled={updateLoading}
+              disabled={updateLoading || user?.role === 3}
               onChange={(cheched) => handleStatusChange(cheched, item.id)}
             />
           </Space>
@@ -413,7 +422,7 @@ const DriversTable = () => {
   return (
     <>
       <Table
-        scroll={{ x: 'max-content' }}
+        scroll={{ x: "max-content" }}
         className="card"
         columns={columns}
         dataSource={data}
