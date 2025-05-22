@@ -17,7 +17,7 @@ import UserBalanceEditModal from "./UserBalanceEditModal";
 import { useEffect } from "react";
 import dayjs from "dayjs";
 import useUserBalance from "../../../../hooks/userBalance/useUserBalance";
-import { iteratee } from "lodash";
+import useAuth from "../../../../hooks/auth/useAuth.jsx";
 
 const UserBalanceTable = () => {
   const {
@@ -28,6 +28,8 @@ const UserBalanceTable = () => {
     pagination,
     listLoading,
   } = useUserBalance();
+  const { getMe, user } = useAuth();
+
   const [detailModal, setDetailModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [detailId, setDetailId] = useState(null);
@@ -37,6 +39,7 @@ const UserBalanceTable = () => {
   });
   useEffect(() => {
     getList(params);
+    getMe();
   }, []);
 
   const formatBalance = (balance) => {
@@ -92,12 +95,16 @@ const UserBalanceTable = () => {
       key: "updatedAt",
       render: (updatedAt) => dayjs(updatedAt).format("DD-MM-YYYY  HH:mm:ss"),
     },
-    {
-      title: "",
-      width: "20%",
-      dataIndex: "others",
-      key: "others",
-    },
+    ...(user?.role !== 3
+      ? [
+          {
+            title: "",
+            width: "20%",
+            dataIndex: "others",
+            key: "others",
+          },
+        ]
+      : []),
   ];
   const data = useMemo(() => {
     return userBalances?.map((item) => {

@@ -2,60 +2,76 @@
 import {
   Button,
   Col,
+  message,
+  Popconfirm,
   Row,
   Space,
   Table,
   Tag,
   Typography,
 } from "antd";
-import { EyeOutlined } from "@ant-design/icons";
+import { DeleteOutlined, FormOutlined } from "@ant-design/icons";
 import { useEffect, useMemo, useState } from "react";
 import {
   setIconFromApplicaionStatus,
   setColorFromApplicaionStatus,
 } from "../../../../utils/index";
 import useTaxAmount from "../../../../hooks/taxAmount/useTaxAmount";
+import TaxAmountUpdateModal from "./TaxAmountEditModal";
 
 const TaxAmountTable = () => {
-  const { listLoading, taxAmounts, getTaxAmounts,pagination } = useTaxAmount();
-// const navigate = useNavigate();
+  const [editModal, setEditModal] = useState(false);
+  const [detailId, setDetailId] = useState(null);
+  const { listLoading, taxAmounts, getTaxAmounts, pagination, remove } =
+    useTaxAmount();
+  // const navigate = useNavigate();
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
     filters: [],
   });
-    useEffect(() => {
-      getTaxAmounts(params);
-    }, []);
+  useEffect(() => {
+    getTaxAmounts(params);
+  }, []);
 
   const columns = [
-      {
-        title: "Ид номер",
-        width: "10%",
-        dataIndex: "id",
-        key: "id",
-      },
-      {
-        title: "Комиссия",
-        width: "10%",
-        dataIndex: "arendumAmount",
-        key: "arendumAmount",
-        render:(text,record) =><span>{`${text} ${record?.arendumPercentage ? '(%)': '(UZS)' } `}</span>
-      },
-      {
-        title: "НДС",
-        width: "10%",
-        dataIndex: "ndsAmount",
-        key: "ndsAmount",
-        render:(text,record) =><span>{`${text} ${record?.ndsPercentage ? '(%)': '(UZS)' } `}</span>
-      },
-      {
-        title: "Баланс водителя (UZS)",
-        width: "10%",
-        dataIndex: "driverBalance",
-        key: "driverBalance",
-      },
-    ];
+    {
+      title: "Ид номер",
+      width: "20%",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "Комиссия",
+      width: "30%",
+      dataIndex: "arendumAmount",
+      key: "arendumAmount",
+      render: (text, record) => (
+        <span>{`${text} ${record?.arendumPercentage ? "(%)" : "(UZS)"} `}</span>
+      ),
+    },
+    {
+      title: "НДС",
+      width: "20%",
+      dataIndex: "ndsAmount",
+      key: "ndsAmount",
+      render: (text, record) => (
+        <span>{`${text} ${record?.ndsPercentage ? "(%)" : "(UZS)"} `}</span>
+      ),
+    },
+    {
+      title: "Баланс водителя (UZS)",
+      width: "30%",
+      dataIndex: "driverBalance",
+      key: "driverBalance",
+    },
+    {
+      title: "",
+      width: "10%",
+      dataIndex: "others",
+      key: "others",
+    },
+  ];
 
   const data = useMemo(() => {
     return taxAmounts?.map((item) => {
@@ -77,11 +93,29 @@ const TaxAmountTable = () => {
           <Space>
             <Button
               onClick={() => {
-                // setDetailModal(true);
-                // setDetailId(item?.id);
+                setEditModal(true);
+                setDetailId(item?.id);
               }}
-              icon={<EyeOutlined />}
+              icon={<FormOutlined />}
             />
+            <Popconfirm
+              placement="topLeft"
+              title="Вы точно хотите удалить?"
+              okText="Да"
+              cancelText="Нет"
+              onConfirm={() => {
+                remove(item?.id).then((res) => {
+                  if (res.success === true) {
+                    message.success("Успешно удалено");
+                    getTaxAmounts(params);
+                  } else {
+                    message.error("Ошибка при удалении");
+                  }
+                });
+              }}
+            >
+              <Button icon={<DeleteOutlined />} />
+            </Popconfirm>
           </Space>
         ),
       };
@@ -92,7 +126,7 @@ const TaxAmountTable = () => {
     <>
       <Table
         className="card"
-        scroll={{ x:'max-content'}}
+        scroll={{ x: "max-content" }}
         columns={columns}
         dataSource={data}
         loading={listLoading}
@@ -141,14 +175,14 @@ const TaxAmountTable = () => {
           current: pagination?.current_page,
         }}
       />
-      {/* <OrdersDetailModal
-        open={detailModal}
+      <TaxAmountUpdateModal
+        open={editModal}
         onCancel={() => {
-          setDetailModal(false);
+          setEditModal(false);
           setDetailId(null);
         }}
         id={detailId}
-      /> */}
+      />
     </>
   );
 };

@@ -18,6 +18,7 @@ import { Link, useLocation } from "react-router-dom";
 import { PATH_DASHBOARD } from "../../constants";
 import { COLOR } from "../../App.tsx";
 import { Logo } from "../../components/index.ts";
+import useAuth from "../../hooks/auth/useAuth.jsx";
 
 const { Sider } = Layout;
 
@@ -44,6 +45,20 @@ const SideNav = ({ ...others }: SiderProps) => {
   const { pathname } = useLocation();
   const [openKeys, setOpenKeys] = useState([""]);
   const [current, setCurrent] = useState("");
+  const { getMe, user } = useAuth();
+
+  useEffect(() => {
+    getMe();
+  }, []);
+
+  const ROLE = {
+    is_admin: user && user?.role === 1,
+    is_super_admin: user && user?.role === 1,
+    is_finansist: user && user?.role === 9,
+    is_moderator: user && user?.role === 7,
+    is_accauntant: user && user?.role === 3,
+    is_operator: user && user?.role === 8,
+  };
 
   const items: MenuProps["items"] = [
     getItem("Основные данные", "main", null, [], "group"),
@@ -57,84 +72,110 @@ const SideNav = ({ ...others }: SiderProps) => {
       "analitika",
       <SlidersOutlined />
     ),
-    getItem("Финансы", "finances", null, [
-      getItem(
-        <Link to={PATH_DASHBOARD.user_balance}>Балансы пользователей</Link>,
-        "user_balance",
-        <FileTextOutlined />
-      ),
-      getItem(
-        <Link to={PATH_DASHBOARD.deposit}>Депозиты</Link>,
-        "deposit",
-        <FileTextOutlined />
-      ),
-    ], "group"),
-    getItem("Управление", "management", null, [], "group"),
     getItem(
-      <Link to={PATH_DASHBOARD.orders}>Заказы</Link>,
-      "orders",
-      <SlidersOutlined />
+      "Финансы",
+      "finances",
+      null,
+      [
+        getItem(
+          <Link to={PATH_DASHBOARD.user_balance}>Балансы пользователей</Link>,
+          "user_balance",
+          <FileTextOutlined />
+        ),
+        getItem(
+          <Link to={PATH_DASHBOARD.deposit}>Депозиты</Link>,
+          "deposit",
+          <FileTextOutlined />
+        ),
+      ],
+      "group"
     ),
     getItem(
-      <Link to={PATH_DASHBOARD.clients}>Пользователи</Link>,
-      "clients",
-      <UserOutlined />
+      "Управление",
+      "management",
+      null,
+      [
+        getItem(
+          <Link to={PATH_DASHBOARD.orders}>Заказы</Link>,
+          "orders",
+          <SlidersOutlined />
+        ),
+        getItem(
+          <Link to={PATH_DASHBOARD.clients}>Пользователи</Link>,
+          "clients",
+          <UserOutlined />
+        ),
+        getItem(
+          <Link to={PATH_DASHBOARD.drivers}>Водители</Link>,
+          "drivers",
+          <SlidersOutlined />
+        ),
+        getItem(
+          <Link to={PATH_DASHBOARD.merchants}>Мерчанты</Link>,
+          "merchants",
+          <UnorderedListOutlined />
+        ),
+        getItem(
+          <Link to={PATH_DASHBOARD.user_reviews}>Оценки пользователей </Link>,
+          "user_reviews",
+          <FileTextOutlined />
+        ),
+      ],
+      "group"
     ),
-    getItem(
-      <Link to={PATH_DASHBOARD.drivers}>Водители</Link>,
-      "drivers",
-      <SlidersOutlined />
-    ),
-    getItem(
-      <Link to={PATH_DASHBOARD.merchants}>Мерчанты</Link>,
-      "merchants",
-      <UnorderedListOutlined />
-    ),
-   
-    getItem(
-      <Link to={PATH_DASHBOARD.user_reviews}>Оценки пользователей </Link>,
-      "user_reviews",
-      <FileTextOutlined />
-    ),
-    getItem("Справочники", "manuals", null, [], "group"),
 
     getItem(
-      <Link to={PATH_DASHBOARD.work_regions}>Регионы</Link>,
-      "work_regions",
-      <FileTextOutlined />
-    ),
-    getItem(
-      <Link to={PATH_DASHBOARD.work_districts}>Районы</Link>,
-      "work_districts",
-      <FileTextOutlined />
-    ),
-    getItem(
-      <Link to={PATH_DASHBOARD.categories_of_equipment}>
-        Категории техники
-      </Link>,
-      "categories_of_equipment",
-      <FileTextOutlined />
-    ),
-    getItem(
-      <Link to={PATH_DASHBOARD.specifications}>Параметры техники</Link>,
-      "specifications",
-      <FileTextOutlined />
-    ),
-    getItem(
-      <Link to={PATH_DASHBOARD.pricing}>Ценообразование</Link>,
-      "pricing",
-      <FileTextOutlined />
-    ),
-    getItem(
-      <Link to={PATH_DASHBOARD.params_filter}>Фильтр параметров</Link>,
-      "params_filter",
-      <FileTextOutlined />
-    ),
-    getItem("Роли", "role", null, [], "group"),
-    getItem(
-      <Link to={PATH_DASHBOARD.moderators}>Модераторы</Link>,
-      "moderators",
-      <FileTextOutlined />
+      "Справочники",
+      "manuals",
+      null,
+      [
+        // (ROLE.is_accauntant && ROLE.is_moderator) &&
+          getItem(
+            <Link to={PATH_DASHBOARD.work_regions}>Регионы</Link>,
+            "work_regions",
+            <FileTextOutlined />
+          ),
+        // (ROLE.is_accauntant || ROLE.is_moderator) &&
+          getItem(
+            <Link to={PATH_DASHBOARD.work_districts}>Районы</Link>,
+            "work_districts",
+            <FileTextOutlined />
+          ),
+        // (ROLE.is_accauntant || ROLE.is_moderator) &&
+          getItem(
+            <Link to={PATH_DASHBOARD.categories_of_equipment}>
+              Категории техники
+            </Link>,
+            "categories_of_equipment",
+            <FileTextOutlined />
+          ),
+        // (ROLE.is_accauntant || ROLE.is_moderator) &&
+          getItem(
+            <Link to={PATH_DASHBOARD.specifications}>Параметры техники</Link>,
+            "specifications",
+            <FileTextOutlined />
+          ),
+        getItem(
+          <Link to={PATH_DASHBOARD.pricing}>Ценообразование</Link>,
+          "pricing",
+          <FileTextOutlined />
+        ),
+        // (ROLE.is_accauntant || ROLE.is_moderator) &&
+          getItem(
+            <Link to={PATH_DASHBOARD.params_filter}>Фильтр параметров</Link>,
+            "params_filter",
+            <FileTextOutlined />
+          ),
+        // (ROLE.is_accauntant || ROLE.is_moderator) &&
+          getItem("Роли", "role", null, [], "group"),
+        (!ROLE.is_accauntant || !ROLE.is_moderator) &&
+          getItem(
+            <Link to={PATH_DASHBOARD.moderators}>Модераторы</Link>,
+            "moderators",
+            <FileTextOutlined />
+          ),
+      ],
+      "group"
     ),
   ];
 

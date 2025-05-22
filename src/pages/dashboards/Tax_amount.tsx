@@ -48,8 +48,8 @@ const Tax_amount = () => {
         <TaxAmountTable />
       </div>
       <TaxAmountCreateModal
-        onSuccessFields={() => setModal(false)}
         open={modal}
+        onSuccessFields={() => setModal(false)}
         onCancel={() => {
           setModal(false);
         }}

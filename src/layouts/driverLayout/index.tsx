@@ -169,7 +169,7 @@ export const DriverAccountLayout = () => {
           </Col>
           <Col xs={24} sm={16} lg={20}>
             <Descriptions
-              title="User Info"
+              title="Информация о водителе"
               items={DESCRIPTION_ITEMS}
               column={{ xs: 1, sm: 1, md: 1, lg: 2, xl: 2, xxl: 2 }}
             />
